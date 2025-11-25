@@ -311,34 +311,33 @@ export default function ProyectoDetalle() {
 
   return (
     <div className="proyecto-detalle-page">
-      {/* Breadcrumb Navigation */}
-      <div className="breadcrumb">
-        <div className="container">
-          <button onClick={() => navigate('/')} className="breadcrumb-link">
-            {t('header.home')}
-          </button>
-          <span className="separator">›</span>
-          <button onClick={() => navigate('/proyectos')} className="breadcrumb-link">
-            {t('projects.title')}
-          </button>
-          <span className="separator">›</span>
-          <button onClick={() => navigate(`/proyectos/${categoria}`)} className="breadcrumb-link">
-            {categoryName}
-          </button>
-          <span className="separator">›</span>
-          <span className="current">{translateProjectName(project.name)}</span>
-        </div>
-      </div>
-
       {/* Main Content */}
       <div className="main-content">
         <div className="container">
+          {/* Back Button */}
+          <button onClick={() => navigate(`/proyectos/${categoria}`)} className="back-btn">
+            <ChevronLeft size={20} />
+          </button>
+          
           <div className="content-grid">
             {/* Left Column - Project Info */}
             <div className="info-column">
-              <button onClick={() => navigate(`/proyectos/${categoria}`)} className="back-btn">
-                <ChevronLeft size={20} />
-              </button>
+              {/* Breadcrumb Navigation */}
+              <div className="breadcrumb-content">
+                <button onClick={() => navigate('/')} className="breadcrumb-link">
+                  {t('header.home')}
+                </button>
+                <span className="separator">›</span>
+                <button onClick={() => navigate('/proyectos')} className="breadcrumb-link">
+                  {t('projects.breadcrumbTitle')}
+                </button>
+                <span className="separator">›</span>
+                <button onClick={() => navigate(`/proyectos/${categoria}`)} className="breadcrumb-link">
+                  {categoryName}
+                </button>
+                <span className="separator">›</span>
+                <span className="current">{translateProjectName(project.name)}</span>
+              </div>
               
               <h1 className="project-title">{translateProjectName(project.name)}</h1>
               
@@ -347,36 +346,24 @@ export default function ProyectoDetalle() {
 
             {/* Right Column - Images */}
             <div className="images-column">
-              {/* Main Image */}
-              <div className="main-image-container">
-                <img 
-                  src={images[selectedImage]} 
-                  alt={project.name}
-                  className="main-image"
-                  onClick={() => setIsZoomed(true)}
-                />
-                <button 
-                  className="zoom-button"
-                  onClick={() => setIsZoomed(true)}
-                >
-                  <ZoomIn size={20} />
-                </button>
-              </div>
-
-              {/* Thumbnail Gallery */}
-              {images.length > 1 && (
-                <div className="thumbnail-gallery">
-                  {images.map((img: string, index: number) => (
-                    <div 
-                      key={index}
-                      className={`thumbnail ${selectedImage === index ? 'active' : ''}`}
-                      onClick={() => setSelectedImage(index)}
-                    >
-                      <img src={img} alt={`${project.name} ${index + 1}`} />
+              {/* Image Grid 2x2 */}
+              <div className="image-grid">
+                {images.slice(0, 4).map((img: string, index: number) => (
+                  <div 
+                    key={index}
+                    className="grid-image-container"
+                    onClick={() => {
+                      setSelectedImage(index);
+                      setIsZoomed(true);
+                    }}
+                  >
+                    <img src={img} alt={`${project.name} ${index + 1}`} />
+                    <div className="image-overlay">
+                      <ZoomIn size={24} color="white" />
                     </div>
-                  ))}
-                </div>
-              )}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -421,7 +408,7 @@ export default function ProyectoDetalle() {
         .proyecto-detalle-page {
           min-height: 100vh;
           background: white;
-          padding-top: 80px;
+          padding-top: 0;
         }
 
         .container {
@@ -430,47 +417,11 @@ export default function ProyectoDetalle() {
           padding: 0 40px;
         }
 
-        /* Breadcrumb */
-        .breadcrumb {
-          background: white;
-          border-bottom: 1px solid #e5e7eb;
-          padding: 16px 0;
-        }
-
-        .breadcrumb .container {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          font-size: 14px;
-        }
-
-        .breadcrumb-link {
-          background: none;
-          border: none;
-          color: #000;
-          cursor: pointer;
-          font-weight: 500;
-          transition: opacity 0.2s;
-          padding: 0;
-        }
-
-        .breadcrumb-link:hover {
-          opacity: 0.6;
-        }
-
-        .separator {
-          color: #9ca3af;
-        }
-
-        .current {
-          color: #9ca3af;
-          font-weight: 400;
-        }
-
         /* Main Content */
         .main-content {
           padding: 40px 0 60px;
           background: white;
+          padding-top: 70px;
         }
 
         .content-grid {
@@ -497,13 +448,47 @@ export default function ProyectoDetalle() {
           justify-content: center;
           cursor: pointer;
           transition: all 0.2s;
-          margin-bottom: 32px;
+          margin-bottom: 24px;
         }
 
         .back-btn:hover {
           background: #000;
           color: white;
           border-color: #000;
+        }
+
+        /* Breadcrumb */
+        .breadcrumb-content {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 14px;
+          margin-bottom: 16px;
+          flex-wrap: wrap;
+        }
+
+        .breadcrumb-link {
+          background: none;
+          border: none;
+          color: #000;
+          cursor: pointer;
+          font-weight: 500;
+          transition: opacity 0.2s;
+          padding: 0;
+          font-size: 14px;
+        }
+
+        .breadcrumb-link:hover {
+          opacity: 0.6;
+        }
+
+        .separator {
+          color: #9ca3af;
+        }
+
+        .current {
+          color: #9ca3af;
+          font-weight: 400;
         }
 
         .project-title {
@@ -526,89 +511,46 @@ export default function ProyectoDetalle() {
           max-width: 700px;
         }
 
-        .main-image-container {
-          width: 100%;
+        .image-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 16px;
+        }
+
+        .grid-image-container {
           aspect-ratio: 4/3;
-          background: white;
           border-radius: 12px;
           overflow: hidden;
           position: relative;
-          margin-bottom: 20px;
+          cursor: pointer;
+          background: white;
           box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-          cursor: zoom-in;
         }
 
-        .main-image {
+        .grid-image-container img {
           width: 100%;
           height: 100%;
           object-fit: cover;
           transition: transform 0.3s;
         }
 
-        .main-image-container:hover .main-image {
-          transform: scale(1.02);
+        .grid-image-container:hover img {
+          transform: scale(1.05);
         }
 
-        .zoom-button {
+        .image-overlay {
           position: absolute;
-          top: 16px;
-          right: 16px;
-          width: 44px;
-          height: 44px;
-          border-radius: 50%;
-          background: rgba(255, 255, 255, 0.95);
-          border: none;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.4);
           display: flex;
           align-items: center;
           justify-content: center;
-          cursor: pointer;
-          transition: all 0.2s;
           opacity: 0;
+          transition: opacity 0.3s;
         }
 
-        .main-image-container:hover .zoom-button {
+        .grid-image-container:hover .image-overlay {
           opacity: 1;
-        }
-
-        .zoom-button:hover {
-          background: white;
-          transform: scale(1.1);
-        }
-
-        /* Thumbnail Gallery */
-        .thumbnail-gallery {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-          gap: 12px;
-        }
-
-        .thumbnail {
-          aspect-ratio: 4/3;
-          border-radius: 8px;
-          overflow: hidden;
-          cursor: pointer;
-          border: 2px solid transparent;
-          transition: all 0.2s;
-          background: white;
-        }
-
-        .thumbnail:hover {
-          border-color: #d1d5db;
-        }
-
-        .thumbnail.active {
-          border-color: #000;
-        }
-
-        .thumbnail img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          transition: transform 0.2s;
-        }
-
-        .thumbnail:hover img {
-          transform: scale(1.05);
         }
 
         /* Related Projects Section */

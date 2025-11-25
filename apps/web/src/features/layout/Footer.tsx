@@ -111,7 +111,6 @@ export default function Footer() {
                 { name: t('categories.carteles.name'), slug: "carteles" },
                 { name: t('categories.cobre.name'), slug: "cobre" },
                 { name: t('categories.corte-laser.name'), slug: "corte-laser" },
-                { name: t('categories.tarimas.name'), slug: "tarimas" },
                 { name: t('categories.cristaleras.name'), slug: "cristaleras" },
                 { name: t('categories.espejos.name'), slug: "espejos" },
                 { name: t('categories.fogoneros.name'), slug: "fogoneros" },
@@ -120,12 +119,13 @@ export default function Footer() {
                 { name: t('categories.muebles.name'), slug: "muebles" },
                 { name: t('categories.pergolas.name'), slug: "pergolas" },
                 { name: t('categories.puertas.name'), slug: "puertas" },
+                { name: t('categories.tarimas.name'), slug: "tarimas" },
               ].map((proyecto) => (
                 <a
                   key={proyecto.slug}
                   href={`/proyectos/${proyecto.slug}`}
-                  className="px-4 py-2 bg-white/10 hover:bg-white hover:text-black transition-colors whitespace-nowrap"
-                  style={{ fontSize: '12px', borderRadius: '4px' }}
+                  className="px-3 py-1.5 bg-white/10 hover:bg-white hover:text-black transition-colors border border-white/20"
+                  style={{ fontSize: '13px' }}
                 >
                   {proyecto.name}
                 </a>
@@ -139,6 +139,15 @@ export default function Footer() {
 
         {/* Footer inferior */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-400">
+          <div className="flex flex-col md:flex-row items-center gap-3 md:gap-6">
+            <a href="/privacidad" className="hover:text-white transition-colors">
+              {t('footer.privacy')}
+            </a>
+            <span className="hidden md:inline">|</span>
+            <a href="/terminos-condiciones" className="hover:text-white transition-colors">
+              {t('footer.terms')}
+            </a>
+          </div>
           <div className="flex items-center gap-3">
             <span>Acá estuvo</span>
             <a 
@@ -153,17 +162,7 @@ export default function Footer() {
                 className="h-8"
               />
             </a>
-          </div>
-          <div className="flex items-center gap-6">
-            <a href="/privacidad" className="hover:text-white transition-colors">
-              {t('footer.privacy')}
-            </a>
-            <span>|</span>
-            <a href="/terminos-condiciones" className="hover:text-white transition-colors">
-              {t('footer.terms')}
-            </a>
-            <span>|</span>
-            <div className="flex gap-2">
+            <div className="flex gap-2 ml-2">
               <button 
                 onClick={() => changeLanguage('es')}
                 className="hover:opacity-80 transition-opacity"

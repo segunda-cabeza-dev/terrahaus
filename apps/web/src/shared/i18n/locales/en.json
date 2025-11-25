@@ -101,6 +101,7 @@
   "projects": {
     "title": "Discover our entire collection",
     "subtitle": "Our projects",
+    "breadcrumbTitle": "Projects",
     "description": "Explore our collection of projects in different categories",
     "search": "Search projects...",
     "searchResults": "Search results for",

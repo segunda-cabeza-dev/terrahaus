@@ -350,7 +350,8 @@ export default function Proyecto() {
 
       <style>{`
         .proyecto-page {
-          padding: 64px 0 120px;
+          padding: 70px 0 120px;
+          padding-top: 70px;
           background: white;
         }
 
@@ -375,11 +376,17 @@ export default function Proyecto() {
         }
 
         .title {
-          font-size: 45px;
+          font-size: 35px;
           font-weight: 700;
           color: #000;
           margin-bottom: 32px;
           line-height: 1.2;
+        }
+
+        @media (min-width: 768px) {
+          .title {
+            font-size: 50px;
+          }
         }
 
         .search-box {
@@ -591,10 +598,6 @@ export default function Proyecto() {
             grid-template-columns: repeat(2, 1fr);
             gap: 20px;
           }
-
-          .title {
-            font-size: 42px;
-          }
         }
 
         @media (max-width: 640px) {
@@ -604,10 +607,6 @@ export default function Proyecto() {
 
           .categories-grid {
             grid-template-columns: 1fr;
-          }
-
-          .title {
-            font-size: 42px;
           }
 
           .search-box input {

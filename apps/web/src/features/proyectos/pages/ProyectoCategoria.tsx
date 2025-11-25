@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { translateProjectName } from '@/shared/lib/projectTranslations';
+import { ChevronLeft } from 'lucide-react';
 
 // Datos de ejemplo de proyectos por categoría
 const projectsByCategory: Record<string, any[]> = {
@@ -187,24 +188,26 @@ export default function ProyectoCategoria() {
 
   return (
     <div className="proyecto-categoria-page">
-      {/* Breadcrumb */}
-      <div className="breadcrumb">
-        <div className="container">
-          <button onClick={() => navigate('/')} className="breadcrumb-link">
-            {t('header.home')}
-          </button>
-          <span className="separator">›</span>
-          <button onClick={() => navigate('/proyectos')} className="breadcrumb-link">
-            {t('projects.title')}
-          </button>
-          <span className="separator">›</span>
-          <span className="current">{categoryName}</span>
-        </div>
-      </div>
-
       {/* Header */}
       <div className="header-section">
         <div className="container">
+          {/* Back Button */}
+          <button onClick={() => navigate('/proyectos')} className="back-btn">
+            <ChevronLeft size={20} />
+          </button>
+          
+          {/* Breadcrumb */}
+          <div className="breadcrumb-content">
+            <button onClick={() => navigate('/')} className="breadcrumb-link">
+              {t('header.home')}
+            </button>
+            <span className="separator">›</span>
+            <button onClick={() => navigate('/proyectos')} className="breadcrumb-link">
+              {t('projects.breadcrumbTitle')}
+            </button>
+            <span className="separator">›</span>
+            <span className="current">{categoryName}</span>
+          </div>
           <h1 className="title">{categoryName}</h1>
         </div>
       </div>
@@ -246,18 +249,32 @@ export default function ProyectoCategoria() {
           padding: 0 40px;
         }
 
-        .breadcrumb {
+        .back-btn {
+          width: 48px;
+          height: 48px;
+          border-radius: 50%;
           background: white;
-          padding: 16px 0;
-          padding-top: 96px;
-          border-bottom: 1px solid #e5e7eb;
+          border: 1px solid #e5e7eb;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.2s;
+          margin-bottom: 20px;
         }
 
-        .breadcrumb .container {
+        .back-btn:hover {
+          background: #000;
+          color: white;
+          border-color: #000;
+        }
+
+        .breadcrumb-content {
           display: flex;
           align-items: center;
           gap: 8px;
           font-size: 14px;
+          margin-bottom: 16px;
         }
 
         .breadcrumb-link {
@@ -286,9 +303,9 @@ export default function ProyectoCategoria() {
         }
 
         .header-section {
-          padding: 20px 0;
-          text-align: center;
+          padding: 12px 0 16px;
           background: white;
+          padding-top: 70px;
         }
 
         .title {
@@ -300,13 +317,13 @@ export default function ProyectoCategoria() {
         }
 
         .projects-section {
-          padding: 20px 0 40px;
+          padding: 0 0 40px;
           background: white;
         }
 
         .projects-grid {
           display: grid;
-          grid-template-columns: repeat(3, 1fr);
+          grid-template-columns: repeat(4, 1fr);
           gap: 30px;
         }
 

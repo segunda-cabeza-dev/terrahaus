@@ -7,7 +7,7 @@ export default function CallToAction() {
     <section className="relative py-20 px-6 bg-gray-200 shadow-[0_-10px_30px_-10px_rgba(0,0,0,0.1)]">
       <div className="max-w-6xl mx-auto">
         <div className="text-center max-w-4xl mx-auto">
-          <h2 className="font-bold mb-6 text-black" style={{ fontSize: '40px', lineHeight: '1.1' }}>
+          <h2 className="font-bold mb-6 text-black" style={{ fontSize: '35px', lineHeight: '1.1' }}>
             {t('cta.title')}
           </h2>
           <p className="text-black mb-4" style={{ fontSize: '17px' }}>

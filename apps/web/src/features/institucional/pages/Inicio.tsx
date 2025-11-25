@@ -14,7 +14,7 @@ export default function Inicio() {
           </p>
 
           {/* Título principal */}
-          <h1 className="font-bold mb-8 text-[42px] md:text-[50px]" style={{ lineHeight: '1.1' }}>
+          <h1 className="font-bold mb-8 text-[35px] md:text-[50px]" style={{ lineHeight: '1.1' }}>
             {t('inicio.title')}
           </h1>
 
@@ -446,11 +446,21 @@ export default function Inicio() {
         }
 
         .animate-marquee {
-          animation: marquee 60s linear infinite;
+          animation: marquee 40s linear infinite;
         }
 
         .animate-marquee-reverse {
-          animation: marquee-reverse 60s linear infinite;
+          animation: marquee-reverse 40s linear infinite;
+        }
+
+        @media (min-width: 768px) {
+          .animate-marquee {
+            animation: marquee 40s linear infinite;
+          }
+
+          .animate-marquee-reverse {
+            animation: marquee-reverse 40s linear infinite;
+          }
         }
 
         .animate-float-services {

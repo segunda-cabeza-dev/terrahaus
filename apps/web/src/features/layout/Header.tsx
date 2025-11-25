@@ -13,14 +13,46 @@ export default function Header() {
     <header className="bg-white shadow-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
-          {/* Logo */}
-          <a href="/" className="flex-shrink-0">
-            <img
-              src="/assets/icons/Logo Beltrame Negro.png"
-              alt="Beltrame"
-              className="h-12 w-auto hover:opacity-80 transition-opacity"
-            />
-          </a>
+          {/* Mobile: Hamburger + Logo on Left */}
+          <div className="flex items-center gap-4 md:gap-0">
+            {/* Mobile Menu Button - Left */}
+            <button 
+              className="md:hidden text-gray-900 hover:text-gray-600"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                {mobileMenuOpen ? (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                ) : (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
+                )}
+              </svg>
+            </button>
+
+            {/* Logo */}
+            <a href="/" className="flex-shrink-0">
+              <img
+                src="/assets/icons/Logo Beltrame Negro.png"
+                alt="Beltrame"
+                className="h-10 md:h-12 w-auto hover:opacity-80 transition-opacity"
+              />
+            </a>
+          </div>
 
           {/* Navigation - Centrado */}
           <nav className="hidden md:flex items-center gap-8 absolute left-1/2 transform -translate-x-1/2">
@@ -59,7 +91,7 @@ export default function Header() {
           </nav>
 
           {/* Language & CTA */}
-          <div className="flex items-center gap-6 ml-8">
+          <div className="flex items-center gap-6 md:ml-auto">
             {/* Language Switcher */}
             <div className="hidden md:flex items-center gap-2">
               <button
@@ -105,35 +137,6 @@ export default function Header() {
             >
               {t('header.quote')}
             </a>
-
-            {/* Mobile Menu Button */}
-            <button 
-              className="md:hidden text-gray-900 hover:text-gray-600"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            >
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                {mobileMenuOpen ? (
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                ) : (
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
-                )}
-              </svg>
-            </button>
           </div>
         </div>
 
