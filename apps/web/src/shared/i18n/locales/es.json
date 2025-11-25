@@ -1,0 +1,230 @@
+{
+  "topbar": {
+    "shipping": "ENVÍOS A TODO EL MUNDO"
+  },
+  "header": {
+    "home": "Inicio",
+    "projects": "Proyectos",
+    "about": "Quiénes Somos",
+    "contact": "Contacto",
+    "quote": "Contáctanos"
+  },
+  "inicio": {
+    "subtitle": "HERRERIA, DISEÑO Y CORTE LASER",
+    "title": "Creamos piezas únicas en hierro para todo tus proyectos",
+    "cta": "Ver Proyectos",
+    "services": {
+      "badge": "Nuestros servicios",
+      "title": "Diseños en hierro totalmente a medida",
+      "unique": {
+        "title": "Creación de piezas únicas",
+        "description": "Carteles, puertas, escaleras, barandillas, muebles, espejos, estructuras para decoración y mucho más.",
+        "cta": "Ver proyectos"
+      },
+      "laser": {
+        "title": "Corte láser CNC",
+        "description": "Realizamos trabajos con nuestra cortadora láser para empresas, negocios y profesionales.",
+        "cta": "Ver proyectos"
+      },
+      "advisory": {
+        "title": "Asesoramiento personalizado",
+        "description": "Te acompañamos en cada etapa de tu proyecto, desde la selección de materiales hasta la ubicación final.",
+        "cta": "Contactar"
+      }
+    },
+    "materials": {
+      "badge": "Nuestros materiales",
+      "title": "Materiales de calidad, resultados excepcionales",
+      "description": "Trabajamos con los mejores materiales del mercado para garantizar durabilidad, resistencia y acabados perfectos en cada proyecto.",
+      "brass": "Latón",
+      "galvanized": "Galvanizado",
+      "stainless": "Acero Inoxidable",
+      "corten": "Corten",
+      "black": "Hierro Negro",
+      "copper": "Cobre"
+    },
+    "recentProjects": {
+      "badge": "Proyectos",
+      "title": "Estos son algunos de nuestros últimos proyectos",
+      "viewAll": "Ver todos",
+      "items": {
+        "barbacoa": "Barbacoa Rústica",
+        "barandilla": "Barandilla",
+        "barandillaEscalera": "Barandilla en escalera de piedras",
+        "cartelBloom": "Cartel Bloom studio",
+        "espejoBano": "Espejo baño horizontal",
+        "cristaleraMedio": "Cristalera Medio punto"
+      }
+    }
+  },
+  "cta": {
+    "title": "¿Tienes algún proyecto?",
+    "description1": "Creemos que cada proyecto cuenta una historia. Somos un equipo apasionado por el diseño y el detalle, combinando creatividad y precisión para dar vida a estructuras únicas, resistentes y funcionales.",
+    "description2": "Creemos que cada proyecto cuenta una historia. Contáctanos y hablemos sobre lo que tienes en mente.",
+    "button": "Contáctanos"
+  },
+  "about": {
+    "title": "Conoce la historia detrás de nuestra marca",
+    "subtitle": "QUIÉNES SOMOS",
+    "p1": "Lo nuestro no empezó ayer. Ni la semana pasada.",
+    "p2": "Esto viene de hace cinco generaciones, cuando el hierro se forjaba con fuego y martillo, y el conocimiento pasaba de padres a hijos como un secreto de familia.",
+    "p3": "Gustavo aprendió de su padre, que aprendió del suyo, que aprendió del suyo… Todos con la misma obsesión: dar forma al hierro hasta que diga algo, hasta que cuente una historia.",
+    "p4": "Estamos en Argentina, en Italia, en España. Un poco por todas partes, pero siempre con las manos en el metal.",
+    "p5": "Nos gusta darle vueltas a los proyectos, mirarlos desde todos los ángulos hasta encontrar la mejor solución. Nos aburren las cosas obvias. Lo nuestro es lo diferente, lo que desafía, lo que requiere ingenio y precisión.",
+    "p6": "Diseñamos. Creamos. Innovamos.",
+    "p7": "Pero sin olvidar lo aprendido, la tradición, esas técnicas que nunca fallan y que hacen que cada pieza sea única.",
+    "unique": "Piezas únicas hechas 100% a medida"
+  },
+  "contact": {
+    "title": "¿Tienes un proyecto en mente?",
+    "subtitle": "Contáctanos",
+    "description": "Estamos aquí para ayudarte. Completa el formulario o contáctanos directamente por WhatsApp.",
+    "address": "Dirección",
+    "addressText": "Carrer Riu Arno, 17\nSanta Eulalia del Río\nIlles Balears",
+    "hours": "Horario",
+    "hoursText": "Lunes a Viernes\n9:00 - 18:00",
+    "phone": "Teléfono",
+    "name": "Nombre",
+    "email": "Email",
+    "emailPlaceholder": "Email",
+    "phonePlaceholder": "Teléfono",
+    "message": "Mensaje",
+    "messagePlaceholder": "Mensaje",
+    "send": "Enviar Mensaje",
+    "sending": "Enviando...",
+    "success": "¡Mensaje enviado con éxito!",
+    "error": "Error al enviar el mensaje",
+    "whatsapp": "Escríbenos por WhatsApp",
+    "whatsappButton": "Enviar Mensaje",
+    "location": "Dónde Estamos"
+  },
+  "projects": {
+    "title": "Conoce toda nuestra colección",
+    "subtitle": "Nuestros proyectos",
+    "description": "Explora nuestra colección de proyectos en diferentes categorías",
+    "search": "Buscar proyectos...",
+    "searchResults": "Resultados de búsqueda para",
+    "noResults": "No se encontraron proyectos",
+    "viewAll": "Ver todos los proyectos",
+    "backToProjects": "Volver a Proyectos",
+    "viewProject": "Ver proyecto",
+    "projectOf": "Proyecto de",
+    "madeWith": "elaborado con materiales de alta calidad y diseño personalizado.",
+    "relatedProjects": "Proyectos Relacionados",
+    "notFound": "Proyecto no encontrado",
+    "otherPieces": "Otras piezas que podrían interesarte",
+    "terms": {
+      "pasamanos": "Pasamanos",
+      "barandilla": "Barandilla",
+      "escalera": "Escalera",
+      "terraza": "Terraza",
+      "organica": "Orgánica",
+      "madera": "Madera",
+      "piedras": "Piedras",
+      "interior": "Interior",
+      "barbacoa": "Barbacoa",
+      "rustica": "Rústica",
+      "hierro negro": "Hierro Negro",
+      "acero inoxidable": "Acero Inoxidable",
+      "campana": "Campana",
+      "mueble incorporado": "Mueble Incorporado",
+      "empotrada": "Empotrada",
+      "cartel": "Cartel",
+      "ventana": "Ventana",
+      "cristalera": "Cristalera",
+      "cerramiento": "Cerramiento",
+      "reparacion": "Reparación",
+      "divisoria": "Divisoria",
+      "medio punto": "Medio Punto",
+      "silla": "Silla",
+      "minimalista": "Minimalista"
+    }
+  },
+  "categories": {
+    "muebles": {
+      "name": "Muebles",
+      "desc": "Muebles de hierro y madera a medida"
+    },
+    "carteles": {
+      "name": "Carteles",
+      "desc": "Señalización y rotulación comercial"
+    },
+    "cristaleras": {
+      "name": "Cristaleras",
+      "desc": "Estructuras acristaladas y cerramientos"
+    },
+    "barandillas": {
+      "name": "Barandillas",
+      "desc": "Barandillas y protecciones de seguridad"
+    },
+    "pergolas": {
+      "name": "Pérgolas",
+      "desc": "Pérgolas y estructuras para exteriores"
+    },
+    "laton": {
+      "name": "Latón",
+      "desc": "Trabajos especiales en latón"
+    },
+    "espejos": {
+      "name": "Espejos",
+      "desc": "Marcos y estructuras para espejos"
+    },
+    "barbacoas": {
+      "name": "Barbacoas",
+      "desc": "Barbacoas y parrillas personalizadas"
+    },
+    "corte-laser": {
+      "name": "Corte Láser",
+      "desc": "Diseños de precisión con corte láser"
+    },
+    "cobre": {
+      "name": "Cobre",
+      "desc": "Trabajos artísticos en cobre"
+    },
+    "mamparas": {
+      "name": "Mamparas",
+      "desc": "Divisiones y separadores de espacios"
+    },
+    "fogoneros": {
+      "name": "Fogoneros",
+      "desc": "Accesorios y herrajes para chimeneas"
+    },
+    "tarimas": {
+      "name": "Tarimas",
+      "desc": "Estructuras y plataformas metálicas"
+    },
+    "puertas": {
+      "name": "Puertas",
+      "desc": "Puertas de entrada y cancelas"
+    }
+  },
+  "footer": {
+    "description": "Fabricación de piezas únicas en hierro 100% a medida",
+    "customerService": "Atención al cliente",
+    "address": "C/Example, 123, 08001 Barcelona",
+    "whatsapp": "WhatsApp",
+    "instagram": "Instagram",
+    "writeMessage": "Escríbenos",
+    "aboutBeltrame": "Sobre Beltrame",
+    "whoWeAre": "Quiénes Somos",
+    "howToContact": "Cómo Contactar",
+    "sitemap": "Mapa del Sitio",
+    "projects": "Proyectos",
+    "privacy": "Privacidad",
+    "terms": "Términos y condiciones",
+    "rights": "Todos los derechos reservados"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "error": "Error",
+    "close": "Cerrar",
+    "back": "Volver",
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "home": "Inicio",
+    "sitemap": "Mapa del Sitio",
+    "projectsByCategory": "Proyectos por categoría",
+    "privacyPolicy": "Política de Privacidad",
+    "termsConditions": "Términos y Condiciones"
+  }
+}

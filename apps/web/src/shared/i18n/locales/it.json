@@ -1,0 +1,230 @@
+{
+  "topbar": {
+    "shipping": "SPEDIZIONI IN TUTTO IL MONDO"
+  },
+  "header": {
+    "home": "Home",
+    "projects": "Progetti",
+    "about": "Chi Siamo",
+    "contact": "Contatto",
+    "quote": "Contattaci"
+  },
+  "inicio": {
+    "subtitle": "CARPENTERIA, DESIGN E TAGLIO LASER",
+    "title": "Creiamo pezzi unici in ferro per tutti i tuoi progetti",
+    "cta": "Vedi Progetti",
+    "services": {
+      "badge": "I nostri servizi",
+      "title": "Design in ferro completamente personalizzati",
+      "unique": {
+        "title": "Creazione di pezzi unici",
+        "description": "Insegne, porte, scale, ringhiere, mobili, specchi, strutture decorative e molto altro.",
+        "cta": "Vedi progetti"
+      },
+      "laser": {
+        "title": "Taglio Laser CNC",
+        "description": "Realizziamo lavori con il nostro taglio laser per aziende, imprese e professionisti.",
+        "cta": "Vedi progetti"
+      },
+      "advisory": {
+        "title": "Consulenza personalizzata",
+        "description": "Ti accompagniamo in ogni fase del tuo progetto, dalla selezione dei materiali alla collocazione finale.",
+        "cta": "Contatta"
+      }
+    },
+    "materials": {
+      "badge": "I nostri materiali",
+      "title": "Materiali di qualità, risultati eccezionali",
+      "description": "Lavoriamo con i migliori materiali sul mercato per garantire durata, resistenza e finiture perfette in ogni progetto.",
+      "brass": "Ottone",
+      "galvanized": "Zincato",
+      "stainless": "Acciaio Inossidabile",
+      "corten": "Corten",
+      "black": "Ferro Nero",
+      "copper": "Rame"
+    },
+    "recentProjects": {
+      "badge": "Progetti",
+      "title": "Questi sono alcuni dei nostri ultimi progetti",
+      "viewAll": "Vedi tutti",
+      "items": {
+        "barbacoa": "Barbecue Rustico",
+        "barandilla": "Ringhiera",
+        "barandillaEscalera": "Ringhiera per Scala in Pietra",
+        "cartelBloom": "Insegna Bloom Studio",
+        "espejoBano": "Specchio Bagno Orizzontale",
+        "cristaleraMedio": "Vetrata a Mezzo Punto"
+      }
+    }
+  },
+  "cta": {
+    "title": "Hai un progetto?",
+    "description1": "Crediamo che ogni progetto racconti una storia. Siamo un team appassionato di design e dettagli, combinando creatività e precisione per dare vita a strutture uniche, resistenti e funzionali.",
+    "description2": "Crediamo che ogni progetto racconti una storia. Contattaci e parliamo di ciò che hai in mente.",
+    "button": "Contattaci"
+  },
+  "about": {
+    "title": "Scopri la storia dietro il nostro marchio",
+    "subtitle": "CHI SIAMO",
+    "p1": "La nostra storia non è iniziata ieri. Nemmeno la settimana scorsa.",
+    "p2": "Viene da cinque generazioni fa, quando il ferro si forgiava con fuoco e martello, e la conoscenza passava di padre in figlio come un segreto di famiglia.",
+    "p3": "Gustavo ha imparato da suo padre, che ha imparato dal suo, che ha imparato dal suo... Tutti con la stessa ossessione: dare forma al ferro finché non dice qualcosa, finché non racconta una storia.",
+    "p4": "Siamo in Argentina, in Italia, in Spagna. Un po' dappertutto, ma sempre con le mani sul metallo.",
+    "p5": "Ci piace rigirare i progetti, guardarli da tutti gli angoli fino a trovare la soluzione migliore. Le cose ovvie ci annoiano. Il nostro è il diverso, ciò che sfida, ciò che richiede ingegno e precisione.",
+    "p6": "Progettiamo. Creiamo. Innoviamo.",
+    "p7": "Ma senza dimenticare ciò che abbiamo imparato, la tradizione, quelle tecniche che non falliscono mai e che rendono ogni pezzo unico.",
+    "unique": "Pezzi unici realizzati al 100% su misura"
+  },
+  "contact": {
+    "title": "Hai un progetto in mente?",
+    "subtitle": "Contattaci",
+    "description": "Siamo qui per aiutarti. Compila il modulo o contattaci direttamente tramite WhatsApp.",
+    "address": "Indirizzo",
+    "addressText": "Carrer Riu Arno, 17\nSanta Eulalia del Río\nIsole Baleari",
+    "hours": "Orario",
+    "hoursText": "Lunedì a Venerdì\n9:00 - 18:00",
+    "phone": "Telefono",
+    "name": "Nome",
+    "email": "Email",
+    "emailPlaceholder": "Email",
+    "phonePlaceholder": "Telefono",
+    "message": "Messaggio",
+    "messagePlaceholder": "Messaggio",
+    "send": "Invia Messaggio",
+    "sending": "Invio...",
+    "success": "Messaggio inviato con successo!",
+    "error": "Errore nell'invio del messaggio",
+    "whatsapp": "Scrivici su WhatsApp",
+    "whatsappButton": "Invia Messaggio",
+    "location": "Dove Siamo"
+  },
+  "projects": {
+    "title": "Scopri tutta la nostra collezione",
+    "subtitle": "I nostri progetti",
+    "description": "Esplora la nostra collezione di progetti in diverse categorie",
+    "search": "Cerca progetti...",
+    "searchResults": "Risultati della ricerca per",
+    "noResults": "Nessun progetto trovato",
+    "viewAll": "Vedi tutti i progetti",
+    "backToProjects": "Torna ai Progetti",
+    "viewProject": "Vedi progetto",
+    "projectOf": "Progetto di",
+    "madeWith": "realizzato con materiali di alta qualità e design personalizzato.",
+    "relatedProjects": "Progetti Correlati",
+    "notFound": "Progetto non trovato",
+    "otherPieces": "Altri pezzi che potrebbero interessarti",
+    "terms": {
+      "pasamanos": "Corrimano",
+      "barandilla": "Ringhiera",
+      "escalera": "Scala",
+      "terraza": "Terrazza",
+      "organica": "Organica",
+      "madera": "Legno",
+      "piedras": "Pietra",
+      "interior": "Interno",
+      "barbacoa": "Barbecue",
+      "rustica": "Rustica",
+      "hierro negro": "Ferro Nero",
+      "acero inoxidable": "Acciaio Inossidabile",
+      "campana": "Cappa",
+      "mueble incorporado": "Mobile Incorporato",
+      "empotrada": "Incorporata",
+      "cartel": "Insegna",
+      "ventana": "Finestra",
+      "cristalera": "Vetrata",
+      "cerramiento": "Chiusura",
+      "reparacion": "Riparazione",
+      "divisoria": "Divisoria",
+      "medio punto": "Mezzo Punto",
+      "silla": "Sedia",
+      "minimalista": "Minimalista"
+    }
+  },
+  "categories": {
+    "muebles": {
+      "name": "Mobili",
+      "desc": "Mobili in ferro e legno su misura"
+    },
+    "carteles": {
+      "name": "Insegne",
+      "desc": "Segnaletica e insegne commerciali"
+    },
+    "cristaleras": {
+      "name": "Vetrate",
+      "desc": "Strutture vetrate e chiusure"
+    },
+    "barandillas": {
+      "name": "Ringhiere",
+      "desc": "Ringhiere e protezioni di sicurezza"
+    },
+    "pergolas": {
+      "name": "Pergolati",
+      "desc": "Pergolati e strutture per esterni"
+    },
+    "laton": {
+      "name": "Ottone",
+      "desc": "Lavori speciali in ottone"
+    },
+    "espejos": {
+      "name": "Specchi",
+      "desc": "Cornici e strutture per specchi"
+    },
+    "barbacoas": {
+      "name": "Barbecue",
+      "desc": "Barbecue e griglie personalizzate"
+    },
+    "corte-laser": {
+      "name": "Taglio Laser",
+      "desc": "Design di precisione con taglio laser"
+    },
+    "cobre": {
+      "name": "Rame",
+      "desc": "Lavori artistici in rame"
+    },
+    "mamparas": {
+      "name": "Pareti Divisorie",
+      "desc": "Divisioni e separatori di spazi"
+    },
+    "fogoneros": {
+      "name": "Accessori per Camini",
+      "desc": "Accessori e ferramenta per camini"
+    },
+    "tarimas": {
+      "name": "Pedane",
+      "desc": "Strutture e piattaforme metalliche"
+    },
+    "puertas": {
+      "name": "Porte",
+      "desc": "Porte d'ingresso e cancelli"
+    }
+  },
+  "footer": {
+    "description": "Produzione di pezzi unici in ferro al 100% su misura",
+    "customerService": "Servizio clienti",
+    "address": "C/ Example, 123, 08001 Barcellona",
+    "whatsapp": "WhatsApp",
+    "instagram": "Instagram",
+    "writeMessage": "Scrivici",
+    "aboutBeltrame": "Su Beltrame",
+    "whoWeAre": "Chi Siamo",
+    "howToContact": "Come Contattarci",
+    "sitemap": "Mappa del Sito",
+    "projects": "Progetti",
+    "privacy": "Privacy",
+    "terms": "Termini e condizioni",
+    "rights": "Tutti i diritti riservati"
+  },
+  "common": {
+    "loading": "Caricamento...",
+    "error": "Errore",
+    "close": "Chiudi",
+    "back": "Indietro",
+    "next": "Avanti",
+    "previous": "Precedente",
+    "home": "Home",
+    "sitemap": "Mappa del Sito",
+    "projectsByCategory": "Progetti per categoria",
+    "privacyPolicy": "Informativa sulla Privacy",
+    "termsConditions": "Termini e Condizioni"
+  }
+}

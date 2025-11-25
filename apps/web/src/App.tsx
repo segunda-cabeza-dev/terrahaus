@@ -1,18 +1,10 @@
 import { Routes, Route } from 'react-router-dom'
-import ComponentsShowcase from './pages/ComponentsShowcase'
-import Inicio from './pages/Inicio'
-import QuienesSomos from './pages/QuienesSomos'
-import Contacto from './pages/Contacto'
-import Proyecto from './pages/Proyecto'
-import ProyectoCategoria from './pages/ProyectoCategoria'
-import ProyectoDetalle from './pages/ProyectoDetalle'
-import MapaSitio from './pages/MapaSitio'
-import TerminosCondiciones from './pages/TerminosCondiciones'
-import Privacidad from './pages/Privacidad'
-import TopBar from './components/TopBar'
-import Header from './components/Header'
-import CallToAction from './components/CallToAction'
-import Footer from './components/Footer'
+// import { ComponentsShowcase } from './features/showcase'
+import { Inicio, QuienesSomos, MapaSitio, TerminosCondiciones, Privacidad } from './features/institucional'
+import { Proyecto, ProyectoCategoria, ProyectoDetalle } from './features/proyectos'
+import { Contacto } from './features/contacto'
+import { TopBar, Header, CallToAction, Footer } from './features/layout'
+import { WhatsAppFloat } from './components/WhatsAppFloat'
 import './App.css'
 
 function App() {
@@ -30,10 +22,11 @@ function App() {
         <Route path="/mapa-sitio" element={<MapaSitio />} />
         <Route path="/terminos-condiciones" element={<TerminosCondiciones />} />
         <Route path="/privacidad" element={<Privacidad />} />
-        <Route path="/elements" element={<ComponentsShowcase />} />
+        {/* <Route path="/elements" element={<ComponentsShowcase />} /> */}
       </Routes>
       <CallToAction />
       <Footer />
+      <WhatsAppFloat />
     </>
   )
 }

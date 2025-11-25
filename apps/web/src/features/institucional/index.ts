@@ -1,0 +1,5 @@
+export { default as Inicio } from './pages/Inicio'
+export { default as QuienesSomos } from './pages/QuienesSomos'
+export { default as MapaSitio } from './pages/MapaSitio'
+export { default as TerminosCondiciones } from './pages/TerminosCondiciones'
+export { default as Privacidad } from './pages/Privacidad'

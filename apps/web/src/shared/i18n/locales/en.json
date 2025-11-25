@@ -1,0 +1,230 @@
+{
+  "topbar": {
+    "shipping": "WORLDWIDE SHIPPING"
+  },
+  "header": {
+    "home": "Home",
+    "projects": "Projects",
+    "about": "About Us",
+    "contact": "Contact",
+    "quote": "Contact Us"
+  },
+  "inicio": {
+    "subtitle": "IRONWORK, DESIGN AND LASER CUTTING",
+    "title": "We create unique iron pieces for all your projects",
+    "cta": "View Projects",
+    "services": {
+      "badge": "Our services",
+      "title": "Fully customized iron designs",
+      "unique": {
+        "title": "Creation of unique pieces",
+        "description": "Signs, doors, stairs, railings, furniture, mirrors, decorative structures and much more.",
+        "cta": "View projects"
+      },
+      "laser": {
+        "title": "CNC Laser Cutting",
+        "description": "We carry out work with our laser cutter for companies, businesses and professionals.",
+        "cta": "View projects"
+      },
+      "advisory": {
+        "title": "Personalized advice",
+        "description": "We accompany you at every stage of your project, from material selection to final placement.",
+        "cta": "Contact"
+      }
+    },
+    "materials": {
+      "badge": "Our materials",
+      "title": "Quality materials, exceptional results",
+      "description": "We work with the best materials on the market to guarantee durability, resistance and perfect finishes in each project.",
+      "brass": "Brass",
+      "galvanized": "Galvanized",
+      "stainless": "Stainless Steel",
+      "corten": "Corten",
+      "black": "Black Iron",
+      "copper": "Copper"
+    },
+    "recentProjects": {
+      "badge": "Projects",
+      "title": "These are some of our latest projects",
+      "viewAll": "View all",
+      "items": {
+        "barbacoa": "Rustic Barbecue",
+        "barandilla": "Railing",
+        "barandillaEscalera": "Stone Staircase Railing",
+        "cartelBloom": "Bloom Studio Sign",
+        "espejoBano": "Horizontal Bathroom Mirror",
+        "cristaleraMedio": "Half-Round Glass Structure"
+      }
+    }
+  },
+  "cta": {
+    "title": "Do you have a project?",
+    "description1": "We believe that each project tells a story. We are a team passionate about design and detail, combining creativity and precision to bring to life unique, resistant and functional structures.",
+    "description2": "We believe that each project tells a story. Contact us and let's talk about what you have in mind.",
+    "button": "Contact Us"
+  },
+  "about": {
+    "title": "Discover the story behind our brand",
+    "subtitle": "ABOUT US",
+    "p1": "Our story didn't start yesterday. Not even last week.",
+    "p2": "This comes from five generations ago, when iron was forged with fire and hammer, and knowledge passed from fathers to sons like a family secret.",
+    "p3": "Gustavo learned from his father, who learned from his, who learned from his... All with the same obsession: shaping iron until it says something, until it tells a story.",
+    "p4": "We are in Argentina, in Italy, in Spain. A little bit everywhere, but always with our hands on the metal.",
+    "p5": "We like to turn projects around, look at them from all angles until we find the best solution. Obvious things bore us. What we do is different, challenging, requiring ingenuity and precision.",
+    "p6": "We design. We create. We innovate.",
+    "p7": "But without forgetting what we've learned, the tradition, those techniques that never fail and that make each piece unique.",
+    "unique": "Unique pieces made 100% to measure"
+  },
+  "contact": {
+    "title": "Do you have a project in mind?",
+    "subtitle": "Contact Us",
+    "description": "We are here to help you. Fill out the form or contact us directly via WhatsApp.",
+    "address": "Address",
+    "addressText": "Carrer Riu Arno, 17\nSanta Eulalia del Río\nBalearic Islands",
+    "hours": "Hours",
+    "hoursText": "Monday to Friday\n9:00 AM - 6:00 PM",
+    "phone": "Phone",
+    "name": "Name",
+    "email": "Email",
+    "emailPlaceholder": "Email",
+    "phonePlaceholder": "Phone",
+    "message": "Message",
+    "messagePlaceholder": "Message",
+    "send": "Send Message",
+    "sending": "Sending...",
+    "success": "Message sent successfully!",
+    "error": "Error sending message",
+    "whatsapp": "Write us on WhatsApp",
+    "whatsappButton": "Send Message",
+    "location": "Where We Are"
+  },
+  "projects": {
+    "title": "Discover our entire collection",
+    "subtitle": "Our projects",
+    "description": "Explore our collection of projects in different categories",
+    "search": "Search projects...",
+    "searchResults": "Search results for",
+    "noResults": "No projects found",
+    "viewAll": "View all projects",
+    "backToProjects": "Back to Projects",
+    "viewProject": "View project",
+    "projectOf": "Project of",
+    "madeWith": "made with high quality materials and personalized design.",
+    "relatedProjects": "Related Projects",
+    "notFound": "Project not found",
+    "otherPieces": "Other pieces you might be interested in",
+    "terms": {
+      "pasamanos": "Handrail",
+      "barandilla": "Railing",
+      "escalera": "Staircase",
+      "terraza": "Terrace",
+      "organica": "Organic",
+      "madera": "Wood",
+      "piedras": "Stone",
+      "interior": "Interior",
+      "barbacoa": "Barbecue",
+      "rustica": "Rustic",
+      "hierro negro": "Black Iron",
+      "acero inoxidable": "Stainless Steel",
+      "campana": "Hood",
+      "mueble incorporado": "Built-in Furniture",
+      "empotrada": "Built-in",
+      "cartel": "Sign",
+      "ventana": "Window",
+      "cristalera": "Glass Structure",
+      "cerramiento": "Enclosure",
+      "reparacion": "Repair",
+      "divisoria": "Divider",
+      "medio punto": "Half Point",
+      "silla": "Chair",
+      "minimalista": "Minimalist"
+    }
+  },
+  "categories": {
+    "muebles": {
+      "name": "Furniture",
+      "desc": "Custom iron and wood furniture"
+    },
+    "carteles": {
+      "name": "Signs",
+      "desc": "Commercial signage and lettering"
+    },
+    "cristaleras": {
+      "name": "Glass Structures",
+      "desc": "Glazed structures and enclosures"
+    },
+    "barandillas": {
+      "name": "Railings",
+      "desc": "Railings and safety protections"
+    },
+    "pergolas": {
+      "name": "Pergolas",
+      "desc": "Pergolas and outdoor structures"
+    },
+    "laton": {
+      "name": "Brass",
+      "desc": "Special brass works"
+    },
+    "espejos": {
+      "name": "Mirrors",
+      "desc": "Frames and structures for mirrors"
+    },
+    "barbacoas": {
+      "name": "Barbecues",
+      "desc": "Customized barbecues and grills"
+    },
+    "corte-laser": {
+      "name": "Laser Cutting",
+      "desc": "Precision designs with laser cutting"
+    },
+    "cobre": {
+      "name": "Copper",
+      "desc": "Artistic copper works"
+    },
+    "mamparas": {
+      "name": "Partitions",
+      "desc": "Divisions and space separators"
+    },
+    "fogoneros": {
+      "name": "Fireplace Accessories",
+      "desc": "Accessories and hardware for fireplaces"
+    },
+    "tarimas": {
+      "name": "Platforms",
+      "desc": "Metal structures and platforms"
+    },
+    "puertas": {
+      "name": "Doors",
+      "desc": "Entrance doors and gates"
+    }
+  },
+  "footer": {
+    "description": "Manufacturing unique iron pieces 100% custom made",
+    "customerService": "Customer service",
+    "address": "C/ Example, 123, 08001 Barcelona",
+    "whatsapp": "WhatsApp",
+    "instagram": "Instagram",
+    "writeMessage": "Write us",
+    "aboutBeltrame": "About Beltrame",
+    "whoWeAre": "Who We Are",
+    "howToContact": "How to Contact",
+    "sitemap": "Site Map",
+    "projects": "Projects",
+    "privacy": "Privacy",
+    "terms": "Terms and conditions",
+    "rights": "All rights reserved"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "home": "Home",
+    "sitemap": "Sitemap",
+    "projectsByCategory": "Projects by category",
+    "privacyPolicy": "Privacy Policy",
+    "termsConditions": "Terms and Conditions"
+  }
+}
