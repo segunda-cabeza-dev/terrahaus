@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react'
 import { supabase, USE_MOCK_DATA, mockData, type SiteContent } from '@beltrame/shared'
 import { Button } from '@beltrame/shared/ui/button'
 import { Input } from '@beltrame/shared/ui/input'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@beltrame/shared/ui/card'
+import { Label } from '@beltrame/shared/ui/label'
 import { useToast } from '@beltrame/shared'
+import { PageHeader } from '../../shared'
 
 
 export default function WhatsAppConfig() {
@@ -67,10 +68,18 @@ export default function WhatsAppConfig() {
         .update({ valor: whatsapp, updated_at: new Date().toISOString() })
         .eq('id', whatsappId);
       if (error) throw error;
-      toast({ title: 'WhatsApp actualizado', description: 'El número de WhatsApp se ha guardado correctamente.' });
+      toast({ 
+        title: 'Configuración guardada',
+        description: 'El número de WhatsApp ha sido actualizado',
+        className: 'bg-green-600 text-white border-green-600',
+      });
       await loadWhatsapp();
     } catch (error) {
-      toast({ title: 'Error', description: 'No se pudo guardar el número de WhatsApp', variant: 'destructive' });
+      toast({ 
+        title: 'Error al guardar', 
+        description: 'No se pudo actualizar el número', 
+        variant: 'destructive' 
+      });
     } finally {
       setSaving(false);
     }
@@ -81,40 +90,51 @@ export default function WhatsAppConfig() {
   }
 
   return (
-    <div className="flex flex-col items-start justify-center min-h-[60vh] px-4">
-      <Card className="w-full max-w-xl bg-white border border-gray-200 shadow-sm">
-        <CardHeader className="flex flex-row items-center gap-4 pb-2">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" className="w-12 h-12" />
-          <div>
-            <CardTitle className="text-left">WhatsApp de contacto en la web</CardTitle>
-            <CardDescription className="text-left">Este número aparecerá como botón flotante en la web</CardDescription>
+    <div className="space-y-6">
+      <PageHeader
+        title="Configuración de WhatsApp"
+        description="Configura el número de contacto que aparecerá como botón flotante en tu sitio web"
+      />
+      
+      <div className="max-w-2xl">
+        <div className="bg-white rounded-lg shadow-sm p-8">
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="phone" className="text-sm font-medium text-gray-700">
+                Número de teléfono
+              </Label>
+              <Input
+                id="phone"
+                type="text"
+                value={whatsapp}
+                onChange={(e) => setWhatsapp(e.target.value)}
+                placeholder="Ej: +34 688 860 838"
+                className="mt-1"
+                disabled={saving}
+              />
+              <p className="text-xs text-gray-500 mt-2">
+                💡 Incluye el código de país (ej: +34 para España)
+              </p>
+            </div>
+
+            <div className="pt-4">
+              <Button
+                onClick={handleSave}
+                disabled={saving || !whatsapp.trim() || !whatsappId}
+                className="bg-black hover:bg-gray-800 text-white px-6"
+              >
+                {saving ? 'Guardando...' : 'Guardar'}
+              </Button>
+            </div>
           </div>
-        </CardHeader>
-        <CardContent>
-          <form
-            className="flex flex-col sm:flex-row gap-2 items-center sm:items-end justify-start w-full"
-            onSubmit={e => { e.preventDefault(); handleSave(); }}
-          >
-            <Input
-              type="text"
-              className="border rounded px-2 py-2 w-full max-w-xs text-lg bg-white"
-              value={whatsapp}
-              onChange={e => setWhatsapp(e.target.value)}
-              placeholder="Ej: +34 688 860 838"
-              disabled={saving}
-            />
-            <Button
-              size="lg"
-              disabled={saving || !whatsappId}
-              type="submit"
-              className="ml-0 sm:ml-2 w-full sm:w-auto bg-black text-white hover:bg-neutral-800"
-              style={{minWidth: 130, paddingLeft: 28, paddingRight: 28, paddingTop: 12, paddingBottom: 12}}
-            >
-              Guardar
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+
+          <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="text-sm text-blue-800">
+              <span className="font-semibold">Vista previa:</span> Los visitantes verán un botón flotante verde en la esquina inferior derecha con este número.
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

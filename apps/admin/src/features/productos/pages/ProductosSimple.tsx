@@ -22,6 +22,29 @@ export default function ProductosSimple() {
   const [selectedCategory, setSelectedCategory] = useState<CategoryWithProjects | null>(null)
   const [editingCategory, setEditingCategory] = useState<Category | null>(null)
   const [editingProject, setEditingProject] = useState<Project | null>(null)
+  const [activeLanguageTab, setActiveLanguageTab] = useState<'ES' | 'EN' | 'IT'>('ES')
+  const [activeProjectLanguageTab, setActiveProjectLanguageTab] = useState<'ES' | 'EN' | 'IT'>('ES')
+  const [showImageSourceDialog, setShowImageSourceDialog] = useState(false)
+  const [imageSourceType, setImageSourceType] = useState<'project' | 'category' | null>(null)
+  const [showGalleryModal, setShowGalleryModal] = useState(false)
+  const [gallerySearchTerm, setGallerySearchTerm] = useState('')
+  const [selectedGalleryImages, setSelectedGalleryImages] = useState<string[]>([])
+  
+  // Imágenes de ejemplo para la galería (en producción vendrían de Supabase)
+  const galleryImages = [
+    { id: 1, url: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400', name: 'Casa Moderna 1' },
+    { id: 2, url: 'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=400', name: 'Casa Moderna 2' },
+    { id: 3, url: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400', name: 'Escalera Metal' },
+    { id: 4, url: 'https://images.unsplash.com/photo-1600210492493-0946911123ea?w=400', name: 'Barandilla' },
+    { id: 5, url: 'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=400', name: 'Puerta de Hierro' },
+    { id: 6, url: 'https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?w=400', name: 'Pérgola' },
+    { id: 7, url: 'https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=400', name: 'Mueble Metal' },
+    { id: 8, url: 'https://images.unsplash.com/photo-1600607687644-c7171b42498b?w=400', name: 'Detalle Cobre' },
+    { id: 9, url: 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=400', name: 'Escalera Exterior' },
+    { id: 10, url: 'https://images.unsplash.com/photo-1600047509358-9dc75507daeb?w=400', name: 'Cristalera' },
+    { id: 11, url: 'https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=400', name: 'Barbacoa' },
+    { id: 12, url: 'https://images.unsplash.com/photo-1600585154363-67eb9e2e2099?w=400', name: 'Mampara' },
+  ]
   
   const [categoryForm, setCategoryForm] = useState({
     nombre: '',
@@ -84,6 +107,39 @@ export default function ProductosSimple() {
     setSaved(false)
     try {
       await new Promise(resolve => setTimeout(resolve, 500))
+      
+      if (USE_MOCK_DATA) {
+        if (editingCategory) {
+          // Actualizar categoría existente
+          const categoryIndex = mockData.categories.findIndex(c => c.id === editingCategory.id)
+          if (categoryIndex !== -1) {
+            mockData.categories[categoryIndex] = {
+              ...mockData.categories[categoryIndex],
+              nombre: categoryForm.nombre,
+              nombre_en: categoryForm.nombre_en,
+              imagen_portada: categoryForm.imagen_portada,
+              updated_at: new Date().toISOString(),
+            }
+          }
+        } else {
+          // Crear nueva categoría
+          const newCategory = {
+            id: Math.max(...mockData.categories.map(c => c.id), 0) + 1,
+            nombre: categoryForm.nombre,
+            nombre_en: categoryForm.nombre_en,
+            descripcion: '',
+            descripcion_en: '',
+            imagen_portada: categoryForm.imagen_portada,
+            slug: categoryForm.nombre.toLowerCase().replace(/\s+/g, '-'),
+            orden: mockData.categories.length + 1,
+            activa: true,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          }
+          mockData.categories.push(newCategory)
+        }
+      }
+      
       toast({
         title: editingCategory ? 'Categoría actualizada' : 'Categoría creada',
         className: 'bg-green-600 text-white border-green-600',
@@ -128,16 +184,27 @@ export default function ProductosSimple() {
 
   // Editar proyecto
   const handleEditProject = (project: Project) => {
-    setEditingProject(project)
+    setSaved(false) // Reset saved state
+    
+    // Si está en modo mock, buscar los datos más recientes
+    let currentProject = project
+    if (USE_MOCK_DATA) {
+      const updatedProject = mockData.projects.find(p => p.id === project.id)
+      if (updatedProject) {
+        currentProject = updatedProject
+      }
+    }
+    
+    setEditingProject(currentProject)
     setProjectForm({
-      categoria_id: project.categoria_id,
-      nombre: project.nombre,
-      nombre_en: project.nombre_en || '',
-      nombre_it: project.nombre_it || '',
-      descripcion: project.descripcion || '',
-      descripcion_en: project.descripcion_en || '',
-      descripcion_it: project.descripcion_it || '',
-      imagenes: project.imagenes || [],
+      categoria_id: currentProject.categoria_id,
+      nombre: currentProject.nombre,
+      nombre_en: currentProject.nombre_en || '',
+      nombre_it: currentProject.nombre_it || '',
+      descripcion: currentProject.descripcion || '',
+      descripcion_en: currentProject.descripcion_en || '',
+      descripcion_it: currentProject.descripcion_it || '',
+      imagenes: currentProject.imagenes || [],
     })
     setCurrentView('edit-project')
   }
@@ -149,15 +216,48 @@ export default function ProductosSimple() {
     setSaved(false)
     try {
       await new Promise(resolve => setTimeout(resolve, 500))
+      
+      if (USE_MOCK_DATA) {
+        if (editingProject) {
+          // Actualizar proyecto existente
+          const projectIndex = mockData.projects.findIndex(p => p.id === editingProject.id)
+          if (projectIndex !== -1) {
+            mockData.projects[projectIndex] = {
+              ...mockData.projects[projectIndex],
+              nombre: projectForm.nombre,
+              nombre_en: projectForm.nombre_en,
+              descripcion: projectForm.descripcion,
+              descripcion_en: projectForm.descripcion_en,
+              imagenes: projectForm.imagenes,
+              updated_at: new Date().toISOString(),
+            }
+          }
+        } else {
+          // Crear nuevo proyecto
+          const newProject = {
+            id: Math.max(...mockData.projects.map(p => p.id), 0) + 1,
+            categoria_id: projectForm.categoria_id,
+            nombre: projectForm.nombre,
+            nombre_en: projectForm.nombre_en,
+            descripcion: projectForm.descripcion,
+            descripcion_en: projectForm.descripcion_en,
+            imagenes: projectForm.imagenes,
+            slug: projectForm.nombre.toLowerCase().replace(/\s+/g, '-'),
+            orden: mockData.projects.length + 1,
+            activo: true,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          }
+          mockData.projects.push(newProject)
+        }
+      }
+      
       toast({
         title: editingProject ? 'Proyecto actualizado' : 'Proyecto creado',
         className: 'bg-green-600 text-white border-green-600',
       })
       await loadData()
       setSaved(true)
-      setTimeout(() => {
-        setCurrentView('category-detail')
-      }, 1000)
     } catch (error) {
       toast({
         title: 'Error al guardar',
@@ -178,6 +278,11 @@ export default function ProductosSimple() {
 
   // Agregar imagen a proyecto desde archivo
   const handleAddImage = () => {
+    setImageSourceType('project')
+    setShowImageSourceDialog(true)
+  }
+
+  const handleAddImageFromComputer = () => {
     const input = document.createElement('input')
     input.type = 'file'
     input.accept = 'image/*'
@@ -202,10 +307,21 @@ export default function ProductosSimple() {
     }
     
     input.click()
+    setShowImageSourceDialog(false)
+  }
+
+  const handleAddImageFromGallery = () => {
+    setShowImageSourceDialog(false)
+    setShowGalleryModal(true)
   }
 
   // Agregar imagen de portada para categoría
   const handleAddCategoryImage = () => {
+    setImageSourceType('category')
+    setShowImageSourceDialog(true)
+  }
+
+  const handleAddCategoryImageFromComputer = () => {
     const input = document.createElement('input')
     input.type = 'file'
     input.accept = 'image/*'
@@ -227,6 +343,12 @@ export default function ProductosSimple() {
     }
     
     input.click()
+    setShowImageSourceDialog(false)
+  }
+
+  const handleAddCategoryImageFromGallery = () => {
+    setShowImageSourceDialog(false)
+    setShowGalleryModal(true)
   }
 
   // Eliminar imagen
@@ -234,6 +356,70 @@ export default function ProductosSimple() {
     setProjectForm({
       ...projectForm,
       imagenes: projectForm.imagenes.filter((_, i) => i !== index)
+    })
+  }
+
+  // Seleccionar imagen de la galería
+  const handleSelectGalleryImage = (imageUrl: string) => {
+    if (imageSourceType === 'project') {
+      // Para proyectos, agregar a la lista de imágenes
+      setProjectForm(prev => ({
+        ...prev,
+        imagenes: [...prev.imagenes, imageUrl]
+      }))
+    } else if (imageSourceType === 'category') {
+      // Para categorías, establecer como imagen de portada
+      setCategoryForm(prev => ({
+        ...prev,
+        imagen_portada: imageUrl
+      }))
+    }
+    setShowGalleryModal(false)
+    setGallerySearchTerm('')
+    setSelectedGalleryImages([])
+    toast({ title: 'Imagen agregada desde la galería' })
+  }
+
+  // Agregar múltiples imágenes seleccionadas
+  const handleAddSelectedImages = () => {
+    if (selectedGalleryImages.length === 0) {
+      toast({ title: 'Selecciona al menos una imagen', variant: 'destructive' })
+      return
+    }
+
+    if (imageSourceType === 'project') {
+      // Para proyectos, agregar todas las imágenes seleccionadas
+      setProjectForm(prev => ({
+        ...prev,
+        imagenes: [...prev.imagenes, ...selectedGalleryImages]
+      }))
+      toast({ title: `${selectedGalleryImages.length} imagen${selectedGalleryImages.length > 1 ? 'es agregadas' : ' agregada'}` })
+    } else if (imageSourceType === 'category') {
+      // Para categorías, solo tomar la primera
+      setCategoryForm(prev => ({
+        ...prev,
+        imagen_portada: selectedGalleryImages[0]
+      }))
+      toast({ title: 'Imagen de portada establecida' })
+    }
+    
+    setShowGalleryModal(false)
+    setGallerySearchTerm('')
+    setSelectedGalleryImages([])
+  }
+
+  // Toggle selección de imagen
+  const handleToggleImageSelection = (imageUrl: string) => {
+    setSelectedGalleryImages(prev => {
+      if (prev.includes(imageUrl)) {
+        return prev.filter(url => url !== imageUrl)
+      } else {
+        // Para categorías, solo permitir una selección
+        if (imageSourceType === 'category') {
+          return [imageUrl]
+        }
+        return [...prev, imageUrl]
+      }
     })
   }
 
@@ -407,10 +593,212 @@ export default function ProductosSimple() {
     return <div className="flex items-center justify-center h-screen">Cargando...</div>
   }
 
+  // Componente de diálogo de selección de imagen
+  const ImageSourceDialog = () => (
+    <>
+      {showImageSourceDialog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowImageSourceDialog(false)}>
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
+            <h2 className="text-xl font-bold mb-4">Agregar Imagen</h2>
+            <p className="text-gray-600 mb-6">¿Desde dónde quieres agregar la imagen?</p>
+            
+            <div className="space-y-3">
+              <button
+                onClick={imageSourceType === 'project' ? handleAddImageFromComputer : handleAddCategoryImageFromComputer}
+                className="w-full flex items-center gap-3 p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors"
+              >
+                <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg">
+                  <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <div className="text-left">
+                  <p className="font-semibold">Subir desde mi computadora</p>
+                  <p className="text-sm text-gray-500">Seleccionar archivos locales</p>
+                </div>
+              </button>
+              
+              <button
+                onClick={imageSourceType === 'project' ? handleAddImageFromGallery : handleAddCategoryImageFromGallery}
+                className="w-full flex items-center gap-3 p-4 border-2 border-gray-200 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition-colors"
+              >
+                <div className="flex items-center justify-center w-12 h-12 bg-purple-100 rounded-lg">
+                  <ImageIcon className="w-6 h-6 text-purple-600" />
+                </div>
+                <div className="text-left">
+                  <p className="font-semibold">Galería del Admin</p>
+                  <p className="text-sm text-gray-500">Usar imágenes ya subidas</p>
+                </div>
+              </button>
+            </div>
+            
+            <button
+              onClick={() => setShowImageSourceDialog(false)}
+              className="w-full mt-4 py-2 text-gray-600 hover:text-gray-800 font-medium"
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
+      )}
+    </>
+  )
+
+  // Componente de modal de galería
+  const GalleryModal = () => {
+    if (!showGalleryModal) return null
+    
+    const filteredImages = galleryImages.filter(img => 
+      img.name.toLowerCase().includes(gallerySearchTerm.toLowerCase())
+    )
+    
+    const isMultiSelect = imageSourceType === 'project'
+    
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => {
+        setShowGalleryModal(false)
+        setSelectedGalleryImages([])
+      }}>
+        <div className="bg-white rounded-lg w-full max-w-5xl max-h-[90vh] overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()}>
+          {/* Header */}
+          <div className="p-6 border-b">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-2xl font-bold">Galería de Imágenes</h2>
+                {isMultiSelect && selectedGalleryImages.length > 0 && (
+                  <p className="text-sm text-blue-600 mt-1">{selectedGalleryImages.length} imagen{selectedGalleryImages.length > 1 ? 'es' : ''} seleccionada{selectedGalleryImages.length > 1 ? 's' : ''}</p>
+                )}
+              </div>
+              <button
+                onClick={() => {
+                  setShowGalleryModal(false)
+                  setSelectedGalleryImages([])
+                }}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            {/* Buscador */}
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Buscar imágenes..."
+                value={gallerySearchTerm}
+                onChange={(e) => setGallerySearchTerm(e.target.value)}
+                className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <svg className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+          </div>
+          
+          {/* Grid de imágenes */}
+          <div className="p-6 overflow-y-auto flex-1">
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4">
+              {filteredImages.map((image) => {
+                const isSelected = selectedGalleryImages.includes(image.url)
+                return (
+                  <button
+                    key={image.id}
+                    onClick={() => isMultiSelect ? handleToggleImageSelection(image.url) : handleSelectGalleryImage(image.url)}
+                    className={`group relative aspect-square overflow-hidden rounded-lg border-2 transition-all hover:shadow-lg ${
+                      isSelected ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200 hover:border-blue-500'
+                    }`}
+                  >
+                    <img
+                      src={image.url}
+                      alt={image.name}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-200"
+                    />
+                    
+                    {/* Checkbox para selección múltiple */}
+                    {isMultiSelect && (
+                      <div className="absolute top-2 right-2 z-10">
+                        <div className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-colors ${
+                          isSelected ? 'bg-blue-500 border-blue-500' : 'bg-white border-gray-300 group-hover:border-blue-400'
+                        }`}>
+                          {isSelected && (
+                            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                            </svg>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                    
+                    <div className={`absolute inset-0 bg-black transition-opacity flex items-end ${
+                      isSelected ? 'bg-opacity-30' : 'bg-opacity-0 group-hover:bg-opacity-40'
+                    }`}>
+                      <div className={`p-2 text-white transition-opacity w-full ${
+                        isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                      }`}>
+                        <p className="text-sm font-medium truncate">{image.name}</p>
+                      </div>
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
+            
+            {filteredImages.length === 0 && (
+              <div className="text-center py-12 text-gray-500">
+                <ImageIcon className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+                <p className="text-lg font-medium">No se encontraron imágenes</p>
+                <p className="text-sm">Intenta con otro término de búsqueda</p>
+              </div>
+            )}
+          </div>
+          
+          {/* Footer */}
+          <div className="p-4 border-t bg-gray-50">
+            {isMultiSelect ? (
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setShowGalleryModal(false)
+                    setSelectedGalleryImages([])
+                  }}
+                  className="flex-1 py-2 px-4 bg-gray-200 hover:bg-gray-300 rounded-lg font-medium transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleAddSelectedImages}
+                  className="flex-1 py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={selectedGalleryImages.length === 0}
+                >
+                  Agregar {selectedGalleryImages.length > 0 && `(${selectedGalleryImages.length})`}
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => {
+                  setShowGalleryModal(false)
+                  setSelectedGalleryImages([])
+                }}
+                className="w-full py-2 px-4 bg-gray-200 hover:bg-gray-300 rounded-lg font-medium transition-colors"
+              >
+                Cancelar
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   // VISTA: Lista de Categorías
   if (currentView === 'categories') {
     return (
-      <div className="space-y-6">
+      <>
+        <ImageSourceDialog />
+        <GalleryModal />
+        <div className="space-y-6">
         <PageHeader
           title="Categorías de Proyectos"
           description="Organiza y administra las categorías y proyectos del portfolio"
@@ -421,12 +809,6 @@ export default function ProductosSimple() {
             </Button>
           }
         />
-
-        {USE_MOCK_DATA && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <p className="text-sm font-semibold text-blue-800">🎮 Modo DEMO</p>
-          </div>
-        )}
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           {categories.map((category) => (
@@ -481,7 +863,8 @@ export default function ProductosSimple() {
             <p>No hay categorías. Crea la primera.</p>
           </div>
         )}
-      </div>
+        </div>
+      </>
     )
   }
 
@@ -498,7 +881,10 @@ export default function ProductosSimple() {
     }
 
     return (
-      <div className="p-8 max-w-7xl mx-auto">
+      <>
+        <ImageSourceDialog />
+        <GalleryModal />
+        <div className="p-8 max-w-7xl mx-auto">
         <button
           onClick={() => setCurrentView('categories')}
           className="flex items-center text-gray-600 hover:text-gray-900 mb-6"
@@ -542,23 +928,122 @@ export default function ProductosSimple() {
 
             {/* Información de la Categoría */}
             <div className="flex-1 space-y-4">
-              <div>
-                <Label className="text-xs font-semibold text-gray-700 mb-1.5 flex items-center gap-1.5">
-                  🇪🇸 Nombre
-                </Label>
-                <Input
-                  placeholder="Nombre de la categoría"
-                  value={categoryForm.nombre}
-                  onChange={(e) => setCategoryForm({ ...categoryForm, nombre: e.target.value })}
-                  required
-                  className="text-2xl font-bold py-2 px-3"
-                />
+              {/* Tabs de idiomas */}
+              <div className="flex border-b border-gray-200">
+                <button
+                  type="button"
+                  onClick={() => setActiveLanguageTab('ES')}
+                  className={`flex items-center gap-1.5 px-5 py-2.5 text-sm font-semibold transition-colors ${
+                    activeLanguageTab === 'ES'
+                      ? 'border-b-2 border-black text-black'
+                      : 'text-gray-400 hover:text-gray-600'
+                  }`}
+                >
+                  <span className="text-base">🇪🇸</span> ES
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveLanguageTab('EN')}
+                  className={`flex items-center gap-1.5 px-5 py-2.5 text-sm font-semibold transition-colors ${
+                    activeLanguageTab === 'EN'
+                      ? 'border-b-2 border-black text-black'
+                      : 'text-gray-400 hover:text-gray-600'
+                  }`}
+                >
+                  <span className="text-base">🇬🇧</span> EN
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveLanguageTab('IT')}
+                  className={`flex items-center gap-1.5 px-5 py-2.5 text-sm font-semibold transition-colors ${
+                    activeLanguageTab === 'IT'
+                      ? 'border-b-2 border-black text-black'
+                      : 'text-gray-400 hover:text-gray-600'
+                  }`}
+                >
+                  <span className="text-base">🇮🇹</span> IT
+                </button>
               </div>
 
-              <div>
-                {/* ...otros campos y botones... */}
-                      </div>
-                    )
+              {/* Contenido según tab activo */}
+              <div className="pt-2">
+                {activeLanguageTab === 'ES' && (
+                  <div>
+                    <Label className="text-sm font-semibold text-gray-700 mb-1.5 block">Nombre</Label>
+                    <Input
+                      placeholder="Nombre de la categoría"
+                      value={categoryForm.nombre}
+                      onChange={(e) => setCategoryForm({ ...categoryForm, nombre: e.target.value })}
+                      required
+                      className="text-xl font-bold py-2 px-3"
+                    />
+                  </div>
+                )}
+
+                {activeLanguageTab === 'EN' && (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-sm font-semibold text-gray-700">Name</Label>
+                      <Button
+                        type="button"
+                        onClick={handleTranslateCategory}
+                        disabled={saving || !categoryForm.nombre}
+                        size="sm"
+                        variant="outline"
+                        className="text-xs"
+                      >
+                        ✨ Traducir con IA
+                      </Button>
+                    </div>
+                    <Input
+                      placeholder="Category name"
+                      value={categoryForm.nombre_en}
+                      onChange={(e) => setCategoryForm({ ...categoryForm, nombre_en: e.target.value })}
+                      className="text-xl font-bold py-2 px-3"
+                    />
+                  </div>
+                )}
+
+                {activeLanguageTab === 'IT' && (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-sm font-semibold text-gray-700">Nome</Label>
+                      <Button
+                        type="button"
+                        onClick={handleTranslateCategory}
+                        disabled={saving || !categoryForm.nombre}
+                        size="sm"
+                        variant="outline"
+                        className="text-xs"
+                      >
+                        ✨ Traducir con IA
+                      </Button>
+                    </div>
+                    <Input
+                      placeholder="Nome della categoria"
+                      value={categoryForm.nombre_it}
+                      onChange={(e) => setCategoryForm({ ...categoryForm, nombre_it: e.target.value })}
+                      className="text-xl font-bold py-2 px-3"
+                    />
+                  </div>
+                )}
+              </div>
+
+              <div className="flex items-center gap-2 pt-2">
+                <Button 
+                  type="submit" 
+                  disabled={saving} 
+                  size="sm"
+                  className={`${
+                    saved || saving
+                      ? 'bg-green-600 hover:bg-green-700 text-white' 
+                      : 'bg-black hover:bg-gray-800 text-white'
+                  }`}
+                >
+                  {saving ? 'Guardando...' : saved ? '✓ Guardado!' : 'Guardar'}
+                </Button>
+              </div>
+            
             </div>
           </div>
         </form>
@@ -577,7 +1062,8 @@ export default function ProductosSimple() {
           {selectedCategory.projects.map((project) => (
             <div
               key={project.id}
-              className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow overflow-hidden"
+              onClick={() => handleEditProject(project)}
+              className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow overflow-hidden cursor-pointer"
             >
               <div className="h-32 bg-gray-200 relative">
                 {project.imagenes && project.imagenes.length > 0 ? (
@@ -607,7 +1093,7 @@ export default function ProductosSimple() {
                     {project.descripcion}
                   </p>
                 )}
-                <div className="flex gap-1">
+                <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
                   <button
                     onClick={() => handleEditProject(project)}
                     className="flex-1 py-1.5 px-2 text-xs bg-blue-50 text-blue-600 hover:bg-blue-100 rounded"
@@ -637,14 +1123,18 @@ export default function ProductosSimple() {
             </Button>
           </div>
         )}
-      </div>
+        </div>
+      </>
     )
   }
 
   // VISTA: Formulario de Categoría
   if (currentView === 'edit-category') {
     return (
-      <div className="p-8 max-w-2xl mx-auto">
+      <>
+        <ImageSourceDialog />
+        <GalleryModal />
+        <div className="p-8 max-w-2xl mx-auto">
         <button
           onClick={() => setCurrentView('categories')}
           className="flex items-center text-gray-600 hover:text-gray-900 mb-6"
@@ -732,14 +1222,18 @@ export default function ProductosSimple() {
             </div>
           </form>
         </div>
-      </div>
+        </div>
+      </>
     )
   }
 
   // VISTA: Formulario de Proyecto
   if (currentView === 'edit-project') {
     return (
-      <div className="p-8 max-w-7xl mx-auto">
+      <>
+        <ImageSourceDialog />
+        <GalleryModal />
+        <div className="p-8 max-w-7xl mx-auto">
         <button
           onClick={() => setCurrentView('category-detail')}
           className="flex items-center text-gray-600 hover:text-gray-900 mb-6"
@@ -748,19 +1242,22 @@ export default function ProductosSimple() {
           Volver a proyectos
         </button>
 
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-          <div className="bg-gradient-to-r from-gray-900 to-gray-800 px-8 py-6">
-            <h1 className="text-2xl font-bold text-white">
-              {editingProject ? `Editar Proyecto: ${editingProject.nombre}` : 'Nuevo Proyecto'}
+        <div className="bg-white rounded-lg shadow-sm p-8">
+          <div className="mb-6">
+            <h1 className="text-2xl font-bold">
+              {editingProject ? editingProject.nombre : 'Nuevo Proyecto'}
             </h1>
+            <p className="text-sm text-gray-500 mt-1">
+              {editingProject ? 'Edita la información y fotos del proyecto' : 'Completa la información para crear un nuevo proyecto'}
+            </p>
           </div>
 
-          <form onSubmit={handleSaveProject} className="p-8">
+          <form onSubmit={handleSaveProject}>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Columna Izquierda: Fotos */}
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <Label className="text-lg font-semibold">Fotos del Proyecto</Label>
+                  <Label className="text-base font-semibold">Fotografías</Label>
                   <Button type="button" onClick={handleAddImage} size="sm" className="bg-black hover:bg-gray-800 text-white">
                     <Plus className="w-4 h-4 mr-1" />
                     Agregar Foto
@@ -776,7 +1273,7 @@ export default function ProductosSimple() {
                     </Button>
                   </div>
                 ) : (
-                  <div className="space-y-3">
+                  <div className="grid grid-cols-2 gap-3">
                     {projectForm.imagenes.map((img, index) => (
                       <div key={index} className="relative group rounded-lg overflow-hidden border-2 border-gray-200 hover:border-gray-400 transition-all">
                         <img
@@ -807,83 +1304,148 @@ export default function ProductosSimple() {
 
               {/* Columna Derecha: Información */}
               <div className="space-y-6">
-                <div className="bg-gray-50 rounded-xl p-6 space-y-4">
-                  <div>
-                    <Label className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                      🇪🇸 Español
-                    </Label>
-                    <Input
-                      placeholder="Nombre del proyecto"
-                      value={projectForm.nombre}
-                      onChange={(e) => setProjectForm({ ...projectForm, nombre: e.target.value })}
-                      required
-                      className="text-lg font-semibold mb-3"
-                    />
-                    <textarea
-                      placeholder="Descripción del proyecto (opcional)"
-                      value={projectForm.descripcion}
-                      onChange={(e) => setProjectForm({ ...projectForm, descripcion: e.target.value })}
-                      className="w-full p-3 border rounded-lg resize-none focus:ring-2 focus:ring-gray-400 focus:border-transparent"
-                      rows={4}
-                    />
-                  </div>
+                {/* Tabs de idiomas */}
+                <div className="flex border-b border-gray-200">
+                  <button
+                    type="button"
+                    onClick={() => setActiveProjectLanguageTab('ES')}
+                    className={`flex items-center gap-1.5 px-5 py-2.5 text-sm font-semibold transition-colors ${
+                      activeProjectLanguageTab === 'ES'
+                        ? 'border-b-2 border-black text-black'
+                        : 'text-gray-400 hover:text-gray-600'
+                    }`}
+                  >
+                    <span className="text-base">🇪🇸</span> ES
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveProjectLanguageTab('EN')}
+                    className={`flex items-center gap-1.5 px-5 py-2.5 text-sm font-semibold transition-colors ${
+                      activeProjectLanguageTab === 'EN'
+                        ? 'border-b-2 border-black text-black'
+                        : 'text-gray-400 hover:text-gray-600'
+                    }`}
+                  >
+                    <span className="text-base">🇬🇧</span> EN
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveProjectLanguageTab('IT')}
+                    className={`flex items-center gap-1.5 px-5 py-2.5 text-sm font-semibold transition-colors ${
+                      activeProjectLanguageTab === 'IT'
+                        ? 'border-b-2 border-black text-black'
+                        : 'text-gray-400 hover:text-gray-600'
+                    }`}
+                  >
+                    <span className="text-base">🇮🇹</span> IT
+                  </button>
+                </div>
 
-                  <div className="border-t border-gray-300 pt-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <Label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                        🇬🇧 English
-                      </Label>
-                      <Button
-                        type="button"
-                        onClick={handleTranslateProject}
-                        disabled={saving || !projectForm.nombre}
-                        size="sm"
-                        variant="outline"
-                        className="text-xs"
-                      >
-                        ✨ Traducir con IA
-                      </Button>
+                <div className="bg-gray-50 rounded-xl p-6">
+                  {activeProjectLanguageTab === 'ES' && (
+                    <div className="space-y-3">
+                      <div>
+                        <Label className="text-sm font-semibold text-gray-700 mb-2 block">Nombre</Label>
+                        <Input
+                          placeholder="Nombre del proyecto"
+                          value={projectForm.nombre}
+                          onChange={(e) => setProjectForm({ ...projectForm, nombre: e.target.value })}
+                          required
+                          className="text-lg font-semibold"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-sm font-semibold text-gray-700 mb-2 block">Descripción (opcional)</Label>
+                        <textarea
+                          placeholder="Descripción del proyecto"
+                          value={projectForm.descripcion}
+                          onChange={(e) => setProjectForm({ ...projectForm, descripcion: e.target.value })}
+                          className="w-full p-3 border rounded-lg resize-none focus:ring-2 focus:ring-gray-400 focus:border-transparent"
+                          rows={4}
+                        />
+                      </div>
                     </div>
-                    <Input
-                      placeholder="Project name"
-                      value={projectForm.nombre_en}
-                      onChange={(e) => setProjectForm({ ...projectForm, nombre_en: e.target.value })}
-                      className="text-lg mb-3"
-                    />
-                    <textarea
-                      placeholder="Project description (optional)"
-                      value={projectForm.descripcion_en}
-                      onChange={(e) => setProjectForm({ ...projectForm, descripcion_en: e.target.value })}
-                      className="w-full p-3 border rounded-lg resize-none focus:ring-2 focus:ring-gray-400 focus:border-transparent"
-                      rows={4}
-                    />
-                  </div>
+                  )}
 
-                  <div className="border-t border-gray-300 pt-4">
-                    <Label className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                      🇮🇹 Italiano
-                    </Label>
-                    <Input
-                      placeholder="Nome del progetto"
-                      value={projectForm.nombre_it}
-                      onChange={(e) => setProjectForm({ ...projectForm, nombre_it: e.target.value })}
-                      className="text-lg mb-3"
-                    />
-                    <textarea
-                      placeholder="Descrizione del progetto (opzionale)"
-                      value={projectForm.descripcion_it}
-                      onChange={(e) => setProjectForm({ ...projectForm, descripcion_it: e.target.value })}
-                      className="w-full p-3 border rounded-lg resize-none focus:ring-2 focus:ring-gray-400 focus:border-transparent"
-                      rows={4}
-                    />
-                  </div>
+                  {activeProjectLanguageTab === 'EN' && (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between mb-2">
+                        <Label className="text-sm font-semibold text-gray-700">Name</Label>
+                        <Button
+                          type="button"
+                          onClick={handleTranslateProject}
+                          disabled={saving || !projectForm.nombre}
+                          size="sm"
+                          variant="outline"
+                          className="text-xs"
+                        >
+                          ✨ Traducir con IA
+                        </Button>
+                      </div>
+                      <div>
+                        <Input
+                          placeholder="Project name"
+                          value={projectForm.nombre_en}
+                          onChange={(e) => setProjectForm({ ...projectForm, nombre_en: e.target.value })}
+                          className="text-lg font-semibold"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-sm font-semibold text-gray-700 mb-2 block">Description (optional)</Label>
+                        <textarea
+                          placeholder="Project description"
+                          value={projectForm.descripcion_en}
+                          onChange={(e) => setProjectForm({ ...projectForm, descripcion_en: e.target.value })}
+                          className="w-full p-3 border rounded-lg resize-none focus:ring-2 focus:ring-gray-400 focus:border-transparent"
+                          rows={4}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {activeProjectLanguageTab === 'IT' && (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between mb-2">
+                        <Label className="text-sm font-semibold text-gray-700">Nome</Label>
+                        <Button
+                          type="button"
+                          onClick={handleTranslateProject}
+                          disabled={saving || !projectForm.nombre}
+                          size="sm"
+                          variant="outline"
+                          className="text-xs"
+                        >
+                          ✨ Traducir con IA
+                        </Button>
+                      </div>
+                      <div>
+                        <Input
+                          placeholder="Nome del progetto"
+                          value={projectForm.nombre_it}
+                          onChange={(e) => setProjectForm({ ...projectForm, nombre_it: e.target.value })}
+                          className="text-lg font-semibold"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-sm font-semibold text-gray-700 mb-2 block">Descrizione (opzionale)</Label>
+                        <textarea
+                          placeholder="Descrizione del progetto"
+                          value={projectForm.descripcion_it}
+                          onChange={(e) => setProjectForm({ ...projectForm, descripcion_it: e.target.value })}
+                          className="w-full p-3 border rounded-lg resize-none focus:ring-2 focus:ring-gray-400 focus:border-transparent"
+                          rows={4}
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex gap-3 pt-4">
                   <Button 
                     type="submit" 
                     disabled={saving} 
-                    className={`flex-1 py-3 text-base font-semibold transition-all ${
+                    size="sm"
+                    className={`transition-all ${
                       saved || saving
                         ? 'bg-green-600 hover:bg-green-700 text-white' 
                         : 'bg-black hover:bg-gray-800 text-white'
@@ -891,20 +1453,13 @@ export default function ProductosSimple() {
                   >
                     {saving ? '✓ Guardado!' : saved ? '✓ Guardado!' : editingProject ? 'Guardar' : '+ Crear Proyecto'}
                   </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setCurrentView('category-detail')}
-                    className="px-8 py-3 border-2"
-                  >
-                    Cancelar
-                  </Button>
                 </div>
               </div>
             </div>
           </form>
         </div>
-      </div>
+        </div>
+      </>
     )
   }
 

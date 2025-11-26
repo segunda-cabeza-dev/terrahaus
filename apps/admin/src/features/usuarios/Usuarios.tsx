@@ -220,7 +220,7 @@ export default function Usuarios() {
             }
           }}
         >
-          <div className="bg-white rounded-xl shadow-xl p-8 w-full max-w-md relative">
+          <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-2xl relative">
             <button className="absolute top-3 right-3 text-gray-400 hover:text-gray-700 text-2xl" onClick={() => { setShowModal(false); resetForm() }}>×</button>
             <h2 className="text-2xl font-bold mb-6">Nuevo Usuario</h2>
             <form onSubmit={(e) => {
@@ -239,50 +239,55 @@ export default function Usuarios() {
               toast({ title: 'Usuario creado', description: formData.nombre })
               setShowModal(false)
               resetForm()
-            }} className="space-y-5">
-              <div>
-                <Label>Nombre</Label>
-                <Input value={formData.nombre} onChange={e => setFormData({ ...formData, nombre: e.target.value })} required />
-              </div>
-              <div>
-                <Label>Email</Label>
-                <Input type="email" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} required />
-              </div>
-              <div>
-                <Label>Contraseña</Label>
-                <Input type="password" value={formData.password} onChange={e => setFormData({ ...formData, password: e.target.value })} required />
-              </div>
-              <div>
-                <Label>Rol</Label>
-                <Select value={formData.role} onValueChange={role => setFormData({ ...formData, role: role as UserRole })}>
-                  <SelectTrigger className="w-full h-10 border-gray-300 bg-white">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="z-[100] bg-white border border-gray-200 shadow-lg">
-                    <SelectItem value="dueño">
-                      Dueño
-                    </SelectItem>
-                    <SelectItem value="admin">
-                      Admin
-                    </SelectItem>
-                    <SelectItem value="empleado">
-                      Empleado
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex items-center justify-between py-2">
-                <Label htmlFor="activo" className="text-sm font-medium">Usuario Activo</Label>
-                <div className="flex items-center gap-2">
-                  <Switch 
-                    id="activo"
-                    checked={formData.activo}
-                    onCheckedChange={activo => setFormData({ ...formData, activo })}
-                  />
-                  <span className={`text-sm ${formData.activo ? 'text-green-600' : 'text-gray-400'}`}>
-                    {formData.activo ? 'Activo' : 'Inactivo'}
-                  </span>
+            }} className="space-y-4">
+              {/* Grid de 2 columnas */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Nombre</Label>
+                  <Input value={formData.nombre} onChange={e => setFormData({ ...formData, nombre: e.target.value })} required />
                 </div>
+                <div>
+                  <Label>Email</Label>
+                  <Input type="email" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} required />
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Contraseña</Label>
+                  <Input type="password" value={formData.password} onChange={e => setFormData({ ...formData, password: e.target.value })} required />
+                </div>
+                <div>
+                  <Label>Rol</Label>
+                  <Select value={formData.role} onValueChange={role => setFormData({ ...formData, role: role as UserRole })}>
+                    <SelectTrigger className="w-full h-10 border-gray-300 bg-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="z-[100] bg-white border border-gray-200 shadow-lg">
+                      <SelectItem value="dueño">
+                        Dueño
+                      </SelectItem>
+                      <SelectItem value="admin">
+                        Admin
+                      </SelectItem>
+                      <SelectItem value="empleado">
+                        Empleado
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-3 py-2 border-t pt-4">
+                <Label htmlFor="activo" className="text-sm font-medium">Usuario Activo</Label>
+                <Switch 
+                  id="activo"
+                  checked={formData.activo}
+                  onCheckedChange={activo => setFormData({ ...formData, activo })}
+                />
+                <span className={`text-sm ${formData.activo ? 'text-green-600' : 'text-gray-400'}`}>
+                  {formData.activo ? 'Activo' : 'Inactivo'}
+                </span>
               </div>
               <div className="flex gap-3">
                 <Button type="submit" className="flex-1 bg-black text-white hover:bg-gray-800">Crear</Button>

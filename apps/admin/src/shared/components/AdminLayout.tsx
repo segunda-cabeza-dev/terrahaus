@@ -71,8 +71,8 @@ export default function AdminLayout() {
       <aside className="fixed inset-y-0 left-0 w-64 bg-white shadow-lg">
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="p-6 border-b flex flex-col items-start">
-            <img src="/beltrame-logo.png" alt="Logo Beltrame" className="h-20 w-auto mb-4" />
+          <div className="p-6 border-b flex items-center justify-center">
+            <img src="/beltrame-logo.png" alt="Logo Beltrame" className="h-16 w-auto object-contain" />
           </div>
 
           {/* Navigation */}
