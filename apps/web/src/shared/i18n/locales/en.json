@@ -227,5 +227,14 @@
     "projectsByCategory": "Projects by category",
     "privacyPolicy": "Privacy Policy",
     "termsConditions": "Terms and Conditions"
+  },
+  "routes": {
+    "home": "",
+    "projects": "projects",
+    "about": "about-us",
+    "contact": "contact",
+    "sitemap": "sitemap",
+    "terms": "terms-conditions",
+    "privacy": "privacy"
   }
 }

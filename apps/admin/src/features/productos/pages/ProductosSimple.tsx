@@ -5,6 +5,7 @@ import { Input } from '@beltrame/shared/ui/input'
 import { Label } from '@beltrame/shared/ui/label'
 import { useToast } from '@beltrame/shared'
 import { Plus, Trash2, Edit, Image as ImageIcon, ArrowLeft } from 'lucide-react'
+import { PageHeader } from '../../../shared'
 
 interface CategoryWithProjects extends Category {
   projects: Project[]
@@ -409,20 +410,23 @@ export default function ProductosSimple() {
   // VISTA: Lista de Categorías
   if (currentView === 'categories') {
     return (
-      <div className="p-8 max-w-7xl mx-auto">
+      <div className="space-y-6">
+        <PageHeader
+          title="Categorías de Proyectos"
+          description="Organiza y administra las categorías y proyectos del portfolio"
+          actions={
+            <Button onClick={handleNewCategory} className="bg-black hover:bg-gray-800 text-white whitespace-nowrap px-6 py-2">
+              <Plus className="w-4 h-4 mr-2" />
+              Nueva Categoría
+            </Button>
+          }
+        />
+
         {USE_MOCK_DATA && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <p className="text-sm font-semibold text-blue-800">🎮 Modo DEMO</p>
           </div>
         )}
-
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold">Categorías de Proyectos</h1>
-          <Button onClick={handleNewCategory} className="bg-black hover:bg-gray-800 text-white whitespace-nowrap px-6 py-2 min-w-[180px]">
-            <Plus className="w-4 h-4 mr-2" />
-            Nueva Categoría
-          </Button>
-        </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           {categories.map((category) => (

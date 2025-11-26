@@ -2,7 +2,7 @@ import { Outlet, Link, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { auth, type Profile } from '@beltrame/shared'
 import { Button } from '@beltrame/shared/ui/button'
-import { LogOut, LayoutDashboard, Users, FileText, Image, Mail, Package } from 'lucide-react'
+import { LogOut, Image as ImageIcon, Users, Mail, Package } from 'lucide-react'
 import { WhatsAppSidebarLink } from './WhatsAppSidebarLink'
 import { useToast } from '@beltrame/shared'
 
@@ -36,16 +36,16 @@ export default function AdminLayout() {
 
   const menuItems = [
     {
-      name: 'Dashboard',
-      href: '/dashboard',
-      icon: LayoutDashboard,
+      name: 'Contactos',
+      href: '/contactos',
+      icon: Mail,
       role: ['dueño', 'admin', 'empleado'],
     },
     {
-      name: 'Usuarios',
-      href: '/usuarios',
-      icon: Users,
-      role: ['dueño', 'admin'],
+      name: 'Galería',
+      href: '/galeria',
+      icon: ImageIcon,
+      role: ['dueño', 'admin', 'empleado'],
     },
     {
       name: 'Proyectos',
@@ -54,10 +54,10 @@ export default function AdminLayout() {
       role: ['dueño', 'admin', 'empleado'],
     },
     {
-      name: 'Contactos',
-      href: '/contactos',
-      icon: Mail,
-      role: ['dueño', 'admin', 'empleado'],
+      name: 'Usuarios',
+      href: '/usuarios',
+      icon: Users,
+      role: ['dueño', 'admin'],
     },
   ]
 
@@ -83,8 +83,7 @@ export default function AdminLayout() {
                 <Link
                   key={item.href}
                   to={item.href}
-                  className="flex items-center space-x-3 px-4 py-3 rounded-lg font-bold text-gray-800 hover:bg-black hover:text-white transition-colors"
-                  style={{ fontWeight: 700 }}
+                  className="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-800 hover:bg-black hover:text-white transition-colors"
                 >
                   <Icon className="w-5 h-5" />
                   <span>{item.name}</span>

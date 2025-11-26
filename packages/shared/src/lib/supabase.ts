@@ -1,9 +1,8 @@
 import { createClient } from '@supabase/supabase-js'
 
-// Configuración de Supabase con valores placeholder
-// TODO: Reemplazar con tus credenciales reales de Supabase
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://tu-proyecto.supabase.co'
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'tu-anon-key-aqui'
+// Configuración de Supabase
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://api.segundacabeza.net'
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlZmF1bHQiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTc2MzkxNzk5NiwiZXhwIjoyMDc5Mjc3OTk2fQ.SX8rgU4H7f8b1q-eWeP8xF97gpyUGzrQ6EZvYuT9MrQ'
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
@@ -72,6 +71,26 @@ export interface Project {
   updated_at: string
 }
 
+export interface MediaFile {
+  id: number
+  name: string
+  url: string
+  size: number
+  type: string
+  active: boolean
+  thumbnail_url?: string
+  medium_url?: string
+  large_url?: string
+  created_at: string
+  updated_at: string
+}
+
+export interface ImageUsage {
+  type: 'project' | 'category' | 'product'
+  id: number
+  name: string
+}
+
 // Funciones de autenticación
 export const authService = {
   // Iniciar sesión
@@ -119,7 +138,7 @@ export const authService = {
 }
 
 // Modo DEMO - Para probar sin Supabase
-export const USE_MOCK_DATA = supabaseUrl === 'https://tu-proyecto.supabase.co'
+export const USE_MOCK_DATA = supabaseUrl === 'https://tu-proyecto.supabase.co' || supabaseUrl === 'https://api.segundacabeza.net'
 
 // Datos mock para modo DEMO
 export const mockData = {

@@ -1,7 +1,17 @@
 import { useTranslation } from 'react-i18next';
 
 export default function Inicio() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  
+  const getLocalizedPath = (route: string) => {
+    const translations: Record<string, Record<string, string>> = {
+      'es': { 'projects': 'proyectos', 'contact': 'contacto' },
+      'en': { 'projects': 'projects', 'contact': 'contact' },
+      'it': { 'projects': 'progetti', 'contact': 'contatto' }
+    };
+    const translatedRoute = translations[i18n.language]?.[route] || translations['es'][route];
+    return `/${i18n.language}/${translatedRoute}`;
+  };
   
   return (
     <div className="inicio-page">
@@ -20,7 +30,7 @@ export default function Inicio() {
 
           {/* CTA Button */}
           <a
-            href="/proyectos"
+            href={getLocalizedPath('projects')}
             className="inline-block bg-black text-white px-8 py-3 rounded-md hover:bg-white hover:text-black hover:ring-2 hover:ring-black transition-all font-medium"
           >
             {t('inicio.cta')}
@@ -101,7 +111,7 @@ export default function Inicio() {
                 <p className="text-black leading-relaxed mb-4" style={{ fontSize: '17px' }}>
                   {t('inicio.services.unique.description')}
                 </p>
-                <a href="/proyectos" className="text-black font-semibold hover:underline inline-flex items-center gap-2" style={{ fontSize: '15px' }}>
+                <a href={getLocalizedPath('projects')} className="text-black font-semibold hover:underline inline-flex items-center gap-2" style={{ fontSize: '15px' }}>
                   {t('inicio.services.unique.cta')}
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -126,7 +136,7 @@ export default function Inicio() {
                 <p className="text-black leading-relaxed mb-4" style={{ fontSize: '17px' }}>
                   {t('inicio.services.laser.description')}
                 </p>
-                <a href="/proyectos" className="text-black font-semibold hover:underline inline-flex items-center gap-2" style={{ fontSize: '15px' }}>
+                <a href={getLocalizedPath('projects')} className="text-black font-semibold hover:underline inline-flex items-center gap-2" style={{ fontSize: '15px' }}>
                   {t('inicio.services.laser.cta')}
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -151,7 +161,7 @@ export default function Inicio() {
                 <p className="text-black leading-relaxed mb-4" style={{ fontSize: '17px' }}>
                   {t('inicio.services.advisory.description')}
                 </p>
-                <a href="/contacto" className="text-black font-semibold hover:underline inline-flex items-center gap-2" style={{ fontSize: '15px' }}>
+                <a href={getLocalizedPath('contact')} className="text-black font-semibold hover:underline inline-flex items-center gap-2" style={{ fontSize: '15px' }}>
                   {t('inicio.services.advisory.cta')}
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -380,7 +390,7 @@ export default function Inicio() {
           {/* Botón Ver todos */}
           <div className="text-center">
             <a
-              href="/proyectos"
+              href={getLocalizedPath('projects')}
               className="inline-block bg-black text-white px-10 py-3 rounded-md hover:bg-white hover:text-black hover:ring-2 hover:ring-black transition-all font-medium"
               style={{ fontSize: '15px' }}
             >

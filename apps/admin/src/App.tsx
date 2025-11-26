@@ -1,6 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
 import { Login, ProtectedRoute } from './features/auth'
-import { Dashboard } from './features/dashboard'
+import { Galeria } from './features/galeria'
 import { Usuarios } from './features/usuarios'
 import { Contenido } from './features/contenido'
 import WhatsAppConfig from './features/contenido/WhatsAppConfig'
@@ -22,8 +22,8 @@ function App() {
           </ProtectedRoute>
         }
       >
-        <Route index element={<Dashboard />} />
-        <Route path="dashboard" element={<Dashboard />} />
+        <Route index element={<Galeria />} />
+        <Route path="galeria" element={<Galeria />} />
         <Route
           path="usuarios"
           element={

@@ -1,10 +1,44 @@
 import { useTranslation } from 'react-i18next';
+import { useLanguageSwitcher } from '../../shared/hooks/useLocalizedRoutes';
 
 export default function Footer() {
   const { t, i18n } = useTranslation();
+  const { changeLanguage } = useLanguageSwitcher();
   
-  const changeLanguage = (lang: string) => {
-    i18n.changeLanguage(lang);
+  // Función para construir rutas localizadas
+  const getLocalizedPath = (route: string) => {
+    const translations: Record<string, Record<string, string>> = {
+      'es': {
+        'home': '',
+        'projects': 'proyectos',
+        'about': 'quienes-somos',
+        'contact': 'contacto',
+        'sitemap': 'mapa-sitio',
+        'privacy': 'privacidad',
+        'terms': 'terminos-condiciones',
+      },
+      'en': {
+        'home': '',
+        'projects': 'projects',
+        'about': 'about-us',
+        'contact': 'contact',
+        'sitemap': 'sitemap',
+        'privacy': 'privacy',
+        'terms': 'terms-conditions',
+      },
+      'it': {
+        'home': '',
+        'projects': 'progetti',
+        'about': 'chi-siamo',
+        'contact': 'contatto',
+        'sitemap': 'mappa-sito',
+        'privacy': 'privacy',
+        'terms': 'termini-condizioni',
+      }
+    };
+    
+    const translatedRoute = translations[i18n.language]?.[route] || translations['es'][route];
+    return translatedRoute ? `/${i18n.language}/${translatedRoute}` : `/${i18n.language}`;
   };
   
   return (
@@ -14,7 +48,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-[280px_280px_200px_auto] gap-8 lg:gap-16 mb-12">
           {/* Logo y descripción */}
           <div className="flex flex-col gap-6 items-start">
-            <a href="/">
+            <a href={getLocalizedPath('home')}>
               <img
                 src="/assets/icons/Logo Beltrame Blanco.png"
                 alt="Beltrame"
@@ -68,7 +102,7 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a href="/contacto" className="hover:text-white transition-colors">
+                <a href={getLocalizedPath('contact')} className="hover:text-white transition-colors">
                   {t('footer.writeMessage')}
                 </a>
               </li>
@@ -82,17 +116,17 @@ export default function Footer() {
             </h3>
             <ul className="space-y-3 text-gray-300" style={{ fontSize: '15px' }}>
               <li>
-                <a href="/quienes-somos" className="hover:text-white transition-colors">
+                <a href={getLocalizedPath('about')} className="hover:text-white transition-colors">
                   {t('footer.whoWeAre')}
                 </a>
               </li>
               <li>
-                <a href="/contacto" className="hover:text-white transition-colors">
+                <a href={getLocalizedPath('contact')} className="hover:text-white transition-colors">
                   {t('footer.howToContact')}
                 </a>
               </li>
               <li>
-                <a href="/mapa-sitio" className="hover:text-white transition-colors">
+                <a href={getLocalizedPath('sitemap')} className="hover:text-white transition-colors">
                   {t('footer.sitemap')}
                 </a>
               </li>
@@ -123,7 +157,7 @@ export default function Footer() {
               ].map((proyecto) => (
                 <a
                   key={proyecto.slug}
-                  href={`/proyectos/${proyecto.slug}`}
+                  href={`/${i18n.language}/${t('routes.projects')}/${proyecto.slug}`}
                   className="px-3 py-1.5 bg-white/10 hover:bg-white hover:text-black transition-colors border border-white/20"
                   style={{ fontSize: '13px' }}
                 >
@@ -140,11 +174,11 @@ export default function Footer() {
         {/* Footer inferior */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-400">
           <div className="flex flex-col md:flex-row items-center gap-3 md:gap-6">
-            <a href="/privacidad" className="hover:text-white transition-colors">
+            <a href={getLocalizedPath('privacy')} className="hover:text-white transition-colors">
               {t('footer.privacy')}
             </a>
             <span className="hidden md:inline">|</span>
-            <a href="/terminos-condiciones" className="hover:text-white transition-colors">
+            <a href={getLocalizedPath('terms')} className="hover:text-white transition-colors">
               {t('footer.terms')}
             </a>
           </div>

@@ -1,12 +1,37 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useLanguageSwitcher } from '../../shared/hooks/useLocalizedRoutes';
 
 export default function Header() {
   const { i18n, t } = useTranslation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { changeLanguage } = useLanguageSwitcher();
 
-  const changeLanguage = (lng: string) => {
-    i18n.changeLanguage(lng);
+  // Función para construir rutas localizadas
+  const getLocalizedPath = (route: string) => {
+    const translations: Record<string, Record<string, string>> = {
+      'es': {
+        'home': '',
+        'projects': 'proyectos',
+        'about': 'quienes-somos',
+        'contact': 'contacto',
+      },
+      'en': {
+        'home': '',
+        'projects': 'projects',
+        'about': 'about-us',
+        'contact': 'contact',
+      },
+      'it': {
+        'home': '',
+        'projects': 'progetti',
+        'about': 'chi-siamo',
+        'contact': 'contatto',
+      }
+    };
+    
+    const translatedRoute = translations[i18n.language]?.[route] || translations['es'][route];
+    return translatedRoute ? `/${i18n.language}/${translatedRoute}` : `/${i18n.language}`;
   };
 
   return (
@@ -45,7 +70,7 @@ export default function Header() {
             </button>
 
             {/* Logo */}
-            <a href="/" className="flex-shrink-0">
+            <a href={getLocalizedPath('home')} className="flex-shrink-0">
               <img
                 src="/assets/icons/Logo Beltrame Negro.png"
                 alt="Beltrame"
@@ -57,7 +82,7 @@ export default function Header() {
           {/* Navigation - Centrado */}
           <nav className="hidden md:flex items-center gap-8 absolute left-1/2 transform -translate-x-1/2">
             <a
-              href="/"
+              href={getLocalizedPath('home')}
               className="text-gray-900 hover:text-gray-600 transition-colors font-medium relative group"
               style={{ fontSize: '15px' }}
             >
@@ -65,7 +90,7 @@ export default function Header() {
               <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-black transition-all duration-300 group-hover:w-full"></span>
             </a>
             <a
-              href="/proyectos"
+              href={getLocalizedPath('projects')}
               className="text-gray-900 hover:text-gray-600 transition-colors font-medium relative group"
               style={{ fontSize: '15px' }}
             >
@@ -73,7 +98,7 @@ export default function Header() {
               <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-black transition-all duration-300 group-hover:w-full"></span>
             </a>
             <a
-              href="/quienes-somos"
+              href={getLocalizedPath('about')}
               className="text-gray-900 hover:text-gray-600 transition-colors font-medium relative group"
               style={{ fontSize: '15px' }}
             >
@@ -81,7 +106,7 @@ export default function Header() {
               <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-black transition-all duration-300 group-hover:w-full"></span>
             </a>
             <a
-              href="/contacto"
+              href={getLocalizedPath('contact')}
               className="text-gray-900 hover:text-gray-600 transition-colors font-medium relative group"
               style={{ fontSize: '15px' }}
             >
@@ -131,7 +156,7 @@ export default function Header() {
 
             {/* CTA Button */}
             <a
-              href="/contacto"
+              href={getLocalizedPath('contact')}
               className="bg-black text-white px-6 py-2.5 rounded-md hover:bg-white hover:text-black hover:ring-2 hover:ring-black transition-all font-medium"
               style={{ fontSize: '15px' }}
             >
@@ -145,7 +170,7 @@ export default function Header() {
           <div className="md:hidden mt-4 pb-4 border-t border-gray-200">
             <nav className="flex flex-col gap-4 pt-4">
               <a
-                href="/"
+                href={getLocalizedPath('home')}
                 className="text-gray-900 hover:bg-black hover:text-white transition-all font-medium py-2 px-4 rounded"
                 style={{ fontSize: '15px' }}
                 onClick={() => setMobileMenuOpen(false)}
@@ -153,7 +178,7 @@ export default function Header() {
                 {t('header.home')}
               </a>
               <a
-                href="/proyectos"
+                href={getLocalizedPath('projects')}
                 className="text-gray-900 hover:bg-black hover:text-white transition-all font-medium py-2 px-4 rounded"
                 style={{ fontSize: '15px' }}
                 onClick={() => setMobileMenuOpen(false)}
@@ -161,7 +186,7 @@ export default function Header() {
                 {t('header.projects')}
               </a>
               <a
-                href="/quienes-somos"
+                href={getLocalizedPath('about')}
                 className="text-gray-900 hover:bg-black hover:text-white transition-all font-medium py-2 px-4 rounded"
                 style={{ fontSize: '15px' }}
                 onClick={() => setMobileMenuOpen(false)}
@@ -169,7 +194,7 @@ export default function Header() {
                 {t('header.about')}
               </a>
               <a
-                href="/contacto"
+                href={getLocalizedPath('contact')}
                 className="text-gray-900 hover:bg-black hover:text-white transition-all font-medium py-2 px-4 rounded"
                 style={{ fontSize: '15px' }}
                 onClick={() => setMobileMenuOpen(false)}

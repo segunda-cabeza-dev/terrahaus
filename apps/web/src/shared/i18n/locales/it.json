@@ -227,5 +227,14 @@
     "projectsByCategory": "Progetti per categoria",
     "privacyPolicy": "Informativa sulla Privacy",
     "termsConditions": "Termini e Condizioni"
+  },
+  "routes": {
+    "home": "",
+    "projects": "progetti",
+    "about": "chi-siamo",
+    "contact": "contatto",
+    "sitemap": "mappa-sito",
+    "terms": "termini-condizioni",
+    "privacy": "privacy"
   }
 }
