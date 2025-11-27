@@ -23,6 +23,7 @@ export default function ProductosSimple() {
   const [editingCategory, setEditingCategory] = useState<Category | null>(null)
   const [editingProject, setEditingProject] = useState<Project | null>(null)
   const [activeLanguageTab, setActiveLanguageTab] = useState<'ES' | 'EN' | 'IT'>('ES')
+  const [activeCategoryLanguageTab, setActiveCategoryLanguageTab] = useState<'ES' | 'EN' | 'IT'>('ES')
   const [activeProjectLanguageTab, setActiveProjectLanguageTab] = useState<'ES' | 'EN' | 'IT'>('ES')
   const [showImageSourceDialog, setShowImageSourceDialog] = useState(false)
   const [imageSourceType, setImageSourceType] = useState<'project' | 'category' | null>(null)
@@ -73,6 +74,7 @@ export default function ProductosSimple() {
   const loadData = async () => {
     try {
       if (USE_MOCK_DATA) {
+        // Crear una copia profunda del mockData para poder modificarlo
         const categoriesWithProjects: CategoryWithProjects[] = mockData.categories.map(cat => ({
           ...cat,
           projects: mockData.projects.filter(p => p.categoria_id === cat.id)
@@ -103,6 +105,17 @@ export default function ProductosSimple() {
   // Guardar categoría
   const handleSaveCategory = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Validar traducciones
+    if (!categoryForm.nombre_en || !categoryForm.nombre_it) {
+      toast({
+        title: '⚠️ Traducciones incompletas',
+        description: 'Por favor completa las traducciones en inglés e italiano antes de guardar.',
+        variant: 'destructive',
+      })
+      return
+    }
+    
     setSaving(true)
     setSaved(false)
     try {
@@ -110,23 +123,38 @@ export default function ProductosSimple() {
       
       if (USE_MOCK_DATA) {
         if (editingCategory) {
-          // Actualizar categoría existente
+          // Actualizar categoría existente en el estado
+          setCategories(prevCategories => 
+            prevCategories.map(cat => 
+              cat.id === editingCategory.id
+                ? {
+                    ...cat,
+                    nombre: categoryForm.nombre,
+                    nombre_en: categoryForm.nombre_en,
+                    nombre_it: categoryForm.nombre_it,
+                    imagen_portada: categoryForm.imagen_portada,
+                    updated_at: new Date().toISOString(),
+                  }
+                : cat
+            )
+          )
+          
+          // También actualizar en mockData para persistencia durante la sesión
           const categoryIndex = mockData.categories.findIndex(c => c.id === editingCategory.id)
           if (categoryIndex !== -1) {
-            mockData.categories[categoryIndex] = {
-              ...mockData.categories[categoryIndex],
-              nombre: categoryForm.nombre,
-              nombre_en: categoryForm.nombre_en,
-              imagen_portada: categoryForm.imagen_portada,
-              updated_at: new Date().toISOString(),
-            }
+            (mockData.categories[categoryIndex] as any).nombre = categoryForm.nombre;
+            (mockData.categories[categoryIndex] as any).nombre_en = categoryForm.nombre_en;
+            (mockData.categories[categoryIndex] as any).nombre_it = categoryForm.nombre_it;
+            (mockData.categories[categoryIndex] as any).imagen_portada = categoryForm.imagen_portada;
+            (mockData.categories[categoryIndex] as any).updated_at = new Date().toISOString()
           }
         } else {
           // Crear nueva categoría
-          const newCategory = {
+          const newCategory: CategoryWithProjects = {
             id: Math.max(...mockData.categories.map(c => c.id), 0) + 1,
             nombre: categoryForm.nombre,
             nombre_en: categoryForm.nombre_en,
+            nombre_it: categoryForm.nombre_it,
             descripcion: '',
             descripcion_en: '',
             imagen_portada: categoryForm.imagen_portada,
@@ -135,18 +163,43 @@ export default function ProductosSimple() {
             activa: true,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
+            projects: []
           }
-          mockData.categories.push(newCategory)
+          
+          // Agregar al estado
+          setCategories(prevCategories => [...prevCategories, newCategory])
+          
+          // Agregar a mockData para persistencia durante la sesión
+          const newCategoryData = {
+            id: newCategory.id,
+            nombre: newCategory.nombre,
+            nombre_en: newCategory.nombre_en || '',
+            nombre_it: newCategory.nombre_it || '',
+            descripcion: newCategory.descripcion || '',
+            descripcion_en: newCategory.descripcion_en || '',
+            descripcion_it: newCategory.descripcion_it || '',
+            imagen_portada: newCategory.imagen_portada || '',
+            slug: newCategory.slug,
+            orden: newCategory.orden,
+            activa: newCategory.activa,
+            created_at: newCategory.created_at,
+            updated_at: newCategory.updated_at
+          }
+          mockData.categories.push(newCategoryData as any)
         }
       }
       
       toast({
-        title: editingCategory ? 'Categoría actualizada' : 'Categoría creada',
+        title: editingCategory ? '✓ Categoría actualizada' : '✓ Categoría creada',
+        description: `"${categoryForm.nombre}" se guardó correctamente`,
         className: 'bg-green-600 text-white border-green-600',
       })
-      await loadData()
       setSaved(true)
-      // No cambiar de vista, quedarse en category-detail
+      // Volver a la vista de categorías
+      setTimeout(() => {
+        setCurrentView('categories')
+        setEditingCategory(null)
+      }, 500)
     } catch (error) {
       toast({
         title: 'Error al guardar',
@@ -212,6 +265,17 @@ export default function ProductosSimple() {
   // Guardar proyecto
   const handleSaveProject = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Validar traducciones
+    if (!projectForm.nombre_en || !projectForm.nombre_it) {
+      toast({
+        title: '⚠️ Traducciones incompletas',
+        description: 'Por favor completa las traducciones en inglés e italiano antes de guardar.',
+        variant: 'destructive',
+      })
+      return
+    }
+    
     setSaving(true)
     setSaved(false)
     try {
@@ -219,45 +283,95 @@ export default function ProductosSimple() {
       
       if (USE_MOCK_DATA) {
         if (editingProject) {
-          // Actualizar proyecto existente
+          // Actualizar proyecto existente en el estado
+          setCategories(prevCategories => 
+            prevCategories.map(cat => 
+              cat.id === projectForm.categoria_id
+                ? {
+                    ...cat,
+                    projects: cat.projects.map(proj =>
+                      proj.id === editingProject.id
+                        ? {
+                            ...proj,
+                            nombre: projectForm.nombre,
+                            nombre_en: projectForm.nombre_en,
+                            nombre_it: projectForm.nombre_it,
+                            descripcion: projectForm.descripcion,
+                            descripcion_en: projectForm.descripcion_en,
+                            descripcion_it: projectForm.descripcion_it,
+                            imagenes: projectForm.imagenes,
+                            updated_at: new Date().toISOString(),
+                          }
+                        : proj
+                    )
+                  }
+                : cat
+            )
+          )
+          
+          // También actualizar en mockData
           const projectIndex = mockData.projects.findIndex(p => p.id === editingProject.id)
           if (projectIndex !== -1) {
-            mockData.projects[projectIndex] = {
-              ...mockData.projects[projectIndex],
-              nombre: projectForm.nombre,
-              nombre_en: projectForm.nombre_en,
-              descripcion: projectForm.descripcion,
-              descripcion_en: projectForm.descripcion_en,
-              imagenes: projectForm.imagenes,
-              updated_at: new Date().toISOString(),
-            }
+            (mockData.projects[projectIndex] as any).nombre = projectForm.nombre;
+            (mockData.projects[projectIndex] as any).nombre_en = projectForm.nombre_en;
+            (mockData.projects[projectIndex] as any).nombre_it = projectForm.nombre_it;
+            (mockData.projects[projectIndex] as any).descripcion = projectForm.descripcion;
+            (mockData.projects[projectIndex] as any).descripcion_en = projectForm.descripcion_en;
+            (mockData.projects[projectIndex] as any).descripcion_it = projectForm.descripcion_it;
+            (mockData.projects[projectIndex] as any).imagenes = projectForm.imagenes;
+            (mockData.projects[projectIndex] as any).updated_at = new Date().toISOString()
           }
         } else {
           // Crear nuevo proyecto
-          const newProject = {
+          const newProject: Project = {
             id: Math.max(...mockData.projects.map(p => p.id), 0) + 1,
             categoria_id: projectForm.categoria_id,
             nombre: projectForm.nombre,
             nombre_en: projectForm.nombre_en,
+            nombre_it: projectForm.nombre_it,
             descripcion: projectForm.descripcion,
             descripcion_en: projectForm.descripcion_en,
+            descripcion_it: projectForm.descripcion_it,
             imagenes: projectForm.imagenes,
-            slug: projectForm.nombre.toLowerCase().replace(/\s+/g, '-'),
             orden: mockData.projects.length + 1,
             activo: true,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
           }
-          mockData.projects.push(newProject)
+          
+          // Actualizar el estado
+          setCategories(prevCategories =>
+            prevCategories.map(cat =>
+              cat.id === projectForm.categoria_id
+                ? { ...cat, projects: [...cat.projects, newProject] }
+                : cat
+            )
+          )
+          
+          // Actualizar selectedCategory si existe
+          if (selectedCategory && selectedCategory.id === projectForm.categoria_id) {
+            setSelectedCategory({
+              ...selectedCategory,
+              projects: [...selectedCategory.projects, newProject]
+            })
+          }
+          
+          // Agregar a mockData
+          mockData.projects.push(newProject as any)
         }
       }
       
       toast({
-        title: editingProject ? 'Proyecto actualizado' : 'Proyecto creado',
+        title: editingProject ? '✓ Proyecto actualizado' : '✓ Proyecto creado',
+        description: `"${projectForm.nombre}" se guardó correctamente`,
         className: 'bg-green-600 text-white border-green-600',
       })
-      await loadData()
       setSaved(true)
+      // Volver a la vista de detalle de categoría
+      setTimeout(() => {
+        setCurrentView('category-detail')
+        setEditingProject(null)
+      }, 500)
     } catch (error) {
       toast({
         title: 'Error al guardar',
@@ -884,19 +998,19 @@ export default function ProductosSimple() {
       <>
         <ImageSourceDialog />
         <GalleryModal />
-        <div className="p-8 max-w-7xl mx-auto">
+        <div className="space-y-6">
         <button
           onClick={() => setCurrentView('categories')}
-          className="flex items-center text-gray-600 hover:text-gray-900 mb-6"
+          className="flex items-center text-gray-600 hover:text-gray-900"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Volver a categorías
         </button>
 
-        <form onSubmit={handleSaveCategory} className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <div className="flex items-start gap-6">
+        <form onSubmit={handleSaveCategory} className="bg-white rounded-lg shadow-sm p-6">
+          <div className="flex flex-col md:flex-row items-start gap-6">
             {/* Foto de Portada */}
-            <div className="w-48 flex-shrink-0">
+            <div className="w-full md:w-48 flex-shrink-0">
               <Label className="text-xs font-semibold text-gray-700 mb-2 block">Foto de Portada</Label>
               <div className="relative group">
                 <div className="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg overflow-hidden border border-gray-300">
@@ -1029,6 +1143,21 @@ export default function ProductosSimple() {
                 )}
               </div>
 
+              {/* Alerta de traducciones faltantes */}
+              {categoryForm.nombre && (!categoryForm.nombre_en || !categoryForm.nombre_it) && (
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 flex items-start gap-2">
+                  <svg className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                  </svg>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-yellow-800">Traducciones pendientes</p>
+                    <p className="text-xs text-yellow-700 mt-1">
+                      Faltan traducciones: {!categoryForm.nombre_en && '🇬🇧 Inglés'} {!categoryForm.nombre_en && !categoryForm.nombre_it && 'y'} {!categoryForm.nombre_it && '🇮🇹 Italiano'}
+                    </p>
+                  </div>
+                </div>
+              )}
+
               <div className="flex items-center gap-2 pt-2">
                 <Button 
                   type="submit" 
@@ -1048,7 +1177,7 @@ export default function ProductosSimple() {
           </div>
         </form>
 
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-center">
           <h2 className="text-2xl font-bold">
             Proyectos ({selectedCategory.projects.length})
           </h2>
@@ -1134,91 +1263,206 @@ export default function ProductosSimple() {
       <>
         <ImageSourceDialog />
         <GalleryModal />
-        <div className="p-8 max-w-2xl mx-auto">
+        <div className="space-y-6">
         <button
           onClick={() => setCurrentView('categories')}
-          className="flex items-center text-gray-600 hover:text-gray-900 mb-6"
+          className="flex items-center text-gray-600 hover:text-gray-900"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Cancelar
         </button>
 
-        <div className="bg-white rounded-lg shadow-sm p-8">
-          <h1 className="text-2xl font-bold mb-6">
-            {editingCategory ? 'Editar Categoría' : 'Nueva Categoría'}
-          </h1>
+        <div className="bg-white rounded-lg shadow-sm p-6">
+          <div className="mb-6">
+            <h1 className="text-xl sm:text-2xl font-bold">
+              {editingCategory ? 'Editar Categoría' : 'Nueva Categoría'}
+            </h1>
+            <p className="text-xs sm:text-sm text-gray-500 mt-1">
+              {editingCategory ? 'Edita el nombre y la imagen de portada' : 'Completa la información para crear una nueva categoría'}
+            </p>
+          </div>
 
-          <form onSubmit={handleSaveCategory} className="space-y-6">
-            <div>
-              <Label className="text-base font-semibold mb-3 block">🇪🇸 Español</Label>
-              <Input
-                placeholder="Nombre de la categoría"
-                value={categoryForm.nombre}
-                onChange={(e) => setCategoryForm({ ...categoryForm, nombre: e.target.value })}
-                required
-                className="text-lg"
-              />
-            </div>
-
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <Label className="text-base font-semibold">🇬🇧 English</Label>
-                <Button
-                  type="button"
-                  onClick={handleTranslateCategory}
-                  disabled={saving || !categoryForm.nombre}
-                  size="sm"
-                  variant="outline"
-                  className="text-xs"
-                >
-                  ✨ Traducir con IA
-                </Button>
+          <form onSubmit={handleSaveCategory}>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+              {/* Columna Izquierda: Foto */}
+              <div className="space-y-4">
+                <Label className="text-base font-semibold">Foto de Portada</Label>
+                
+                {categoryForm.imagen_portada ? (
+                  <div className="relative group rounded-lg overflow-hidden border-2 border-gray-200">
+                    <img
+                      src={categoryForm.imagen_portada}
+                      alt="Preview"
+                      className="w-full h-64 object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all flex items-center justify-center gap-3">
+                      <button
+                        type="button"
+                        onClick={handleAddCategoryImage}
+                        className="opacity-0 group-hover:opacity-100 bg-white hover:bg-gray-100 text-gray-900 px-4 py-2 rounded-lg transition-all transform scale-90 group-hover:scale-100"
+                      >
+                        Cambiar
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setCategoryForm({ ...categoryForm, imagen_portada: '' })}
+                        className="opacity-0 group-hover:opacity-100 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-all transform scale-90 group-hover:scale-100"
+                      >
+                        Eliminar
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="border-2 border-dashed border-gray-300 rounded-xl p-12 text-center bg-gray-50">
+                    <ImageIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-600 mb-3">Sin foto de portada</p>
+                    <Button type="button" onClick={handleAddCategoryImage} variant="outline" size="sm">
+                      Seleccionar Foto
+                    </Button>
+                  </div>
+                )}
+                
+                <p className="text-sm text-gray-500 italic">
+                  💡 Esta imagen se mostrará como portada de la categoría
+                </p>
               </div>
-              <Input
-                placeholder="Category name"
-                value={categoryForm.nombre_en}
-                onChange={(e) => setCategoryForm({ ...categoryForm, nombre_en: e.target.value })}
-                className="text-lg"
-              />
-            </div>
 
-            <div>
-              <Label className="text-base font-semibold mb-3 block">Foto de Portada</Label>
-              <Button
-                type="button"
-                onClick={handleAddCategoryImage}
-                variant="outline"
-                className="w-full mb-3"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                {categoryForm.imagen_portada ? 'Cambiar Foto' : 'Seleccionar Foto'}
-              </Button>
-              {categoryForm.imagen_portada && (
-                <div className="mt-4">
-                  <img
-                    src={categoryForm.imagen_portada}
-                    alt="Preview"
-                    className="w-full h-48 object-cover rounded-lg"
-                  />
+              {/* Columna Derecha: Información */}
+              <div className="space-y-6">
+                {/* Tabs de idiomas */}
+                <div className="flex border-b border-gray-200">
+                  <button
+                    type="button"
+                    onClick={() => setActiveCategoryLanguageTab('ES')}
+                    className={`flex items-center gap-1.5 px-5 py-2.5 text-sm font-semibold transition-colors ${
+                      activeCategoryLanguageTab === 'ES'
+                        ? 'border-b-2 border-black text-black'
+                        : 'text-gray-400 hover:text-gray-600'
+                    }`}
+                  >
+                    <span className="text-base">🇪🇸</span> ES
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveCategoryLanguageTab('EN')}
+                    className={`flex items-center gap-1.5 px-5 py-2.5 text-sm font-semibold transition-colors ${
+                      activeCategoryLanguageTab === 'EN'
+                        ? 'border-b-2 border-black text-black'
+                        : 'text-gray-400 hover:text-gray-600'
+                    }`}
+                  >
+                    <span className="text-base">🇬🇧</span> EN
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveCategoryLanguageTab('IT')}
+                    className={`flex items-center gap-1.5 px-5 py-2.5 text-sm font-semibold transition-colors ${
+                      activeCategoryLanguageTab === 'IT'
+                        ? 'border-b-2 border-black text-black'
+                        : 'text-gray-400 hover:text-gray-600'
+                    }`}
+                  >
+                    <span className="text-base">🇮🇹</span> IT
+                  </button>
                 </div>
-              )}
-              <p className="text-sm text-gray-500 mt-2">
-                Esta imagen se mostrará como portada de la categoría
-              </p>
-            </div>
 
-            <div className="flex gap-3 pt-4">
-              <Button type="submit" disabled={saving} className="flex-1 py-3 text-base">
-                {saving ? 'Guardando...' : editingCategory ? 'Guardar' : 'Crear Categoría'}
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setCurrentView('categories')}
-                className="px-6"
-              >
-                Cancelar
-              </Button>
+                <div className="bg-gray-50 rounded-xl p-6">
+                  {activeCategoryLanguageTab === 'ES' && (
+                    <div>
+                      <Label className="text-sm font-semibold text-gray-700 mb-2 block">Nombre</Label>
+                      <Input
+                        placeholder="Nombre de la categoría"
+                        value={categoryForm.nombre}
+                        onChange={(e) => setCategoryForm({ ...categoryForm, nombre: e.target.value })}
+                        required
+                        className="text-lg font-semibold"
+                      />
+                    </div>
+                  )}
+
+                  {activeCategoryLanguageTab === 'EN' && (
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <Label className="text-sm font-semibold text-gray-700">Name</Label>
+                        <Button
+                          type="button"
+                          onClick={handleTranslateCategory}
+                          disabled={saving || !categoryForm.nombre}
+                          size="sm"
+                          variant="outline"
+                          className="text-xs"
+                        >
+                          ✨ Traducir con IA
+                        </Button>
+                      </div>
+                      <Input
+                        placeholder="Category name"
+                        value={categoryForm.nombre_en}
+                        onChange={(e) => setCategoryForm({ ...categoryForm, nombre_en: e.target.value })}
+                        className="text-lg font-semibold"
+                      />
+                    </div>
+                  )}
+
+                  {activeCategoryLanguageTab === 'IT' && (
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <Label className="text-sm font-semibold text-gray-700">Nome</Label>
+                        <Button
+                          type="button"
+                          onClick={handleTranslateCategory}
+                          disabled={saving || !categoryForm.nombre}
+                          size="sm"
+                          variant="outline"
+                          className="text-xs"
+                        >
+                          ✨ Traducir con IA
+                        </Button>
+                      </div>
+                      <Input
+                        placeholder="Nome della categoria"
+                        value={categoryForm.nombre_it}
+                        onChange={(e) => setCategoryForm({ ...categoryForm, nombre_it: e.target.value })}
+                        className="text-lg font-semibold"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* Alerta de traducciones faltantes */}
+                {categoryForm.nombre && (!categoryForm.nombre_en || !categoryForm.nombre_it) && (
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 flex items-start gap-2">
+                    <svg className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                    </svg>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-yellow-800">Traducciones pendientes</p>
+                      <p className="text-xs text-yellow-700 mt-1">
+                        Faltan traducciones: {!categoryForm.nombre_en && '🇬🇧 Inglés'} {!categoryForm.nombre_en && !categoryForm.nombre_it && 'y'} {!categoryForm.nombre_it && '🇮🇹 Italiano'}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex gap-3 pt-4">
+                  <Button 
+                    type="submit" 
+                    disabled={saving} 
+                    size="sm"
+                    className="bg-black hover:bg-gray-800 text-white"
+                  >
+                    {saving ? 'Guardando...' : editingCategory ? 'Guardar' : '+ Crear Categoría'}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setCurrentView('categories')}
+                    size="sm"
+                  >
+                    Cancelar
+                  </Button>
+                </div>
+              </div>
             </div>
           </form>
         </div>
@@ -1233,27 +1477,27 @@ export default function ProductosSimple() {
       <>
         <ImageSourceDialog />
         <GalleryModal />
-        <div className="p-8 max-w-7xl mx-auto">
+        <div className="space-y-6">
         <button
           onClick={() => setCurrentView('category-detail')}
-          className="flex items-center text-gray-600 hover:text-gray-900 mb-6"
+          className="flex items-center text-gray-600 hover:text-gray-900"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Volver a proyectos
         </button>
 
-        <div className="bg-white rounded-lg shadow-sm p-8">
+        <div className="bg-white rounded-lg shadow-sm p-6">
           <div className="mb-6">
-            <h1 className="text-2xl font-bold">
+            <h1 className="text-xl sm:text-2xl font-bold">
               {editingProject ? editingProject.nombre : 'Nuevo Proyecto'}
             </h1>
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-xs sm:text-sm text-gray-500 mt-1">
               {editingProject ? 'Edita la información y fotos del proyecto' : 'Completa la información para crear un nuevo proyecto'}
             </p>
           </div>
 
           <form onSubmit={handleSaveProject}>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
               {/* Columna Izquierda: Fotos */}
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
@@ -1273,7 +1517,7 @@ export default function ProductosSimple() {
                     </Button>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {projectForm.imagenes.map((img, index) => (
                       <div key={index} className="relative group rounded-lg overflow-hidden border-2 border-gray-200 hover:border-gray-400 transition-all">
                         <img
@@ -1439,6 +1683,21 @@ export default function ProductosSimple() {
                     </div>
                   )}
                 </div>
+
+                {/* Alerta de traducciones faltantes */}
+                {projectForm.nombre && (!projectForm.nombre_en || !projectForm.nombre_it) && (
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 flex items-start gap-2">
+                    <svg className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                    </svg>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-yellow-800">Traducciones pendientes</p>
+                      <p className="text-xs text-yellow-700 mt-1">
+                        Faltan traducciones: {!projectForm.nombre_en && '🇬🇧 Inglés'} {!projectForm.nombre_en && !projectForm.nombre_it && 'y'} {!projectForm.nombre_it && '🇮🇹 Italiano'}
+                      </p>
+                    </div>
+                  </div>
+                )}
 
                 <div className="flex gap-3 pt-4">
                   <Button 

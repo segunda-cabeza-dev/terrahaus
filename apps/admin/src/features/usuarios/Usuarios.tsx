@@ -6,7 +6,7 @@ import { Label } from '@beltrame/shared/ui/label'
 import { Switch } from '@beltrame/shared/ui/switch'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@beltrame/shared/ui/select'
 import { useToast } from '@beltrame/shared'
-import { Trash2, Pencil } from 'lucide-react'
+import { Trash2, Pencil, Plus } from 'lucide-react'
 import { PageHeader } from '../../shared'
 
 interface ExtendedProfile extends Profile {
@@ -87,31 +87,34 @@ export default function Usuarios() {
         description="Gestiona los usuarios del sistema y sus permisos"
         actions={
           <Button onClick={() => { resetForm(); setShowModal(true) }} className="bg-black text-white px-6 py-2">
+            <Plus className="w-4 h-4 mr-2" />
             Nuevo Usuario
           </Button>
         }
       />
-      <div className="overflow-x-auto rounded-xl shadow-lg bg-white">
-        <table className="min-w-full">
-          <thead>
-            <tr className="bg-gray-50 border-b border-gray-200">
-              <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Nombre</th>
-              <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Email</th>
-              <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Rol</th>
-              <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Estado</th>
-              <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Creado</th>
-              <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Acciones</th>
-            </tr>
-          </thead>
+      <div className="overflow-x-auto rounded-xl shadow-lg bg-white -mx-4 sm:mx-0">
+        <div className="inline-block min-w-full align-middle">
+          <div className="overflow-hidden">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead>
+                <tr className="bg-gray-50 border-b border-gray-200">
+                  <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-medium text-gray-700">Nombre</th>
+                  <th className="hidden md:table-cell px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-medium text-gray-700">Email</th>
+                  <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-medium text-gray-700">Rol</th>
+                  <th className="hidden lg:table-cell px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-medium text-gray-700">Estado</th>
+                  <th className="hidden sm:table-cell px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-medium text-gray-700">Creado</th>
+                  <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-medium text-gray-700">Acciones</th>
+                </tr>
+              </thead>
           <tbody>
             {users.length === 0 ? (
               <tr><td colSpan={6} className="text-center py-10 text-gray-400">No hay usuarios</td></tr>
             ) : (
               users.map(user => (
                 <tr key={user.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-4">
+                  <td className="px-3 sm:px-6 py-3 sm:py-4">
                     {editingField?.userId === user.id && editingField?.field === 'nombre' ? (
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1 sm:gap-2">
                         <Input
                           value={editValue}
                           onChange={(e) => setEditValue(e.target.value)}
@@ -119,25 +122,26 @@ export default function Usuarios() {
                             if (e.key === 'Enter') saveField(user.id, 'nombre')
                             if (e.key === 'Escape') cancelEdit()
                           }}
-                          className="h-8"
+                          className="h-8 text-sm"
                           autoFocus
                         />
                         <Button size="sm" onClick={() => saveField(user.id, 'nombre')} className="h-8 px-2">✓</Button>
                         <Button size="sm" variant="outline" onClick={cancelEdit} className="h-8 px-2">✕</Button>
                       </div>
                     ) : (
-                      <div className="flex items-center gap-2 group">
-                        <span className="font-medium text-gray-900">{user.nombre}</span>
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                        <span className="font-medium text-gray-900 text-sm sm:text-base">{user.nombre}</span>
+                        <div className="md:hidden text-xs text-gray-500">{user.email}</div>
                         <button 
                           onClick={() => startEditField(user.id, 'nombre', user.nombre)}
-                          className="text-gray-400 hover:text-blue-600 transition-colors"
+                          className="text-gray-400 hover:text-blue-600 transition-colors self-start sm:self-auto"
                         >
-                          <Pencil className="w-4 h-4" />
+                          <Pencil className="w-3 h-3 sm:w-4 sm:h-4" />
                         </button>
                       </div>
                     )}
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="hidden md:table-cell px-3 sm:px-6 py-3 sm:py-4">
                     {editingField?.userId === user.id && editingField?.field === 'email' ? (
                       <div className="flex items-center gap-2">
                         <Input
@@ -156,7 +160,7 @@ export default function Usuarios() {
                       </div>
                     ) : (
                       <div className="flex items-center gap-2 group">
-                        <span className="text-gray-600">{user.email}</span>
+                        <span className="text-gray-600 text-sm">{user.email}</span>
                         <button 
                           onClick={() => startEditField(user.id, 'email', user.email)}
                           className="text-gray-400 hover:text-blue-600 transition-colors"
@@ -166,42 +170,42 @@ export default function Usuarios() {
                       </div>
                     )}
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-3 sm:px-6 py-3 sm:py-4">
                     <Select value={user.role} onValueChange={(role) => updateUserRole(user.id, role as UserRole)}>
-                      <SelectTrigger className="w-[160px] h-9 border-gray-300 bg-white">
+                      <SelectTrigger className="w-[120px] sm:w-[160px] h-8 sm:h-9 border-gray-300 bg-white text-xs sm:text-sm">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-white border border-gray-200 shadow-lg min-w-[160px]">
-                        <SelectItem value="dueño">
+                      <SelectContent className="bg-white border border-gray-200 shadow-lg min-w-[120px] sm:min-w-[160px]">
+                        <SelectItem value="dueño" className="px-3 text-xs sm:text-sm">
                           Dueño
                         </SelectItem>
-                        <SelectItem value="admin">
+                        <SelectItem value="admin" className="px-3 text-xs sm:text-sm">
                           Admin
                         </SelectItem>
-                        <SelectItem value="empleado">
+                        <SelectItem value="empleado" className="px-3 text-xs sm:text-sm">
                           Empleado
                         </SelectItem>
                       </SelectContent>
                     </Select>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="hidden lg:table-cell px-3 sm:px-6 py-3 sm:py-4">
                     <div className="flex items-center gap-2">
                       <Switch 
                         checked={user.activo ?? true}
                         onCheckedChange={() => toggleUserStatus(user.id)}
                       />
-                      <span className={`text-sm ${user.activo ? 'text-green-600' : 'text-gray-400'}`}>
+                      <span className={`text-xs sm:text-sm ${user.activo ? 'text-green-600' : 'text-gray-400'}`}>
                         {user.activo ? 'Activo' : 'Inactivo'}
                       </span>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{new Date(user.created_at).toLocaleDateString()}</td>
-                  <td className="px-6 py-4">
+                  <td className="hidden sm:table-cell px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm text-gray-500">{new Date(user.created_at).toLocaleDateString()}</td>
+                  <td className="px-3 sm:px-6 py-3 sm:py-4">
                     <button 
                       onClick={() => setDeleteUserId(user.id)}
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50 p-2 rounded transition-colors"
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50 p-1.5 sm:p-2 rounded transition-colors"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
                     </button>
                   </td>
                 </tr>
@@ -209,6 +213,8 @@ export default function Usuarios() {
             )}
           </tbody>
         </table>
+          </div>
+        </div>
       </div>
       {showModal && (
         <div 
@@ -264,13 +270,13 @@ export default function Usuarios() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="z-[100] bg-white border border-gray-200 shadow-lg">
-                      <SelectItem value="dueño">
+                      <SelectItem value="dueño" className="px-3">
                         Dueño
                       </SelectItem>
-                      <SelectItem value="admin">
+                      <SelectItem value="admin" className="px-3">
                         Admin
                       </SelectItem>
-                      <SelectItem value="empleado">
+                      <SelectItem value="empleado" className="px-3">
                         Empleado
                       </SelectItem>
                     </SelectContent>

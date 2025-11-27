@@ -7,6 +7,7 @@ import WhatsAppConfig from './features/contenido/WhatsAppConfig'
 import { Imagenes } from './features/imagenes'
 import { Contactos } from './features/contactos'
 import { ProductosSimple } from './features/productos'
+import { Recordatorios } from './features/recordatorios'
 import { AdminLayout } from './shared'
 import './App.css'
 
@@ -29,6 +30,14 @@ function App() {
           element={
             <ProtectedRoute requiredRoles={['dueño', 'admin']}>
               <Usuarios />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="recordatorios"
+          element={
+            <ProtectedRoute requiredRoles={['dueño', 'admin']}>
+              <Recordatorios />
             </ProtectedRoute>
           }
         />

@@ -203,10 +203,10 @@ export function Galeria() {
               <SelectTrigger className="w-full sm:w-48 bg-white border-gray-300 h-[42px]">
                 <SelectValue placeholder="Categoría" />
               </SelectTrigger>
-              <SelectContent className="bg-white">
-                <SelectItem value="all">Todas las categorías</SelectItem>
+              <SelectContent className="bg-white p-2 max-h-[300px] overflow-y-auto">
+                <SelectItem value="all" className="pl-3">Todas las categorías</SelectItem>
                 {categories.map(cat => (
-                  <SelectItem key={cat.id} value={cat.id.toString()}>
+                  <SelectItem key={cat.id} value={cat.id.toString()} className="pl-3">
                     {cat.nombre}
                   </SelectItem>
                 ))}
@@ -218,16 +218,17 @@ export function Galeria() {
               <SelectTrigger className="w-full sm:w-40 bg-white border-gray-300 h-[42px]">
                 <SelectValue placeholder="Estado" />
               </SelectTrigger>
-              <SelectContent className="bg-white">
-                <SelectItem value="all">Todas</SelectItem>
-                <SelectItem value="active">Activadas</SelectItem>
-                <SelectItem value="inactive">Desactivadas</SelectItem>
+              <SelectContent className="bg-white p-2">
+                <SelectItem value="all" className="pl-3">Todas</SelectItem>
+                <SelectItem value="active" className="pl-3">Activadas</SelectItem>
+                <SelectItem value="inactive" className="pl-3">Desactivadas</SelectItem>
               </SelectContent>
             </Select>
           </div>
           
-          <div className="overflow-x-auto">
-            <table className="min-w-full">
+          <div className="overflow-x-auto -mx-6 sm:mx-0">
+            {/* Vista de tabla para desktop */}
+            <table className="min-w-full hidden md:table">
               <thead>
                 <tr className="bg-gray-50 border-b border-gray-200">
                   <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Vista Previa</th>
@@ -303,6 +304,73 @@ export function Galeria() {
                 })}
               </tbody>
             </table>
+
+            {/* Vista de tarjetas para móvil */}
+            <div className="md:hidden space-y-3 px-4">
+              {displayedFiles.map((file) => {
+                const usageCount = imageUsageMap[file.url] || 0
+                return (
+                  <div key={file.id} className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                    <div className="flex gap-4">
+                      {/* Imagen */}
+                      <div className="w-20 h-20 rounded-lg overflow-hidden shadow-sm flex-shrink-0">
+                        <img 
+                          src={file.url} 
+                          alt={file.name}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      
+                      {/* Información */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-2 mb-2">
+                          <h3 className="font-semibold text-sm text-gray-900 truncate">{file.name}</h3>
+                          <button
+                            onClick={() => handleDeleteImage(file.url)}
+                            className="text-red-600 hover:text-red-700 p-1.5 rounded flex-shrink-0"
+                            title={usageCount > 0 ? 'No se puede eliminar (en uso)' : 'Eliminar imagen'}
+                            disabled={usageCount > 0}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                        
+                        <div className="space-y-2 text-xs text-gray-600">
+                          <div className="flex items-center justify-between">
+                            <span className="flex items-center gap-1">
+                              <Calendar className="w-3 h-3" />
+                              {new Date(file.created_at).toLocaleDateString()}
+                            </span>
+                            <span>{formatBytes(file.size)}</span>
+                          </div>
+                          
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <Switch 
+                                checked={file.active}
+                                onCheckedChange={() => toggleImageActive(file.url)}
+                                className="scale-75"
+                              />
+                              <span className={`text-xs ${file.active ? 'text-green-600' : 'text-gray-400'}`}>
+                                {file.active ? 'Activa' : 'Inactiva'}
+                              </span>
+                            </div>
+                            
+                            {usageCount > 0 ? (
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                {usageCount} {usageCount === 1 ? 'lugar' : 'lugares'}
+                              </span>
+                            ) : (
+                              <span className="text-xs text-gray-400">Sin usar</span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
           </div>
           
           {/* Mensaje sin resultados */}
