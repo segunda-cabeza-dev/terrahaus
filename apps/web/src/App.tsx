@@ -23,6 +23,17 @@ function LanguageSync() {
   return null;
 }
 
+// Componente para redirigir rutas legacy con parámetros
+function CategoryRedirect() {
+  const { categoria } = useParams<{ categoria: string }>();
+  return <Navigate to={`/es/proyectos/${categoria}`} replace />;
+}
+
+function ProjectDetailRedirect() {
+  const { categoria, id } = useParams<{ categoria: string; id: string }>();
+  return <Navigate to={`/es/proyectos/${categoria}/${id}`} replace />;
+}
+
 function App() {
   const { i18n } = useTranslation();
   
@@ -69,8 +80,8 @@ function App() {
 
         {/* Legacy routes redirect to Spanish */}
         <Route path="/proyectos" element={<Navigate to="/es/proyectos" replace />} />
-        <Route path="/proyectos/:categoria" element={<Navigate to="/es/proyectos/:categoria" replace />} />
-        <Route path="/proyectos/:categoria/:id" element={<Navigate to="/es/proyectos/:categoria/:id" replace />} />
+        <Route path="/proyectos/:categoria" element={<CategoryRedirect />} />
+        <Route path="/proyectos/:categoria/:id" element={<ProjectDetailRedirect />} />
         <Route path="/quienes-somos" element={<Navigate to="/es/quienes-somos" replace />} />
         <Route path="/contacto" element={<Navigate to="/es/contacto" replace />} />
         <Route path="/mapa-sitio" element={<Navigate to="/es/mapa-sitio" replace />} />

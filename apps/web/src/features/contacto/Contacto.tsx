@@ -23,13 +23,13 @@ export default function Contacto() {
 
     try {
       const { error } = await supabase
-        .from('contact_submissions')
+        .from('contact_messages')
         .insert([
           {
-            nombre: formData.nombre,
+            full_name: formData.nombre,
             email: formData.email,
-            telefono: formData.telefono || null,
-            mensaje: formData.mensaje
+            phone: formData.telefono || null,
+            message: formData.mensaje
           }
         ]);
 
@@ -44,10 +44,7 @@ export default function Contacto() {
         mensaje: ''
       });
 
-      // Ocultar mensaje de éxito después de 5 segundos
-      setTimeout(() => {
-        setSubmitStatus('idle');
-      }, 5000);
+      // No ocultar el mensaje de éxito automáticamente para que el usuario lo vea
     } catch (error: any) {
       console.error('Error al enviar formulario:', error);
       setSubmitStatus('error');
@@ -154,92 +151,99 @@ export default function Contacto() {
             {/* Right side - Contact Form - Más angosto */}
             <div className="bg-gray-100 rounded-xl p-6 border border-gray-200 max-w-md mx-auto w-full">
               
-              {/* Mensaje de éxito */}
-              {submitStatus === 'success' && (
-                <div className="mb-4 bg-green-50 border border-green-200 rounded-lg p-3 flex items-start gap-2">
-                  <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <h4 className="font-semibold text-green-900 text-sm mb-1">¡Mensaje enviado correctamente!</h4>
-                    <p className="text-xs text-green-700">
-                      Gracias por contactarnos. Te responderemos lo antes posible.
-                    </p>
-                  </div>
+              {/* Mensaje de éxito - reemplaza el formulario */}
+              {submitStatus === 'success' ? (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-6 flex flex-col items-center text-center">
+                  <CheckCircle className="w-12 h-12 text-green-600 mb-4" />
+                  <h4 className="font-semibold text-green-900 text-lg mb-2">¡Mensaje recibido!</h4>
+                  <p className="text-sm text-green-700 mb-4">
+                    Gracias por contactarnos. Nos comunicaremos contigo a la brevedad.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setSubmitStatus('idle')}
+                    className="text-sm text-green-700 underline hover:text-green-900"
+                  >
+                    Enviar otro mensaje
+                  </button>
                 </div>
-              )}
-
-              {/* Mensaje de error */}
-              {submitStatus === 'error' && (
-                <div className="mb-4 bg-red-50 border border-red-200 rounded-lg p-3 flex items-start gap-2">
-                  <AlertCircle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <h4 className="font-semibold text-red-900 text-sm mb-1">Error al enviar el mensaje</h4>
-                    <p className="text-xs text-red-700">
-                      {errorMessage}
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              <form onSubmit={handleSubmit} className="space-y-3">
-                <input
-                  type="text"
-                  name="nombre"
-                  placeholder={t('contact.name')}
-                  value={formData.nombre}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all text-gray-700 placeholder:text-gray-500 text-sm"
-                />
-
-                <div className="grid grid-cols-2 gap-3">
-                  <input
-                    type="email"
-                    name="email"
-                    placeholder={t('contact.emailPlaceholder')}
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all text-gray-700 placeholder:text-gray-500 text-sm"
-                  />
-
-                  <input
-                    type="tel"
-                    name="telefono"
-                    placeholder={t('contact.phonePlaceholder')}
-                    value={formData.telefono}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all text-gray-700 placeholder:text-gray-500 text-sm"
-                  />
-                </div>
-
-                <textarea
-                  name="mensaje"
-                  placeholder={t('contact.messagePlaceholder')}
-                  value={formData.mensaje}
-                  onChange={handleChange}
-                  required
-                  rows={4}
-                  className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent resize-none transition-all text-gray-700 placeholder:text-gray-500 text-sm"
-                />
-
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full bg-black text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-gray-800 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      Enviando...
-                    </>
-                  ) : (
-                    <>
-                      <Send className="w-4 h-4" />
-                      {t('contact.send')}
-                    </>
+              ) : (
+                <>
+                  {/* Mensaje de error */}
+                  {submitStatus === 'error' && (
+                    <div className="mb-4 bg-red-50 border border-red-200 rounded-lg p-3 flex items-start gap-2">
+                      <AlertCircle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <h4 className="font-semibold text-red-900 text-sm mb-1">Error al enviar el mensaje</h4>
+                        <p className="text-xs text-red-700">
+                          {errorMessage}
+                        </p>
+                      </div>
+                    </div>
                   )}
-                </button>
-              </form>
+
+                  <form onSubmit={handleSubmit} className="space-y-3">
+                    <input
+                      type="text"
+                      name="nombre"
+                      placeholder={t('contact.name')}
+                      value={formData.nombre}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all text-gray-700 placeholder:text-gray-500 text-sm"
+                    />
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <input
+                        type="email"
+                        name="email"
+                        placeholder={t('contact.emailPlaceholder')}
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
+                        className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all text-gray-700 placeholder:text-gray-500 text-sm"
+                      />
+
+                      <input
+                        type="tel"
+                        name="telefono"
+                        placeholder={t('contact.phonePlaceholder')}
+                        value={formData.telefono}
+                        onChange={handleChange}
+                        className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all text-gray-700 placeholder:text-gray-500 text-sm"
+                      />
+                    </div>
+
+                    <textarea
+                      name="mensaje"
+                      placeholder={t('contact.messagePlaceholder')}
+                      value={formData.mensaje}
+                      onChange={handleChange}
+                      required
+                      rows={4}
+                      className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent resize-none transition-all text-gray-700 placeholder:text-gray-500 text-sm"
+                    />
+
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="w-full bg-black text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-gray-800 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          Enviando...
+                        </>
+                      ) : (
+                        <>
+                          <Send className="w-4 h-4" />
+                          {t('contact.send')}
+                        </>
+                      )}
+                    </button>
+                  </form>
+                </>
+              )}
             </div>
 
           </div>

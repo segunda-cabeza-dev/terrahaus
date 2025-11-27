@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { USE_MOCK_DATA, mockData, type Category, type Project } from '@beltrame/shared'
+import { USE_MOCK_DATA, mockData, type Category, type Project, supabase } from '@beltrame/shared'
 import { Button } from '@beltrame/shared/ui/button'
 import { Input } from '@beltrame/shared/ui/input'
 import { Label } from '@beltrame/shared/ui/label'
@@ -80,9 +80,95 @@ export default function ProductosSimple() {
           projects: mockData.projects.filter(p => p.categoria_id === cat.id)
         }))
         setCategories(categoriesWithProjects)
+      } else {
+        // Fetch categories
+        const { data: categoriesData, error: categoriesError } = await supabase
+          .from('categories')
+          .select('*')
+          .order('display_order', { ascending: true })
+        
+        if (categoriesError) throw categoriesError
+
+        // Fetch projects
+        const { data: projectsData, error: projectsError } = await supabase
+          .from('projects')
+          .select('*')
+          .order('display_order', { ascending: true })
+
+        if (projectsError) throw projectsError
+
+        // Fetch translations
+        const { data: translationsData, error: translationsError } = await supabase
+          .from('translations')
+          .select('*')
+          .in('entity_type', ['category', 'project'])
+        
+        if (translationsError) throw translationsError
+
+        // Process categories
+        const processedCategories: any[] = categoriesData.map((cat: any) => {
+          const catTranslations = translationsData.filter((t: any) => t.entity_type === 'category' && t.entity_id === cat.id)
+          
+          const nombre = catTranslations.find((t: any) => t.language_code === 'es' && t.field_name === 'name')?.value || ''
+          const nombre_en = catTranslations.find((t: any) => t.language_code === 'en' && t.field_name === 'name')?.value || ''
+          const nombre_it = catTranslations.find((t: any) => t.language_code === 'it' && t.field_name === 'name')?.value || ''
+          
+          // Filter projects for this category
+          const catProjects = projectsData.filter((p: any) => p.category_id === cat.id).map((p: any) => {
+            const projTranslations = translationsData.filter((t: any) => t.entity_type === 'project' && t.entity_id === p.id)
+            
+            const pNombre = projTranslations.find((t: any) => t.language_code === 'es' && t.field_name === 'name')?.value || ''
+            const pNombre_en = projTranslations.find((t: any) => t.language_code === 'en' && t.field_name === 'name')?.value || ''
+            const pNombre_it = projTranslations.find((t: any) => t.language_code === 'it' && t.field_name === 'name')?.value || ''
+            
+            const pDesc = projTranslations.find((t: any) => t.language_code === 'es' && t.field_name === 'description')?.value || ''
+            const pDesc_en = projTranslations.find((t: any) => t.language_code === 'en' && t.field_name === 'description')?.value || ''
+            const pDesc_it = projTranslations.find((t: any) => t.language_code === 'it' && t.field_name === 'description')?.value || ''
+
+            return {
+              id: p.id,
+              categoria_id: p.category_id,
+              nombre: pNombre,
+              nombre_en: pNombre_en,
+              nombre_it: pNombre_it,
+              descripcion: pDesc,
+              descripcion_en: pDesc_en,
+              descripcion_it: pDesc_it,
+              imagenes: p.image_urls || [],
+              orden: p.display_order,
+              activo: p.is_active,
+              created_at: p.created_at,
+              updated_at: p.updated_at
+            }
+          })
+
+          return {
+            id: cat.id,
+            nombre: nombre,
+            nombre_en: nombre_en,
+            nombre_it: nombre_it,
+            descripcion: '',
+            descripcion_en: '',
+            descripcion_it: '',
+            imagen_portada: cat.cover_image_url || '',
+            slug: cat.slug,
+            orden: cat.display_order,
+            activa: cat.is_active,
+            created_at: cat.created_at,
+            updated_at: cat.updated_at,
+            projects: catProjects
+          }
+        })
+
+        setCategories(processedCategories)
       }
     } catch (error) {
       console.error('Error loading data:', error)
+      toast({
+        title: 'Error al cargar datos',
+        description: 'No se pudieron cargar las categorías y proyectos.',
+        variant: 'destructive',
+      })
     } finally {
       setLoading(false)
     }
@@ -187,6 +273,107 @@ export default function ProductosSimple() {
           }
           mockData.categories.push(newCategoryData as any)
         }
+      } else {
+        // Supabase logic
+        if (editingCategory) {
+          // Update category
+          const { error: updateError } = await supabase
+            .from('categories')
+            .update({
+              cover_image_url: categoryForm.imagen_portada,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', editingCategory.id)
+          
+          if (updateError) throw updateError
+
+          // Update translations
+          const translations = [
+            { lang: 'es', field: 'name', value: categoryForm.nombre },
+            { lang: 'en', field: 'name', value: categoryForm.nombre_en },
+            { lang: 'it', field: 'name', value: categoryForm.nombre_it },
+          ]
+
+          for (const t of translations) {
+             await supabase.from('translations').upsert({
+                entity_type: 'category',
+                entity_id: editingCategory.id,
+                field_name: t.field,
+                language_code: t.lang,
+                value: t.value
+             }, { onConflict: 'entity_type,entity_id,field_name,language_code' })
+          }
+
+          // Update local state
+          setCategories(prevCategories => 
+            prevCategories.map(cat => 
+              cat.id === editingCategory.id
+                ? {
+                    ...cat,
+                    nombre: categoryForm.nombre,
+                    nombre_en: categoryForm.nombre_en,
+                    nombre_it: categoryForm.nombre_it,
+                    imagen_portada: categoryForm.imagen_portada,
+                    updated_at: new Date().toISOString(),
+                  }
+                : cat
+            )
+          )
+
+        } else {
+          // Create category
+          const { data: newCatData, error: createError } = await supabase
+            .from('categories')
+            .insert({
+              slug: categoryForm.nombre.toLowerCase().replace(/\s+/g, '-'),
+              cover_image_url: categoryForm.imagen_portada,
+              display_order: categories.length + 1,
+              is_active: true
+            })
+            .select()
+            .single()
+          
+          if (createError) throw createError
+
+          const newId = newCatData.id
+
+          // Insert translations
+          const translations = [
+            { lang: 'es', field: 'name', value: categoryForm.nombre },
+            { lang: 'en', field: 'name', value: categoryForm.nombre_en },
+            { lang: 'it', field: 'name', value: categoryForm.nombre_it },
+          ]
+
+          for (const t of translations) {
+             await supabase.from('translations').insert({
+                entity_type: 'category',
+                entity_id: newId,
+                field_name: t.field,
+                language_code: t.lang,
+                value: t.value
+             })
+          }
+
+          // Update local state
+          const newCategory: any = {
+            id: newId,
+            nombre: categoryForm.nombre,
+            nombre_en: categoryForm.nombre_en,
+            nombre_it: categoryForm.nombre_it,
+            descripcion: '',
+            descripcion_en: '',
+            descripcion_it: '',
+            imagen_portada: categoryForm.imagen_portada,
+            slug: newCatData.slug,
+            orden: newCatData.display_order,
+            activa: newCatData.is_active,
+            created_at: newCatData.created_at,
+            updated_at: newCatData.updated_at,
+            projects: []
+          }
+          
+          setCategories(prevCategories => [...prevCategories, newCategory])
+        }
       }
       
       toast({
@@ -201,6 +388,7 @@ export default function ProductosSimple() {
         setEditingCategory(null)
       }, 500)
     } catch (error) {
+      console.error(error)
       toast({
         title: 'Error al guardar',
         variant: 'destructive',
@@ -211,8 +399,19 @@ export default function ProductosSimple() {
   }
 
   // Eliminar categoría
-  const handleDeleteCategory = (categoryName: string) => {
+  const handleDeleteCategory = async (categoryName: string) => {
     if (confirm(`¿Eliminar la categoría "${categoryName}" y todos sus proyectos?`)) {
+      if (!USE_MOCK_DATA) {
+        const category = categories.find(c => c.nombre === categoryName)
+        if (category) {
+           const { error } = await supabase.from('categories').delete().eq('id', category.id)
+           if (error) {
+             console.error(error)
+             toast({ title: 'Error al eliminar', variant: 'destructive' })
+             return
+           }
+        }
+      }
       toast({ title: 'Categoría eliminada' })
       loadData()
     }
@@ -359,6 +558,136 @@ export default function ProductosSimple() {
           // Agregar a mockData
           mockData.projects.push(newProject as any)
         }
+      } else {
+        // Supabase logic
+        if (editingProject) {
+          // Update project
+          const { error: updateError } = await supabase
+            .from('projects')
+            .update({
+              image_urls: projectForm.imagenes,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', editingProject.id)
+          
+          if (updateError) throw updateError
+
+          // Update translations
+          const translations = [
+            { lang: 'es', field: 'name', value: projectForm.nombre },
+            { lang: 'en', field: 'name', value: projectForm.nombre_en },
+            { lang: 'it', field: 'name', value: projectForm.nombre_it },
+            { lang: 'es', field: 'description', value: projectForm.descripcion },
+            { lang: 'en', field: 'description', value: projectForm.descripcion_en },
+            { lang: 'it', field: 'description', value: projectForm.descripcion_it },
+          ]
+
+          for (const t of translations) {
+             await supabase.from('translations').upsert({
+                entity_type: 'project',
+                entity_id: editingProject.id,
+                field_name: t.field,
+                language_code: t.lang,
+                value: t.value
+             }, { onConflict: 'entity_type,entity_id,field_name,language_code' })
+          }
+
+          // Update local state
+          setCategories(prevCategories => 
+            prevCategories.map(cat => 
+              cat.id === projectForm.categoria_id
+                ? {
+                    ...cat,
+                    projects: cat.projects.map(proj =>
+                      proj.id === editingProject.id
+                        ? {
+                            ...proj,
+                            nombre: projectForm.nombre,
+                            nombre_en: projectForm.nombre_en,
+                            nombre_it: projectForm.nombre_it,
+                            descripcion: projectForm.descripcion,
+                            descripcion_en: projectForm.descripcion_en,
+                            descripcion_it: projectForm.descripcion_it,
+                            imagenes: projectForm.imagenes,
+                            updated_at: new Date().toISOString(),
+                          }
+                        : proj
+                    )
+                  }
+                : cat
+            )
+          )
+
+        } else {
+          // Create project
+          const { data: newProjData, error: createError } = await supabase
+            .from('projects')
+            .insert({
+              category_id: projectForm.categoria_id,
+              slug: projectForm.nombre.toLowerCase().replace(/\s+/g, '-'),
+              image_urls: projectForm.imagenes,
+              display_order: selectedCategory ? selectedCategory.projects.length + 1 : 1,
+              is_active: true
+            })
+            .select()
+            .single()
+          
+          if (createError) throw createError
+
+          const newId = newProjData.id
+
+          // Insert translations
+          const translations = [
+            { lang: 'es', field: 'name', value: projectForm.nombre },
+            { lang: 'en', field: 'name', value: projectForm.nombre_en },
+            { lang: 'it', field: 'name', value: projectForm.nombre_it },
+            { lang: 'es', field: 'description', value: projectForm.descripcion },
+            { lang: 'en', field: 'description', value: projectForm.descripcion_en },
+            { lang: 'it', field: 'description', value: projectForm.descripcion_it },
+          ]
+
+          for (const t of translations) {
+             await supabase.from('translations').insert({
+                entity_type: 'project',
+                entity_id: newId,
+                field_name: t.field,
+                language_code: t.lang,
+                value: t.value
+             })
+          }
+
+          // Update local state
+          const newProject: any = {
+            id: newId,
+            categoria_id: projectForm.categoria_id,
+            nombre: projectForm.nombre,
+            nombre_en: projectForm.nombre_en,
+            nombre_it: projectForm.nombre_it,
+            descripcion: projectForm.descripcion,
+            descripcion_en: projectForm.descripcion_en,
+            descripcion_it: projectForm.descripcion_it,
+            imagenes: projectForm.imagenes,
+            orden: newProjData.display_order,
+            activo: newProjData.is_active,
+            created_at: newProjData.created_at,
+            updated_at: newProjData.updated_at,
+          }
+          
+          setCategories(prevCategories =>
+            prevCategories.map(cat =>
+              cat.id === projectForm.categoria_id
+                ? { ...cat, projects: [...cat.projects, newProject] }
+                : cat
+            )
+          )
+          
+          if (selectedCategory && selectedCategory.id === projectForm.categoria_id) {
+            setSelectedCategory({
+              ...selectedCategory,
+              projects: [...selectedCategory.projects, newProject]
+            })
+          }
+        }
       }
       
       toast({
@@ -373,6 +702,7 @@ export default function ProductosSimple() {
         setEditingProject(null)
       }, 500)
     } catch (error) {
+      console.error(error)
       toast({
         title: 'Error al guardar',
         variant: 'destructive',
@@ -383,8 +713,27 @@ export default function ProductosSimple() {
   }
 
   // Eliminar proyecto
-  const handleDeleteProject = (projectName: string) => {
+  const handleDeleteProject = async (projectName: string) => {
     if (confirm(`¿Eliminar el proyecto "${projectName}"?`)) {
+      if (!USE_MOCK_DATA) {
+         let project = null
+         for (const cat of categories) {
+            const p = cat.projects.find(p => p.nombre === projectName)
+            if (p) {
+              project = p
+              break
+            }
+         }
+         
+         if (project) {
+            const { error } = await supabase.from('projects').delete().eq('id', project.id)
+            if (error) {
+              console.error(error)
+              toast({ title: 'Error al eliminar', variant: 'destructive' })
+              return
+            }
+         }
+      }
       toast({ title: 'Proyecto eliminado' })
       loadData()
     }

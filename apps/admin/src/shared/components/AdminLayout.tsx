@@ -2,7 +2,7 @@ import { Outlet, Link, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { auth, type Profile } from '@beltrame/shared'
 import { Button } from '@beltrame/shared/ui/button'
-import { LogOut, Image as ImageIcon, Users, Mail, Package, Menu, X } from 'lucide-react'
+import { LogOut, Image as ImageIcon, Users, Mail, Package, Menu, X, Download } from 'lucide-react'
 import { WhatsAppSidebarLink } from './WhatsAppSidebarLink'
 import { useToast } from '@beltrame/shared'
 
@@ -31,28 +31,34 @@ export default function AdminLayout() {
         title: 'Sesión cerrada',
         description: 'Has cerrado sesión correctamente',
       })
-      navigate('/login')
+      navigate('/admin/login')
     }
   }
 
   const menuItems = [
     {
       name: 'Contactos',
-      href: '/contactos',
+      href: '/admin/contactos',
       icon: Mail,
       role: ['dueño', 'admin', 'empleado'],
     },
     {
       name: 'Galería',
-      href: '/galeria',
+      href: '/admin/galeria',
       icon: ImageIcon,
       role: ['dueño', 'admin', 'empleado'],
     },
     {
       name: 'Proyectos',
-      href: '/productos',
+      href: '/admin/productos',
       icon: Package,
       role: ['dueño', 'admin', 'empleado'],
+    },
+    {
+      name: 'WP Importer',
+      href: '/admin/wp-importer',
+      icon: Download,
+      role: ['dueño', 'admin'],
     },
     // {
     //   name: 'Recordatorios',
@@ -62,7 +68,7 @@ export default function AdminLayout() {
     // },
     {
       name: 'Usuarios',
-      href: '/usuarios',
+      href: '/admin/usuarios',
       icon: Users,
       role: ['dueño', 'admin'],
     },
@@ -156,7 +162,7 @@ export default function AdminLayout() {
       </aside>
 
       {/* Main Content */}
-      <main className="lg:ml-64 pt-24 lg:pt-0 p-4 sm:p-6 lg:p-8">
+      <main className="lg:ml-64 pt-24 lg:pt-8 p-6 sm:p-6 lg:p-8">
         <Outlet />
       </main>
     </div>

@@ -8,15 +8,16 @@ import { Imagenes } from './features/imagenes'
 import { Contactos } from './features/contactos'
 import { ProductosSimple } from './features/productos'
 import { Recordatorios } from './features/recordatorios'
+import { WPImporter } from './features/wp-importer'
 import { AdminLayout } from './shared'
 import './App.css'
 
 function App() {
   return (
     <Routes>
-      <Route path="/login" element={<Login />} />
+      <Route path="/admin/login" element={<Login />} />
       <Route
-        path="/"
+        path="/admin"
         element={
           <ProtectedRoute>
             <AdminLayout />
@@ -28,7 +29,7 @@ function App() {
         <Route
           path="usuarios"
           element={
-            <ProtectedRoute requiredRoles={['dueño', 'admin']}>
+            <ProtectedRoute requiredRoles={['owner', 'admin']}>
               <Usuarios />
             </ProtectedRoute>
           }
@@ -36,7 +37,7 @@ function App() {
         <Route
           path="recordatorios"
           element={
-            <ProtectedRoute requiredRoles={['dueño', 'admin']}>
+            <ProtectedRoute requiredRoles={['owner', 'admin']}>
               <Recordatorios />
             </ProtectedRoute>
           }
@@ -46,6 +47,7 @@ function App() {
         <Route path="imagenes" element={<Imagenes />} />
         <Route path="contactos" element={<Contactos />} />
         <Route path="productos" element={<ProductosSimple />} />
+        <Route path="wp-importer" element={<WPImporter />} />
       </Route>
     </Routes>
   )

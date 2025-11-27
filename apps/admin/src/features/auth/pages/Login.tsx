@@ -35,7 +35,7 @@ export default function Login() {
           title: 'Bienvenido',
           description: 'Inicio de sesión exitoso',
         })
-        navigate('/admin/dashboard')
+        navigate('/admin')
       }
     } catch (error) {
       toast({

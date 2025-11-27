@@ -1,0 +1,53 @@
+{
+  "folders": [
+    {
+      "name": "Admin Panel",
+      "path": "apps/admin"
+    },
+    {
+      "name": "Web Publica",
+      "path": "apps/web"
+    },
+    {
+      "name": "Shared Packages",
+      "path": "packages/shared"
+    },
+    {
+      "name": "Root (Monorepo)",
+      "path": "."
+    }
+  ],
+  "settings": {
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "editor.formatOnSave": true,
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/dist": true
+    }
+  },
+  "launch": {
+    "configurations": [],
+    "compounds": []
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Dev Admin",
+        "type": "shell",
+        "command": "npm run dev:admin",
+        "options": { "cwd": "${workspaceFolder:Root (Monorepo)}" },
+        "group": "build",
+        "problemMatcher": []
+      },
+      {
+        "label": "Dev Web",
+        "type": "shell",
+        "command": "npm run dev:web",
+        "options": { "cwd": "${workspaceFolder:Root (Monorepo)}" },
+        "group": "build",
+        "problemMatcher": []
+      }
+    ]
+  }
+}

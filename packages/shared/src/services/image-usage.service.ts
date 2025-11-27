@@ -1,4 +1,10 @@
-import { USE_MOCK_DATA, mockData, type ImageUsage } from '../lib/supabase'
+import { USE_MOCK_DATA, mockData } from '../lib/supabase'
+
+export interface ImageUsage {
+  type: 'project' | 'category' | 'product'
+  id: number | string
+  name: string
+}
 
 /**
  * Encuentra dónde se está usando una imagen específica
@@ -9,7 +15,8 @@ export async function findImageUsage(imageUrl: string): Promise<ImageUsage[]> {
 
   if (USE_MOCK_DATA) {
     // Buscar en proyectos mock
-    mockData.projects.forEach(project => {
+    const projects = mockData.projects as any[]
+    for (const project of projects) {
       if (project.imagenes?.includes(imageUrl)) {
         usage.push({
           type: 'project',
@@ -17,10 +24,11 @@ export async function findImageUsage(imageUrl: string): Promise<ImageUsage[]> {
           name: project.nombre
         })
       }
-    })
+    }
 
     // Buscar en categorías mock (imagen de portada)
-    mockData.categories.forEach(category => {
+    const categories = mockData.categories as any[]
+    for (const category of categories) {
       if (category.imagen_portada === imageUrl) {
         usage.push({
           type: 'category',
@@ -28,7 +36,7 @@ export async function findImageUsage(imageUrl: string): Promise<ImageUsage[]> {
           name: category.nombre
         })
       }
-    })
+    }
 
     return usage
   }
