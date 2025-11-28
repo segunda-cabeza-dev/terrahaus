@@ -1,38 +1,104 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ChevronLeft, ZoomIn, Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { projectsService, type ProjectItem } from '@beltrame/shared';
+
+// Cache compartido - se llena cuando el usuario visita la categoría o el detalle
+const categoryProjectsCache: Map<string, ProjectItem[]> = new Map();
+
+// Función para buscar proyecto en el cache de categoría
+const findProjectInCache = (slug: string, categoria: string, lang: string): ProjectItem | null => {
+  const cacheKey = `${categoria}_${lang}`;
+  const projects = categoryProjectsCache.get(cacheKey);
+  if (projects) {
+    return projects.find(p => p.slug === slug) || null;
+  }
+  return null;
+};
 
 export default function ProyectoDetalle() {
   const { t, i18n } = useTranslation();
   const { categoria, id } = useParams<{ categoria: string; id: string }>();
   const navigate = useNavigate();
   const lang = i18n.language || 'es';
+  const categoryCacheKey = `${categoria}_${lang}`;
 
-  const [project, setProject] = useState<ProjectItem | null>(null);
-  const [relatedProjects, setRelatedProjects] = useState<ProjectItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  // Buscar proyecto en cache inmediatamente (síncrono)
+  const cachedProject = useMemo(() => {
+    if (!id || !categoria) return null;
+    return findProjectInCache(id, categoria, lang);
+  }, [id, categoria, lang]);
+
+  // Obtener proyectos relacionados del cache
+  const cachedRelated = useMemo(() => {
+    if (!categoria || !id) return [];
+    const projects = categoryProjectsCache.get(categoryCacheKey);
+    if (projects) {
+      return projects.filter(p => p.slug !== id).slice(0, 4);
+    }
+    return [];
+  }, [categoria, id, categoryCacheKey]);
+
+  const [project, setProject] = useState<ProjectItem | null>(cachedProject);
+  const [relatedProjects, setRelatedProjects] = useState<ProjectItem[]>(cachedRelated);
+  const [loading, setLoading] = useState(!cachedProject);
   const [selectedImage, setSelectedImage] = useState(0);
   const [isZoomed, setIsZoomed] = useState(false);
+
+  // Cuando cambia el id, actualizar inmediatamente desde cache si existe
+  useEffect(() => {
+    if (!id || !categoria) return;
+    
+    const cached = findProjectInCache(id, categoria, lang);
+    if (cached) {
+      setProject(cached);
+      setLoading(false);
+      const projects = categoryProjectsCache.get(categoryCacheKey);
+      if (projects) {
+        setRelatedProjects(projects.filter(p => p.slug !== id).slice(0, 4));
+      }
+    } else {
+      setLoading(true);
+    }
+    setSelectedImage(0);
+  }, [id, categoria, lang, categoryCacheKey]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [id, categoria]);
 
+  // Cargar datos si no están en cache
   useEffect(() => {
-    const loadProject = async () => {
-      if (!id) return;
-      setLoading(true);
+    const loadData = async () => {
+      if (!id || !categoria) return;
+      
+      // Si ya tenemos el proyecto en cache, no hacer fetch
+      const cached = findProjectInCache(id, categoria, lang);
+      if (cached && project?.slug === id) {
+        setLoading(false);
+        return;
+      }
+
       try {
-        // id puede ser slug o número
-        const proj = await projectsService.getProject(id, lang);
-        setProject(proj);
+        // Cargar los proyectos de la categoría (incluye todos los datos del proyecto)
+        const allProjects = await projectsService.getProjectsByCategory(categoria, lang);
         
-        // Cargar proyectos relacionados
-        if (categoria) {
-          const allProjects = await projectsService.getProjectsByCategory(categoria, lang);
+        // Guardar en cache
+        categoryProjectsCache.set(categoryCacheKey, allProjects);
+        
+        // Buscar el proyecto actual
+        const foundProject = allProjects.find(p => p.slug === id);
+        
+        if (foundProject) {
+          setProject(foundProject);
           setRelatedProjects(allProjects.filter(p => p.slug !== id).slice(0, 4));
+        } else {
+          // Si no está en la categoría, intentar cargarlo directamente
+          const proj = await projectsService.getProject(id, lang);
+          if (proj) {
+            setProject(proj);
+          }
         }
       } catch (error) {
         console.error('Error loading project:', error);
@@ -40,8 +106,9 @@ export default function ProyectoDetalle() {
         setLoading(false);
       }
     };
-    loadProject();
-  }, [id, categoria, lang]);
+    
+    loadData();
+  }, [id, categoria, lang, categoryCacheKey, project?.slug]);
 
   if (loading) {
     return (
@@ -79,21 +146,24 @@ export default function ProyectoDetalle() {
     <div className="proyecto-detalle-page">
       <div className="main-content">
         <div className="container">
-          <button onClick={() => navigate('/proyectos/' + categoria)} className="back-btn">
-            <ChevronLeft size={20} />
-          </button>
+          <div className="back-breadcrumb-wrapper">
+            <button onClick={() => navigate('/proyectos/' + categoria)} className="back-btn">
+              <ChevronLeft size={20} />
+            </button>
+            
+            <div className="breadcrumb-content">
+              <button onClick={() => navigate('/')} className="breadcrumb-link">{t('header.home')}</button>
+              <span className="separator">›</span>
+              <button onClick={() => navigate('/proyectos')} className="breadcrumb-link">{t('projects.breadcrumbTitle')}</button>
+              <span className="separator">›</span>
+              <button onClick={() => navigate('/proyectos/' + categoria)} className="breadcrumb-link">{project.category_name}</button>
+              <span className="separator">›</span>
+              <span className="current">{project.name}</span>
+            </div>
+          </div>
           
           <div className="content-grid">
             <div className="info-column">
-              <div className="breadcrumb-content">
-                <button onClick={() => navigate('/')} className="breadcrumb-link">{t('header.home')}</button>
-                <span className="separator">›</span>
-                <button onClick={() => navigate('/proyectos')} className="breadcrumb-link">{t('projects.breadcrumbTitle')}</button>
-                <span className="separator">›</span>
-                <button onClick={() => navigate('/proyectos/' + categoria)} className="breadcrumb-link">{project.category_name}</button>
-                <span className="separator">›</span>
-                <span className="current">{project.name}</span>
-              </div>
               
               <h1 className="project-title">{project.name}</h1>
               {project.description && <p className="project-description">{project.description}</p>}
@@ -149,19 +219,25 @@ export default function ProyectoDetalle() {
   );
 }
 
+// Exportar la función para llenar el cache desde ProyectoCategoria
+export const setCategoryProjectsCache = (categoria: string, lang: string, projects: ProjectItem[]) => {
+  categoryProjectsCache.set(`${categoria}_${lang}`, projects);
+};
+
 const styles = `
 .proyecto-detalle-page { min-height: 100vh; background: white; padding-top: 0; }
 .container { max-width: 1200px; margin: 0 auto; padding: 0 40px; }
 .main-content { padding: 40px 0 60px; background: white; padding-top: 70px; }
-.content-grid { display: grid; grid-template-columns: 350px 1fr; gap: 50px; align-items: start; }
-.info-column { position: sticky; top: 100px; }
-.back-btn { width: 48px; height: 48px; border-radius: 50%; background: white; border: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; margin-bottom: 24px; }
+.back-breadcrumb-wrapper { display: flex; align-items: center; gap: 16px; margin-bottom: 32px; }
+.back-btn { width: 48px; height: 48px; border-radius: 50%; background: white; border: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; flex-shrink: 0; }
 .back-btn:hover { background: #000; color: white; border-color: #000; }
-.breadcrumb-content { display: flex; align-items: center; gap: 8px; font-size: 14px; margin-bottom: 16px; flex-wrap: wrap; }
+.breadcrumb-content { display: flex; align-items: center; gap: 8px; font-size: 14px; flex-wrap: wrap; }
 .breadcrumb-link { background: none; border: none; color: #000; cursor: pointer; font-weight: 500; transition: opacity 0.2s; padding: 0; font-size: 14px; }
 .breadcrumb-link:hover { opacity: 0.6; }
 .separator { color: #9ca3af; }
 .current { color: #9ca3af; font-weight: 400; }
+.content-grid { display: grid; grid-template-columns: 350px 1fr; gap: 50px; align-items: start; }
+.info-column { position: sticky; top: 100px; }
 .project-title { font-size: 40px; font-weight: 700; color: #000; line-height: 1.1; margin-bottom: 20px; }
 .project-description { font-size: 15px; line-height: 1.6; color: #6b7280; }
 .images-column { width: 100%; max-width: 700px; }

@@ -154,41 +154,27 @@ export const galleryService = {
 
   /**
    * Lista todas las imágenes de todos los buckets
-   * Si no hay archivos en storage, intenta obtener URLs de la base de datos
-   * Optimizado: procesa buckets en paralelo
+   * OPTIMIZADO: Primero carga desde la base de datos (rápido)
+   * Luego puede cargar desde storage si se requiere actualización
    */
   async listAllImages(): Promise<GalleryImage[]> {
     console.log('[Gallery] Iniciando carga de todas las imágenes...')
-    
-    // Cargar todos los buckets en paralelo
     const startTime = Date.now()
-    const results = await Promise.all(
-      BUCKETS.map(async bucket => {
-        try {
-          return await this.listBucketImages(bucket)
-        } catch (error) {
-          console.error(`[Gallery] Error cargando bucket ${bucket}:`, error)
-          return []
-        }
-      })
-    )
     
-    const allImages = results.flat()
-    console.log(`[Gallery] Buckets cargados en ${Date.now() - startTime}ms`)
-
-    // Si no hay imágenes en storage, obtener URLs de la base de datos
-    if (allImages.length === 0) {
-      console.log('[Gallery] No hay imágenes en storage, obteniendo de base de datos...')
-      
+    const allImages: GalleryImage[] = []
+    
+    // PASO 1: Cargar rápidamente desde base de datos (categorías y proyectos)
+    // Esto es mucho más rápido que escanear storage
+    try {
       // Obtener imágenes de categorías
       const categories = await this.getCategories()
       categories.forEach((cat) => {
         if (cat.cover_image_url) {
           allImages.push({
             id: `cat-${cat.id}`,
-            name: `${cat.slug}.jpg`,
+            name: `${cat.slug || cat.name}.jpg`,
             url: cat.cover_image_url,
-            path: cat.slug,
+            path: cat.slug || cat.name,
             bucket: 'categories',
             size: 0,
             type: 'image/jpeg',
@@ -204,9 +190,9 @@ export const galleryService = {
         proj.image_urls.forEach((url, imgIndex) => {
           allImages.push({
             id: `proj-${proj.id}-${imgIndex}`,
-            name: `${proj.slug}-${imgIndex}.jpg`,
+            name: `${proj.slug || proj.name}-${imgIndex}.jpg`,
             url: url,
-            path: `${proj.slug}/${imgIndex}`,
+            path: `${proj.slug || proj.name}/${imgIndex}`,
             bucket: 'projects',
             size: 0,
             type: 'image/jpeg',
@@ -215,6 +201,27 @@ export const galleryService = {
           })
         })
       })
+      
+      console.log(`[Gallery] Base de datos cargada en ${Date.now() - startTime}ms - ${allImages.length} imágenes`)
+    } catch (error) {
+      console.error('[Gallery] Error cargando desde base de datos:', error)
+    }
+
+    // Si no hay imágenes en la base de datos, intentar desde storage (más lento)
+    if (allImages.length === 0) {
+      console.log('[Gallery] No hay imágenes en BD, cargando desde storage...')
+      const results = await Promise.all(
+        BUCKETS.map(async bucket => {
+          try {
+            return await this.listBucketImages(bucket)
+          } catch (error) {
+            console.error(`[Gallery] Error cargando bucket ${bucket}:`, error)
+            return []
+          }
+        })
+      )
+      allImages.push(...results.flat())
+      console.log(`[Gallery] Storage cargado en ${Date.now() - startTime}ms`)
     }
 
     // Ordenar por fecha de creación descendente

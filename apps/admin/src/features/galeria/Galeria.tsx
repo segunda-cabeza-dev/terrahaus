@@ -26,6 +26,7 @@ export function Galeria() {
     queryKey: ['gallery-images', page, filters],
     queryFn: () => galleryService.listImagesPaginated(page, PAGE_SIZE, filters),
     placeholderData: (previousData) => previousData,
+    staleTime: 1000 * 60 * 5, // 5 minutos de cache
   })
 
   const { data: imageUsageMap = {} } = useQuery({
@@ -69,18 +70,28 @@ export function Galeria() {
   }
 
   async function handleDeleteImage(image: GalleryImage) {
-    const usageCount = imageUsageMap[image.url] || 0
-    if (usageCount > 0) {
-      toast({ title: 'No se puede eliminar', description: 'Esta imagen esta en uso', variant: 'destructive' })
+    console.log('🗑️ Intentando eliminar:', image.name, 'bucket:', image.bucket, 'path:', image.path)
+    
+    if (!confirm('¿Eliminar "' + image.name + '"?\n\nEsta acción no se puede deshacer.')) {
       return
     }
-    if (!confirm('Eliminar ' + image.name + '?')) return
-    const success = await galleryService.deleteImage(image.bucket as 'categories' | 'projects' | 'media', image.path)
-    if (success) {
-      await queryClient.invalidateQueries({ queryKey: ['gallery-images'] })
-      toast({ title: 'Imagen eliminada', description: 'La imagen ha sido eliminada' })
-    } else {
-      toast({ title: 'Error', description: 'No se pudo eliminar la imagen', variant: 'destructive' })
+    
+    try {
+      const success = await galleryService.deleteImage(image.bucket as 'categories' | 'projects' | 'media', image.path)
+      console.log('Resultado:', success)
+      
+      if (success) {
+        galleryService.invalidateImagesCache()
+        galleryService.clearCache()
+        await queryClient.invalidateQueries({ queryKey: ['gallery-images'] })
+        await queryClient.invalidateQueries({ queryKey: ['gallery-usage'] })
+        toast({ title: '✓ Eliminada', description: image.name + ' ha sido eliminada' })
+      } else {
+        toast({ title: 'Error', description: 'No se pudo eliminar. Verifica permisos en Supabase.', variant: 'destructive' })
+      }
+    } catch (error) {
+      console.error('Error:', error)
+      toast({ title: 'Error', description: String(error), variant: 'destructive' })
     }
   }
 
@@ -152,9 +163,29 @@ export function Galeria() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <RefreshCw className="w-8 h-8 animate-spin text-gray-400" />
-        <span className="ml-2 text-gray-600">Cargando galeria...</span>
+      <div className="space-y-6">
+        <PageHeader title="Galeria de Imagenes" description="Visualiza y gestiona las imagenes almacenadas en el sistema." />
+        
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          {[1, 2, 3, 4].map(i => (
+            <div key={i} className="bg-white rounded-lg shadow p-4 animate-pulse">
+              <div className="h-8 bg-gray-200 rounded w-16 mb-2"></div>
+              <div className="h-4 bg-gray-100 rounded w-24"></div>
+            </div>
+          ))}
+        </div>
+        
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <div className="flex items-center gap-2 mb-6">
+            <RefreshCw className="w-5 h-5 animate-spin text-gray-400" />
+            <span className="text-gray-600">Cargando galeria...</span>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
+              <div key={i} className="aspect-square bg-gray-100 rounded-lg animate-pulse"></div>
+            ))}
+          </div>
+        </div>
       </div>
     )
   }
@@ -286,7 +317,11 @@ export function Galeria() {
                           </div>
                         </td>
                         <td className="px-6 py-4">
-                          <button onClick={() => handleDeleteImage(image)} className={'p-2 rounded transition-colors ' + (usageCount > 0 ? 'text-gray-300 cursor-not-allowed' : 'text-red-600 hover:text-red-700 hover:bg-red-50')} title={usageCount > 0 ? 'No se puede eliminar (en uso)' : 'Eliminar imagen'} disabled={usageCount > 0}>
+                          <button 
+                            onClick={() => handleDeleteImage(image)} 
+                            className="p-2 rounded transition-colors text-red-600 hover:text-white hover:bg-red-600 border border-red-200 hover:border-red-600"
+                            title="Eliminar imagen"
+                          >
                             <Trash2 className="w-4 h-4" />
                           </button>
                         </td>
@@ -298,7 +333,6 @@ export function Galeria() {
 
               <div className="md:hidden space-y-3">
                 {images.map((image) => {
-                  const usageCount = imageUsageMap[image.url] || 0
                   return (
                     <div key={image.id} className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
                       <div className="flex gap-4">
@@ -308,7 +342,11 @@ export function Galeria() {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between gap-2 mb-2">
                             <h3 className="font-semibold text-sm text-gray-900 truncate">{image.name}</h3>
-                            <button onClick={() => handleDeleteImage(image)} className={'p-1.5 rounded flex-shrink-0 ' + (usageCount > 0 ? 'text-gray-300 cursor-not-allowed' : 'text-red-600 hover:text-red-700')} disabled={usageCount > 0}>
+                            <button 
+                              onClick={() => handleDeleteImage(image)} 
+                              className="p-1.5 rounded flex-shrink-0 text-red-600 hover:text-white hover:bg-red-600 border border-red-200 hover:border-red-600 transition-colors"
+                              title="Eliminar imagen"
+                            >
                               <Trash2 className="w-4 h-4" />
                             </button>
                           </div>

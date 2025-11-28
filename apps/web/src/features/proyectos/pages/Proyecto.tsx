@@ -4,25 +4,38 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { projectsService, type ProjectCategory, type ProjectItem } from '@beltrame/shared';
 
+// Cache local para evitar el spinner en navegación
+const localCache: { categories: ProjectCategory[] | null; lang: string } = { categories: null, lang: '' };
+
 export default function Proyecto() {
   const { t, i18n } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [showResults, setShowResults] = useState(false);
-  const [categories, setCategories] = useState<ProjectCategory[]>([]);
+  // Inicializar con cache local si existe para el mismo idioma
+  const lang = i18n.language || 'es';
+  const [categories, setCategories] = useState<ProjectCategory[]>(
+    localCache.lang === lang && localCache.categories ? localCache.categories : []
+  );
   const [searchResults, setSearchResults] = useState<{ categories: ProjectCategory[], projects: ProjectItem[] }>({ categories: [], projects: [] });
-  const [loading, setLoading] = useState(true);
+  // Solo mostrar loading si no tenemos datos cacheados
+  const [loading, setLoading] = useState(categories.length === 0);
   const [searching, setSearching] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
   const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const navigate = useNavigate();
-  const lang = i18n.language || 'es';
 
   useEffect(() => {
     const loadCategories = async () => {
-      setLoading(true);
+      // Solo mostrar loading si no tenemos datos
+      if (categories.length === 0) {
+        setLoading(true);
+      }
       try {
         const data = await projectsService.getCategories(lang);
         setCategories(data);
+        // Guardar en cache local
+        localCache.categories = data;
+        localCache.lang = lang;
       } catch (error) {
         console.error('Error loading categories:', error);
       } finally {

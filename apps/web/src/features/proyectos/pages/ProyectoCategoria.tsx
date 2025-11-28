@@ -3,31 +3,51 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ChevronLeft, Loader2 } from 'lucide-react';
 import { projectsService, type ProjectItem } from '@beltrame/shared';
+import { setCategoryProjectsCache } from './ProyectoDetalle';
+
+// Cache local para evitar spinner en navegación
+const localCache: Map<string, { projects: ProjectItem[]; categoryName: string }> = new Map();
 
 export default function ProyectoCategoria() {
   const { categoria } = useParams<{ categoria: string }>();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const lang = i18n.language || 'es';
+  const cacheKey = `${categoria}_${lang}`;
 
-  const [projects, setProjects] = useState<ProjectItem[]>([]);
-  const [categoryName, setCategoryName] = useState('');
-  const [loading, setLoading] = useState(true);
+  // Inicializar con cache si existe
+  const cached = localCache.get(cacheKey);
+  const [projects, setProjects] = useState<ProjectItem[]>(cached?.projects || []);
+  const [categoryName, setCategoryName] = useState(cached?.categoryName || '');
+  const [loading, setLoading] = useState(!cached);
 
   useEffect(() => {
     const loadProjects = async () => {
       if (!categoria) return;
-      setLoading(true);
+      // Solo mostrar loading si no hay datos cacheados
+      if (projects.length === 0) {
+        setLoading(true);
+      }
       try {
         const data = await projectsService.getProjectsByCategory(categoria, lang);
         setProjects(data);
+        
+        let catName = '';
         if (data.length > 0) {
-          setCategoryName(data[0].category_name);
+          catName = data[0].category_name;
         } else {
           // Si no hay proyectos, obtener nombre de categoría de otra forma
           const categories = await projectsService.getCategories(lang);
           const cat = categories.find(c => c.slug === categoria);
-          setCategoryName(cat?.name || categoria);
+          catName = cat?.name || categoria;
+        }
+        setCategoryName(catName);
+        
+        // Guardar en cache local
+        localCache.set(cacheKey, { projects: data, categoryName: catName });
+        // También llenar el cache compartido con ProyectoDetalle
+        if (categoria) {
+          setCategoryProjectsCache(categoria, lang, data);
         }
       } catch (error) {
         console.error('Error loading projects:', error);
@@ -36,7 +56,7 @@ export default function ProyectoCategoria() {
       }
     };
     loadProjects();
-  }, [categoria, lang]);
+  }, [categoria, lang, cacheKey]);
 
   if (loading) {
     return (
@@ -56,16 +76,18 @@ export default function ProyectoCategoria() {
     <div className="proyecto-categoria-page">
       <div className="header-section">
         <div className="container">
-          <button onClick={() => navigate('/proyectos')} className="back-btn">
-            <ChevronLeft size={20} />
-          </button>
-          
-          <div className="breadcrumb-content">
-            <button onClick={() => navigate('/')} className="breadcrumb-link">{t('header.home')}</button>
-            <span className="separator">›</span>
-            <button onClick={() => navigate('/proyectos')} className="breadcrumb-link">{t('projects.breadcrumbTitle')}</button>
-            <span className="separator">›</span>
-            <span className="current">{categoryName}</span>
+          <div className="back-breadcrumb-wrapper">
+            <button onClick={() => navigate('/proyectos')} className="back-btn">
+              <ChevronLeft size={20} />
+            </button>
+            
+            <div className="breadcrumb-content">
+              <button onClick={() => navigate('/')} className="breadcrumb-link">{t('header.home')}</button>
+              <span className="separator">›</span>
+              <button onClick={() => navigate('/proyectos')} className="breadcrumb-link">{t('projects.breadcrumbTitle')}</button>
+              <span className="separator">›</span>
+              <span className="current">{categoryName}</span>
+            </div>
           </div>
           <h1 className="title">{categoryName}</h1>
         </div>
@@ -110,9 +132,10 @@ export default function ProyectoCategoria() {
 const styles = `
 .proyecto-categoria-page { min-height: 100vh; background: white; padding-top: 0; padding-bottom: 80px; }
 .container { max-width: 1200px; margin: 0 auto; padding: 0 40px; }
-.back-btn { width: 48px; height: 48px; border-radius: 50%; background: white; border: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; margin-bottom: 20px; }
+.back-breadcrumb-wrapper { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+.back-btn { width: 48px; height: 48px; border-radius: 50%; background: white; border: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; flex-shrink: 0; }
 .back-btn:hover { background: #000; color: white; border-color: #000; }
-.breadcrumb-content { display: flex; align-items: center; gap: 8px; font-size: 14px; margin-bottom: 16px; }
+.breadcrumb-content { display: flex; align-items: center; gap: 8px; font-size: 14px; flex-wrap: wrap; }
 .breadcrumb-link { background: none; border: none; color: #000; cursor: pointer; font-weight: 500; transition: opacity 0.2s; padding: 0; font-size: 14px; }
 .breadcrumb-link:hover { opacity: 0.6; }
 .separator { color: #9ca3af; font-weight: 400; }

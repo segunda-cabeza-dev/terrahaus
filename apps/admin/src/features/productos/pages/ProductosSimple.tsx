@@ -4,7 +4,7 @@ import { Button } from '@beltrame/shared/ui/button'
 import { Input } from '@beltrame/shared/ui/input'
 import { Label } from '@beltrame/shared/ui/label'
 import { useToast } from '@beltrame/shared'
-import { Plus, Trash2, Edit, Image as ImageIcon, ArrowLeft, Search, X, Loader2 } from 'lucide-react'
+import { Plus, Trash2, Edit, Image as ImageIcon, ArrowLeft, Search, X, Loader2, Eye } from 'lucide-react'
 import { PageHeader } from '../../../shared'
 
 interface CategoryWithProjects extends Category {
@@ -135,6 +135,7 @@ export default function ProductosSimple() {
             return {
               id: p.id,
               categoria_id: p.category_id,
+              slug: p.slug,
               nombre: pNombre,
               nombre_en: pNombre_en,
               nombre_it: pNombre_it,
@@ -210,6 +211,9 @@ export default function ProductosSimple() {
     console.log('=== handleSaveCategory called ===')
     console.log('categoryForm:', categoryForm)
     console.log('USE_MOCK_DATA:', USE_MOCK_DATA)
+    
+    // Variable para guardar la nueva categoría creada
+    let createdCategoryRef: CategoryWithProjects | null = null
     
     // Solo validar que el nombre en español esté completo
     if (!categoryForm.nombre.trim()) {
@@ -291,6 +295,9 @@ export default function ProductosSimple() {
             updated_at: newCategory.updated_at
           }
           mockData.categories.push(newCategoryData as any)
+          
+          // Guardar referencia para navegar después
+          createdCategoryRef = newCategory
         }
       } else {
         // Supabase logic
@@ -399,6 +406,9 @@ export default function ProductosSimple() {
           }
           
           setCategories(prevCategories => [...prevCategories, newCategory])
+          
+          // Guardar referencia para navegar después
+          createdCategoryRef = newCategory
         }
       }
       
@@ -408,11 +418,21 @@ export default function ProductosSimple() {
         className: 'bg-green-600 text-white border-green-600',
       })
       setSaved(true)
-      // Volver a la vista de categorías
-      setTimeout(() => {
-        setCurrentView('categories')
-        setEditingCategory(null)
-      }, 500)
+      
+      // Si es nueva categoría, ir directamente a ella para agregar proyectos
+      if (!editingCategory && createdCategoryRef) {
+        setTimeout(() => {
+          setSelectedCategory(createdCategoryRef)
+          setCurrentView('category-detail')
+          setEditingCategory(null)
+        }, 500)
+      } else {
+        // Si es edición, volver a la vista de categorías
+        setTimeout(() => {
+          setCurrentView('categories')
+          setEditingCategory(null)
+        }, 500)
+      }
     } catch (error) {
       console.error(error)
       toast({
@@ -428,14 +448,36 @@ export default function ProductosSimple() {
   const handleDeleteCategory = async (categoryName: string) => {
     if (confirm(`¿Eliminar la categoría "${categoryName}" y todos sus proyectos?`)) {
       if (!USE_MOCK_DATA) {
-        const category = categories.find(c => c.nombre === categoryName)
+        const category = categories.find(c => (c as any).nombre === categoryName || (c as any).name === categoryName)
         if (category) {
+           console.log('=== Deleting category ===', { categoryId: category.id, categoryName })
+           
            const { error } = await supabase.from('categories').delete().eq('id', category.id)
+           
            if (error) {
-             console.error(error)
-             toast({ title: 'Error al eliminar', variant: 'destructive' })
+             console.error('Error deleting category:', error)
+             toast({ title: 'Error al eliminar', description: error.message, variant: 'destructive' })
              return
            }
+           
+           // Verificar que realmente se eliminó
+           const { data: checkData } = await supabase
+             .from('categories')
+             .select('id')
+             .eq('id', category.id)
+             .single()
+           
+           if (checkData) {
+             console.error('Category still exists after delete! RLS policy may be blocking deletion.')
+             toast({ 
+               title: 'Error de permisos', 
+               description: 'No tienes permisos para eliminar categorías. Contacta al owner.', 
+               variant: 'destructive' 
+             })
+             return
+           }
+           
+           console.log('Category deleted successfully')
         }
       }
       toast({ title: 'Categoría eliminada' })
@@ -767,19 +809,35 @@ export default function ProductosSimple() {
          
          // Luego eliminar el proyecto
          console.log('Deleting project from database', projectId)
-         const { data, error } = await supabase
+         const { error } = await supabase
            .from('projects')
            .delete()
            .eq('id', projectId)
-           .select()
-         
-         console.log('Delete result:', { data, error })
          
          if (error) {
-           console.error(error)
+           console.error('Error deleting project:', error)
            toast({ title: 'Error al eliminar', description: error.message, variant: 'destructive' })
            return
          }
+         
+         // Verificar que realmente se eliminó
+         const { data: checkData } = await supabase
+           .from('projects')
+           .select('id')
+           .eq('id', projectId)
+           .single()
+         
+         if (checkData) {
+           console.error('Project still exists after delete! RLS policy may be blocking deletion.')
+           toast({ 
+             title: 'Error de permisos', 
+             description: 'No tienes permisos para eliminar proyectos. Contacta al owner.', 
+             variant: 'destructive' 
+           })
+           return
+         }
+         
+         console.log('Project deleted successfully from database')
          
          // Actualizar estado local
          setCategories(prevCategories =>
@@ -797,7 +855,7 @@ export default function ProductosSimple() {
            })
          }
          
-         console.log('Project deleted successfully from UI')
+         toast({ title: 'Proyecto eliminado' })
       } else {
          // Modo mock - solo actualizar estado
          setCategories(prevCategories =>
@@ -813,8 +871,8 @@ export default function ProductosSimple() {
              projects: selectedCategory.projects.filter(p => p.id !== projectId)
            })
          }
+         toast({ title: 'Proyecto eliminado' })
       }
-      toast({ title: 'Proyecto eliminado' })
     }
   }
 
@@ -1195,7 +1253,12 @@ export default function ProductosSimple() {
                 return (
                   <button
                     key={image.id}
-                    onClick={() => isMultiSelect ? handleToggleImageSelection(image.url) : handleSelectGalleryImage(image.url)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      console.log('🔍 CLICKED IMAGE:', { url: image.url, name: image.name });
+                      isMultiSelect ? handleToggleImageSelection(image.url) : handleSelectGalleryImage(image.url);
+                    }}
                     className={`group relative aspect-square overflow-hidden rounded-lg border-2 transition-all hover:shadow-lg ${
                       isSelected ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200 hover:border-blue-500'
                     }`}
@@ -1359,26 +1422,22 @@ export default function ProductosSimple() {
                 )}
               </div>
               <div className="p-3">
-                <h3 className="text-base font-semibold mb-1 truncate">{category.nombre}</h3>
-                <p className="text-xs text-gray-500 mb-2 truncate">{category.nombre_en}</p>
-                <div className="flex justify-between items-center text-xs">
-                  <span className="text-gray-600">
-                    {category.projects.length} proyecto{category.projects.length !== 1 ? 's' : ''}
-                  </span>
-                  <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
-                    <button
-                      onClick={() => handleViewCategory(category)}
-                      className="p-1.5 text-blue-600 hover:bg-blue-50 rounded"
-                    >
-                      <Edit className="w-3 h-3" />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteCategory(category.nombre)}
-                      className="p-1.5 text-red-600 hover:bg-red-50 rounded"
-                    >
-                      <Trash2 className="w-3 h-3" />
-                    </button>
-                  </div>
+                <h3 className="text-base font-semibold mb-0.5 truncate">{category.nombre}</h3>
+                <p className="text-xs text-gray-500 mb-2 truncate">{category.projects.length} proyecto{category.projects.length !== 1 ? 's' : ''}</p>
+                <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
+                  <button
+                    onClick={() => handleViewCategory(category)}
+                    className="flex-1 py-1.5 px-2 text-xs bg-blue-50 text-blue-600 hover:bg-blue-100 rounded"
+                  >
+                    <Edit className="w-3 h-3 inline mr-1" />
+                    Editar
+                  </button>
+                  <button
+                    onClick={() => handleDeleteCategory(category.nombre)}
+                    className="py-1.5 px-2 text-xs bg-red-50 text-red-600 hover:bg-red-100 rounded"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                  </button>
                 </div>
               </div>
             </div>
@@ -1407,13 +1466,25 @@ export default function ProductosSimple() {
         <ImageSourceDialog />
         <GalleryModal />
         <div className="space-y-6">
-        <button
-          onClick={() => setCurrentView('categories')}
-          className="flex items-center text-gray-600 hover:text-gray-900"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Volver a categorías
-        </button>
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => setCurrentView('categories')}
+            className="flex items-center text-gray-600 hover:text-gray-900"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Volver a categorías
+          </button>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => window.open(`http://localhost:5173/es/proyectos/${selectedCategory.slug}`, '_blank')}
+            className="flex items-center gap-1.5 text-blue-600 border-blue-200 hover:bg-blue-50"
+          >
+            <Eye className="w-4 h-4" />
+            Vista previa
+          </Button>
+        </div>
 
         <form onSubmit={handleSaveCategory} className="bg-white rounded-lg shadow-sm p-6">
           <div className="flex flex-col md:flex-row items-start gap-6">
@@ -1903,23 +1974,40 @@ export default function ProductosSimple() {
 
   // VISTA: Formulario de Proyecto
   if (currentView === 'edit-project') {
+    const projectSlug = editingProject?.slug || ''
+    const categorySlug = selectedCategory?.slug || ''
+    
     return (
       <>
         <ImageSourceDialog />
         <GalleryModal />
         <div className="space-y-6">
-        <button
-          onClick={() => setCurrentView('category-detail')}
-          className="flex items-center text-gray-600 hover:text-gray-900"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Volver a proyectos
-        </button>
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => setCurrentView('category-detail')}
+            className="flex items-center text-gray-600 hover:text-gray-900"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Volver a proyectos
+          </button>
+          {editingProject && projectSlug && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => window.open(`http://localhost:5173/es/proyectos/${categorySlug}/${projectSlug}`, '_blank')}
+              className="flex items-center gap-1.5 text-blue-600 border-blue-200 hover:bg-blue-50"
+            >
+              <Eye className="w-4 h-4" />
+              Vista previa
+            </Button>
+          )}
+        </div>
 
         <div className="bg-white rounded-lg shadow-sm p-6">
           <div className="mb-6">
             <h1 className="text-xl sm:text-2xl font-bold">
-              {editingProject ? editingProject.nombre : 'Nuevo Proyecto'}
+              {editingProject ? (editingProject as any).nombre : 'Nuevo Proyecto'}
             </h1>
             <p className="text-xs sm:text-sm text-gray-500 mt-1">
               {editingProject ? 'Edita la información y fotos del proyecto' : 'Completa la información para crear un nuevo proyecto'}
@@ -1948,6 +2036,16 @@ export default function ProductosSimple() {
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {(() => {
+                      // Debug: Log para ver qué contiene imagenes
+                      console.log('🖼️ PROJECT IMAGES DEBUG:', {
+                        imagenes: projectForm.imagenes,
+                        length: projectForm.imagenes.length,
+                        types: projectForm.imagenes.map(img => typeof img),
+                        first3: projectForm.imagenes.slice(0, 3)
+                      });
+                      return null;
+                    })()}
                     {projectForm.imagenes.map((img, index) => (
                       <div key={index} className="relative group rounded-lg overflow-hidden border-2 border-gray-200 hover:border-gray-400 transition-all">
                         <img
