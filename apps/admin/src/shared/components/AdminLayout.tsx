@@ -2,9 +2,12 @@ import { Outlet, Link, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { auth, type Profile } from '@beltrame/shared'
 import { Button } from '@beltrame/shared/ui/button'
-import { LogOut, Image as ImageIcon, Users, Mail, Package, Menu, X, Download } from 'lucide-react'
-import { WhatsAppSidebarLink } from './WhatsAppSidebarLink'
+import { LogOut, Image as ImageIcon, Users, Mail, Package, Menu, X } from 'lucide-react'
+// import { WhatsAppSidebarLink } from './WhatsAppSidebarLink'
 import { useToast } from '@beltrame/shared'
+
+// Logo URL desde variable de entorno
+const LOGO_URL = import.meta.env.VITE_LOGO_URL || '/beltrame-logo.png'
 
 export default function AdminLayout() {
   const [profile, setProfile] = useState<Profile | null>(null)
@@ -54,12 +57,12 @@ export default function AdminLayout() {
       icon: Package,
       role: ['dueño', 'admin', 'empleado'],
     },
-    {
-      name: 'WP Importer',
-      href: '/admin/wp-importer',
-      icon: Download,
-      role: ['dueño', 'admin'],
-    },
+    // {
+    //   name: 'WP Importer',
+    //   href: '/admin/wp-importer',
+    //   icon: Download,
+    //   role: ['dueño', 'admin'],
+    // },
     // {
     //   name: 'Recordatorios',
     //   href: '/recordatorios',
@@ -86,7 +89,7 @@ export default function AdminLayout() {
     <div className="min-h-screen bg-gray-50">
       {/* Mobile Header */}
       <header className="lg:hidden fixed top-0 left-0 right-0 bg-white shadow-md z-40 h-16 flex items-center justify-between px-4">
-        <img src="/beltrame-logo.png" alt="Logo Beltrame" className="h-10 w-auto object-contain" />
+        <img src={LOGO_URL} alt="Logo Beltrame" className="h-10 w-auto object-contain" />
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
@@ -116,7 +119,7 @@ export default function AdminLayout() {
         <div className="flex flex-col h-full">
           {/* Logo - Hidden on mobile (shown in header instead) */}
           <div className="hidden lg:flex p-6 border-b items-center justify-center">
-            <img src="/beltrame-logo.png" alt="Logo Beltrame" className="h-16 w-auto object-contain" />
+            <img src={LOGO_URL} alt="Logo Beltrame" className="h-16 w-auto object-contain" />
           </div>
 
           {/* Mobile header space */}
@@ -138,10 +141,11 @@ export default function AdminLayout() {
                 </Link>
               )
             })}
-            {/* WhatsApp Sidebar Link */}
+            {/* WhatsApp Sidebar Link - Oculto temporalmente
             <div onClick={closeMobileMenu}>
               <WhatsAppSidebarLink className="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-800 hover:bg-black hover:text-white transition-colors" />
             </div>
+            */}
           </nav>
 
           {/* Logout Button */}

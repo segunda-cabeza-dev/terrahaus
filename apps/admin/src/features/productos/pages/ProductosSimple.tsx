@@ -191,12 +191,15 @@ export default function ProductosSimple() {
   // Guardar categoría
   const handleSaveCategory = async (e: React.FormEvent) => {
     e.preventDefault()
+    console.log('=== handleSaveCategory called ===')
+    console.log('categoryForm:', categoryForm)
+    console.log('USE_MOCK_DATA:', USE_MOCK_DATA)
     
-    // Validar traducciones
-    if (!categoryForm.nombre_en || !categoryForm.nombre_it) {
+    // Solo validar que el nombre en español esté completo
+    if (!categoryForm.nombre.trim()) {
       toast({
-        title: '⚠️ Traducciones incompletas',
-        description: 'Por favor completa las traducciones en inglés e italiano antes de guardar.',
+        title: '⚠️ Nombre requerido',
+        description: 'Por favor ingresa el nombre de la categoría en español.',
         variant: 'destructive',
       })
       return
@@ -322,10 +325,11 @@ export default function ProductosSimple() {
 
         } else {
           // Create category
+          console.log('Creating category in Supabase...')
           const { data: newCatData, error: createError } = await supabase
             .from('categories')
             .insert({
-              slug: categoryForm.nombre.toLowerCase().replace(/\s+/g, '-'),
+              slug: categoryForm.nombre.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
               cover_image_url: categoryForm.imagen_portada,
               display_order: categories.length + 1,
               is_active: true
@@ -333,25 +337,31 @@ export default function ProductosSimple() {
             .select()
             .single()
           
+          console.log('Category insert result:', { newCatData, createError })
           if (createError) throw createError
 
           const newId = newCatData.id
 
-          // Insert translations
+          // Insert translations - usar español como fallback para EN/IT vacíos
+          const nombreEN = categoryForm.nombre_en || categoryForm.nombre
+          const nombreIT = categoryForm.nombre_it || categoryForm.nombre
+          
           const translations = [
             { lang: 'es', field: 'name', value: categoryForm.nombre },
-            { lang: 'en', field: 'name', value: categoryForm.nombre_en },
-            { lang: 'it', field: 'name', value: categoryForm.nombre_it },
+            { lang: 'en', field: 'name', value: nombreEN },
+            { lang: 'it', field: 'name', value: nombreIT },
           ]
 
           for (const t of translations) {
-             await supabase.from('translations').insert({
+            if (t.value) {
+              await supabase.from('translations').insert({
                 entity_type: 'category',
                 entity_id: newId,
                 field_name: t.field,
                 language_code: t.lang,
                 value: t.value
-             })
+              })
+            }
           }
 
           // Update local state
@@ -465,11 +475,11 @@ export default function ProductosSimple() {
   const handleSaveProject = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    // Validar traducciones
-    if (!projectForm.nombre_en || !projectForm.nombre_it) {
+    // Solo validar que el nombre en español esté completo
+    if (!projectForm.nombre.trim()) {
       toast({
-        title: '⚠️ Traducciones incompletas',
-        description: 'Por favor completa las traducciones en inglés e italiano antes de guardar.',
+        title: '⚠️ Nombre requerido',
+        description: 'Por favor ingresa el nombre del proyecto en español.',
         variant: 'destructive',
       })
       return
@@ -624,7 +634,7 @@ export default function ProductosSimple() {
             .from('projects')
             .insert({
               category_id: projectForm.categoria_id,
-              slug: projectForm.nombre.toLowerCase().replace(/\s+/g, '-'),
+              slug: projectForm.nombre.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
               image_urls: projectForm.imagenes,
               display_order: selectedCategory ? selectedCategory.projects.length + 1 : 1,
               is_active: true
@@ -636,24 +646,31 @@ export default function ProductosSimple() {
 
           const newId = newProjData.id
 
-          // Insert translations
+          // Insert translations - usar el nombre español como fallback si no hay traducción
+          const nombreEN = projectForm.nombre_en || projectForm.nombre
+          const nombreIT = projectForm.nombre_it || projectForm.nombre
+          const descEN = projectForm.descripcion_en || projectForm.descripcion
+          const descIT = projectForm.descripcion_it || projectForm.descripcion
+          
           const translations = [
             { lang: 'es', field: 'name', value: projectForm.nombre },
-            { lang: 'en', field: 'name', value: projectForm.nombre_en },
-            { lang: 'it', field: 'name', value: projectForm.nombre_it },
-            { lang: 'es', field: 'description', value: projectForm.descripcion },
-            { lang: 'en', field: 'description', value: projectForm.descripcion_en },
-            { lang: 'it', field: 'description', value: projectForm.descripcion_it },
+            { lang: 'en', field: 'name', value: nombreEN },
+            { lang: 'it', field: 'name', value: nombreIT },
+            { lang: 'es', field: 'description', value: projectForm.descripcion || '' },
+            { lang: 'en', field: 'description', value: descEN || '' },
+            { lang: 'it', field: 'description', value: descIT || '' },
           ]
 
           for (const t of translations) {
-             await supabase.from('translations').insert({
+            if (t.value) { // Solo insertar si tiene valor
+              await supabase.from('translations').insert({
                 entity_type: 'project',
                 entity_id: newId,
                 field_name: t.field,
                 language_code: t.lang,
                 value: t.value
-             })
+              })
+            }
           }
 
           // Update local state
@@ -713,29 +730,75 @@ export default function ProductosSimple() {
   }
 
   // Eliminar proyecto
-  const handleDeleteProject = async (projectName: string) => {
+  const handleDeleteProject = async (projectId: number, projectName: string) => {
     if (confirm(`¿Eliminar el proyecto "${projectName}"?`)) {
+      console.log('=== Deleting project ===', { projectId, projectName })
+      
       if (!USE_MOCK_DATA) {
-         let project = null
-         for (const cat of categories) {
-            const p = cat.projects.find(p => p.nombre === projectName)
-            if (p) {
-              project = p
-              break
-            }
+         // Primero eliminar las traducciones asociadas
+         console.log('Deleting translations for project', projectId)
+         const { error: transError } = await supabase
+           .from('translations')
+           .delete()
+           .eq('entity_type', 'project')
+           .eq('entity_id', projectId)
+         
+         if (transError) {
+           console.error('Error eliminando traducciones:', transError)
+         } else {
+           console.log('Translations deleted successfully')
          }
          
-         if (project) {
-            const { error } = await supabase.from('projects').delete().eq('id', project.id)
-            if (error) {
-              console.error(error)
-              toast({ title: 'Error al eliminar', variant: 'destructive' })
-              return
-            }
+         // Luego eliminar el proyecto
+         console.log('Deleting project from database', projectId)
+         const { data, error } = await supabase
+           .from('projects')
+           .delete()
+           .eq('id', projectId)
+           .select()
+         
+         console.log('Delete result:', { data, error })
+         
+         if (error) {
+           console.error(error)
+           toast({ title: 'Error al eliminar', description: error.message, variant: 'destructive' })
+           return
+         }
+         
+         // Actualizar estado local
+         setCategories(prevCategories =>
+           prevCategories.map(cat => ({
+             ...cat,
+             projects: cat.projects.filter(p => p.id !== projectId)
+           }))
+         )
+         
+         // Actualizar selectedCategory si existe
+         if (selectedCategory) {
+           setSelectedCategory({
+             ...selectedCategory,
+             projects: selectedCategory.projects.filter(p => p.id !== projectId)
+           })
+         }
+         
+         console.log('Project deleted successfully from UI')
+      } else {
+         // Modo mock - solo actualizar estado
+         setCategories(prevCategories =>
+           prevCategories.map(cat => ({
+             ...cat,
+             projects: cat.projects.filter(p => p.id !== projectId)
+           }))
+         )
+         
+         if (selectedCategory) {
+           setSelectedCategory({
+             ...selectedCategory,
+             projects: selectedCategory.projects.filter(p => p.id !== projectId)
+           })
          }
       }
       toast({ title: 'Proyecto eliminado' })
-      loadData()
     }
   }
 
@@ -966,6 +1029,8 @@ export default function ProductosSimple() {
       
       // Traducciones básicas EN
       const translationsEN: { [key: string]: string } = {
+        'casa': 'house',
+        'prueba': 'test',
         'pasamanos': 'handrail',
         'barandilla': 'railing',
         'barbacoa': 'bbq',
@@ -975,24 +1040,61 @@ export default function ProductosSimple() {
         'silla': 'chair',
         'espejo': 'mirror',
         'pérgola': 'pergola',
+        'pergola': 'pergola',
         'tarima': 'platform',
         'mueble': 'furniture',
         'mampara': 'shower screen',
         'escalera': 'staircase',
-        'en': 'on',
+        'ventana': 'window',
+        'cocina': 'kitchen',
+        'baño': 'bathroom',
+        'dormitorio': 'bedroom',
+        'salon': 'living room',
+        'salón': 'living room',
+        'jardin': 'garden',
+        'jardín': 'garden',
+        'piscina': 'pool',
+        'garaje': 'garage',
+        'balcon': 'balcony',
+        'balcón': 'balcony',
+        'techo': 'roof',
+        'pared': 'wall',
+        'suelo': 'floor',
+        'cobre': 'copper',
+        'acero': 'steel',
+        'aluminio': 'aluminum',
+        'bronce': 'bronze',
+        'laton': 'brass',
+        'latón': 'brass',
+        'en': 'in',
         'de': 'of',
         'con': 'with',
         'para': 'for',
+        'y': 'and',
+        'el': 'the',
+        'la': 'the',
+        'los': 'the',
+        'las': 'the',
+        'un': 'a',
+        'una': 'a',
         'moderna': 'modern',
+        'moderno': 'modern',
         'rustica': 'rustic',
+        'rustico': 'rustic',
+        'rústica': 'rustic',
+        'rústico': 'rustic',
         'hierro': 'iron',
         'madera': 'wood',
         'cristal': 'glass',
-        'terraza': 'terrace'
+        'terraza': 'terrace',
+        'exterior': 'outdoor',
+        'interior': 'indoor'
       }
 
       // Traducciones básicas IT
       const translationsIT: { [key: string]: string } = {
+        'casa': 'casa',
+        'prueba': 'prova',
         'pasamanos': 'corrimano',
         'barandilla': 'ringhiera',
         'barbacoa': 'barbecue',
@@ -1002,20 +1104,55 @@ export default function ProductosSimple() {
         'silla': 'sedia',
         'espejo': 'specchio',
         'pérgola': 'pergola',
+        'pergola': 'pergola',
         'tarima': 'pedana',
         'mueble': 'mobile',
         'mampara': 'paravento doccia',
         'escalera': 'scala',
+        'ventana': 'finestra',
+        'cocina': 'cucina',
+        'baño': 'bagno',
+        'dormitorio': 'camera da letto',
+        'salon': 'soggiorno',
+        'salón': 'soggiorno',
+        'jardin': 'giardino',
+        'jardín': 'giardino',
+        'piscina': 'piscina',
+        'garaje': 'garage',
+        'balcon': 'balcone',
+        'balcón': 'balcone',
+        'techo': 'tetto',
+        'pared': 'parete',
+        'suelo': 'pavimento',
+        'cobre': 'rame',
+        'acero': 'acciaio',
+        'aluminio': 'alluminio',
+        'bronce': 'bronzo',
+        'laton': 'ottone',
+        'latón': 'ottone',
         'en': 'in',
         'de': 'di',
         'con': 'con',
         'para': 'per',
+        'y': 'e',
+        'el': 'il',
+        'la': 'la',
+        'los': 'i',
+        'las': 'le',
+        'un': 'un',
+        'una': 'una',
         'moderna': 'moderna',
+        'moderno': 'moderno',
         'rustica': 'rustica',
+        'rustico': 'rustico',
+        'rústica': 'rustica',
+        'rústico': 'rustico',
         'hierro': 'ferro',
         'madera': 'legno',
         'cristal': 'vetro',
-        'terraza': 'terrazza'
+        'terraza': 'terrazza',
+        'exterior': 'esterno',
+        'interior': 'interno'
       }
       
       // Traducción palabra por palabra (simulado)
@@ -1580,7 +1717,7 @@ export default function ProductosSimple() {
                     Editar
                   </button>
                   <button
-                    onClick={() => handleDeleteProject(project.nombre)}
+                    onClick={() => handleDeleteProject(project.id, project.nombre)}
                     className="py-1.5 px-2 text-xs bg-red-50 text-red-600 hover:bg-red-100 rounded"
                   >
                     <Trash2 className="w-3 h-3" />
