@@ -1,7 +1,14 @@
 import { useTranslation } from 'react-i18next';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { projectsService, type ProjectItem } from '@beltrame/shared';
 
 export default function Inicio() {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
+  const [recentProjects, setRecentProjects] = useState<ProjectItem[]>([]);
+  const [loadingProjects, setLoadingProjects] = useState(true);
+  const lang = i18n.language || 'es';
   
   const getLocalizedPath = (route: string) => {
     const translations: Record<string, Record<string, string>> = {
@@ -12,6 +19,31 @@ export default function Inicio() {
     const translatedRoute = translations[i18n.language]?.[route] || translations['es'][route];
     return `/${i18n.language}/${translatedRoute}`;
   };
+
+  const getProjectDetailPath = (categorySlug: string, projectSlug: string) => {
+    const projectsPath: Record<string, string> = {
+      'es': 'proyectos',
+      'en': 'projects',
+      'it': 'progetti'
+    };
+    const basePath = projectsPath[i18n.language] || 'proyectos';
+    return `/${i18n.language}/${basePath}/${categorySlug}/${projectSlug}`;
+  };
+
+  useEffect(() => {
+    const loadRecentProjects = async () => {
+      setLoadingProjects(true);
+      try {
+        const projects = await projectsService.getRecentProjects(lang, 6);
+        setRecentProjects(projects);
+      } catch (error) {
+        console.error('Error loading recent projects:', error);
+      } finally {
+        setLoadingProjects(false);
+      }
+    };
+    loadRecentProjects();
+  }, [lang]);
   
   return (
     <div className="inicio-page">
@@ -296,95 +328,41 @@ export default function Inicio() {
 
           {/* Grid de proyectos */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-            {/* Proyecto 1 */}
-            <div className="group cursor-pointer">
-              <div className="relative overflow-hidden rounded-lg mb-4 h-72 shadow-lg">
-                <img
-                  src="https://picsum.photos/600/800?random=30"
-                  alt={t('inicio.recentProjects.items.barbacoa')}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300"></div>
+            {loadingProjects ? (
+              // Skeleton loader mientras carga
+              [...Array(6)].map((_, index) => (
+                <div key={index} className="animate-pulse">
+                  <div className="bg-gray-300 rounded-lg mb-4 h-72"></div>
+                  <div className="h-4 bg-gray-300 rounded w-3/4 mx-auto"></div>
+                </div>
+              ))
+            ) : recentProjects.length > 0 ? (
+              // Proyectos reales de la base de datos
+              recentProjects.map((project) => (
+                <div 
+                  key={project.id} 
+                  className="group cursor-pointer"
+                  onClick={() => navigate(getProjectDetailPath(project.category_slug, project.slug))}
+                >
+                  <div className="relative overflow-hidden rounded-lg mb-4 h-72 shadow-lg">
+                    <img
+                      src={project.image_urls?.[0] || 'https://picsum.photos/600/800?random=1'}
+                      alt={project.name}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300"></div>
+                  </div>
+                  <h3 className="text-center font-semibold text-black" style={{ fontSize: '16px' }}>
+                    {project.name}
+                  </h3>
+                </div>
+              ))
+            ) : (
+              // Mensaje si no hay proyectos
+              <div className="col-span-3 text-center py-12 text-gray-500">
+                {t('inicio.recentProjects.noProjects', 'No hay proyectos disponibles')}
               </div>
-              <h3 className="text-center font-semibold text-black" style={{ fontSize: '16px' }}>
-                {t('inicio.recentProjects.items.barbacoa')}
-              </h3>
-            </div>
-
-            {/* Proyecto 2 */}
-            <div className="group cursor-pointer">
-              <div className="relative overflow-hidden rounded-lg mb-4 h-72 shadow-lg">
-                <img
-                  src="https://picsum.photos/600/800?random=31"
-                  alt={t('inicio.recentProjects.items.barandilla')}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300"></div>
-              </div>
-              <h3 className="text-center font-semibold text-black" style={{ fontSize: '16px' }}>
-                {t('inicio.recentProjects.items.barandilla')}
-              </h3>
-            </div>
-
-            {/* Proyecto 3 */}
-            <div className="group cursor-pointer">
-              <div className="relative overflow-hidden rounded-lg mb-4 h-72 shadow-lg">
-                <img
-                  src="https://picsum.photos/600/800?random=32"
-                  alt={t('inicio.recentProjects.items.barandillaEscalera')}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300"></div>
-              </div>
-              <h3 className="text-center font-semibold text-black" style={{ fontSize: '16px' }}>
-                {t('inicio.recentProjects.items.barandillaEscalera')}
-              </h3>
-            </div>
-
-            {/* Proyecto 4 */}
-            <div className="group cursor-pointer">
-              <div className="relative overflow-hidden rounded-lg mb-4 h-72 shadow-lg">
-                <img
-                  src="https://picsum.photos/600/800?random=33"
-                  alt={t('inicio.recentProjects.items.cartelBloom')}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300"></div>
-              </div>
-              <h3 className="text-center font-semibold text-black" style={{ fontSize: '16px' }}>
-                {t('inicio.recentProjects.items.cartelBloom')}
-              </h3>
-            </div>
-
-            {/* Proyecto 5 */}
-            <div className="group cursor-pointer">
-              <div className="relative overflow-hidden rounded-lg mb-4 h-72 shadow-lg">
-                <img
-                  src="https://picsum.photos/600/800?random=34"
-                  alt={t('inicio.recentProjects.items.espejoBano')}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300"></div>
-              </div>
-              <h3 className="text-center font-semibold text-black" style={{ fontSize: '16px' }}>
-                {t('inicio.recentProjects.items.espejoBano')}
-              </h3>
-            </div>
-
-            {/* Proyecto 6 */}
-            <div className="group cursor-pointer">
-              <div className="relative overflow-hidden rounded-lg mb-4 h-72 shadow-lg">
-                <img
-                  src="https://picsum.photos/600/800?random=35"
-                  alt={t('inicio.recentProjects.items.cristaleraMedio')}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300"></div>
-              </div>
-              <h3 className="text-center font-semibold text-black" style={{ fontSize: '16px' }}>
-                {t('inicio.recentProjects.items.cristaleraMedio')}
-              </h3>
-            </div>
+            )}
           </div>
 
           {/* Botón Ver todos */}

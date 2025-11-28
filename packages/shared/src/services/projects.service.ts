@@ -316,6 +316,71 @@ export const projectsService = {
   },
 
   /**
+   * Obtiene los proyectos más recientes
+   */
+  async getRecentProjects(lang: string = 'es', limit: number = 6): Promise<ProjectItem[]> {
+    const { data: projects, error } = await supabase
+      .from('projects')
+      .select(`
+        id, slug, category_id, image_urls, display_order, is_active, created_at,
+        categories!inner(slug)
+      `)
+      .eq('is_active', true)
+      .order('created_at', { ascending: false })
+      .limit(limit)
+
+    if (error || !projects || projects.length === 0) {
+      console.error('Error fetching recent projects:', error)
+      return []
+    }
+
+    // Obtener IDs únicos de categorías
+    const categoryIds = [...new Set(projects.map(p => p.category_id))]
+
+    // Obtener traducciones de categorías
+    const { data: catTranslations } = await supabase
+      .from('translations')
+      .select('entity_id, value')
+      .eq('entity_type', 'category')
+      .eq('language_code', lang)
+      .eq('field_name', 'name')
+      .in('entity_id', categoryIds)
+
+    const catNamesMap = new Map<number, string>()
+    catTranslations?.forEach(t => {
+      catNamesMap.set(t.entity_id, t.value)
+    })
+
+    // Obtener traducciones de proyectos
+    const projectIds = projects.map(p => p.id)
+    const { data: translations } = await supabase
+      .from('translations')
+      .select('entity_id, field_name, value')
+      .eq('entity_type', 'project')
+      .eq('language_code', lang)
+      .in('entity_id', projectIds)
+      .in('field_name', ['name', 'description'])
+
+    const translationsMap = new Map<string, string>()
+    translations?.forEach(t => {
+      translationsMap.set(`${t.entity_id}-${t.field_name}`, t.value)
+    })
+
+    return projects.map(proj => ({
+      id: proj.id,
+      slug: proj.slug,
+      name: translationsMap.get(`${proj.id}-name`) || proj.slug,
+      description: translationsMap.get(`${proj.id}-description`) || '',
+      category_id: proj.category_id,
+      category_slug: (proj.categories as unknown as { slug: string }).slug,
+      category_name: catNamesMap.get(proj.category_id) || '',
+      image_urls: proj.image_urls || [],
+      display_order: proj.display_order,
+      is_active: proj.is_active
+    }))
+  },
+
+  /**
    * Limpia el cache
    */
   clearCache() {

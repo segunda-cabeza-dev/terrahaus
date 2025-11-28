@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
-import { USE_MOCK_DATA, mockData, type Category, type Project, supabase } from '@beltrame/shared'
+import { USE_MOCK_DATA, mockData, type Category, type Project, supabase, galleryService } from '@beltrame/shared'
 import { Button } from '@beltrame/shared/ui/button'
 import { Input } from '@beltrame/shared/ui/input'
 import { Label } from '@beltrame/shared/ui/label'
 import { useToast } from '@beltrame/shared'
-import { Plus, Trash2, Edit, Image as ImageIcon, ArrowLeft } from 'lucide-react'
+import { Plus, Trash2, Edit, Image as ImageIcon, ArrowLeft, Search, X, Loader2 } from 'lucide-react'
 import { PageHeader } from '../../../shared'
 
 interface CategoryWithProjects extends Category {
@@ -30,22 +30,29 @@ export default function ProductosSimple() {
   const [showGalleryModal, setShowGalleryModal] = useState(false)
   const [gallerySearchTerm, setGallerySearchTerm] = useState('')
   const [selectedGalleryImages, setSelectedGalleryImages] = useState<string[]>([])
+  const [categorySearchTerm, setCategorySearchTerm] = useState('')
   
-  // Imágenes de ejemplo para la galería (en producción vendrían de Supabase)
-  const galleryImages = [
-    { id: 1, url: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400', name: 'Casa Moderna 1' },
-    { id: 2, url: 'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=400', name: 'Casa Moderna 2' },
-    { id: 3, url: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400', name: 'Escalera Metal' },
-    { id: 4, url: 'https://images.unsplash.com/photo-1600210492493-0946911123ea?w=400', name: 'Barandilla' },
-    { id: 5, url: 'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=400', name: 'Puerta de Hierro' },
-    { id: 6, url: 'https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?w=400', name: 'Pérgola' },
-    { id: 7, url: 'https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=400', name: 'Mueble Metal' },
-    { id: 8, url: 'https://images.unsplash.com/photo-1600607687644-c7171b42498b?w=400', name: 'Detalle Cobre' },
-    { id: 9, url: 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=400', name: 'Escalera Exterior' },
-    { id: 10, url: 'https://images.unsplash.com/photo-1600047509358-9dc75507daeb?w=400', name: 'Cristalera' },
-    { id: 11, url: 'https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=400', name: 'Barbacoa' },
-    { id: 12, url: 'https://images.unsplash.com/photo-1600585154363-67eb9e2e2099?w=400', name: 'Mampara' },
-  ]
+  // Imágenes de la galería de Supabase
+  const [galleryImages, setGalleryImages] = useState<{id: string | number, url: string, name: string}[]>([])
+  const [loadingGalleryImages, setLoadingGalleryImages] = useState(false)
+  
+  // Cargar imágenes de la galería cuando se abre el modal
+  const loadGalleryImages = async () => {
+    if (galleryImages.length > 0) return // Ya cargadas
+    setLoadingGalleryImages(true)
+    try {
+      const result = await galleryService.listAllImages()
+      setGalleryImages(result.map(img => ({
+        id: img.id,
+        url: img.url,
+        name: img.name.replace(/\.[^/.]+$/, '') // Quitar extensión
+      })))
+    } catch (error) {
+      console.error('Error loading gallery images:', error)
+    } finally {
+      setLoadingGalleryImages(false)
+    }
+  }
   
   const [categoryForm, setCategoryForm] = useState({
     nombre: '',
@@ -177,6 +184,14 @@ export default function ProductosSimple() {
   // Ver detalle de categoría y sus proyectos
   const handleViewCategory = (category: CategoryWithProjects) => {
     setSelectedCategory(category)
+    // Inicializar formulario con datos de la categoría
+    setCategoryForm({
+      nombre: (category as any).nombre || category.name || '',
+      nombre_en: (category as any).nombre_en || '',
+      nombre_it: (category as any).nombre_it || '',
+      imagen_portada: (category as any).imagen_portada || category.cover_image_url || '',
+    })
+    setActiveLanguageTab('ES') // Reset tab to Spanish
     setSaved(false) // Reset saved state when viewing a category
     setCurrentView('category-detail')
   }
@@ -185,6 +200,7 @@ export default function ProductosSimple() {
   const handleNewCategory = () => {
     setEditingCategory(null)
     setCategoryForm({ nombre: '', nombre_en: '', nombre_it: '', imagen_portada: '' })
+    setActiveCategoryLanguageTab('ES') // Reset tab to Spanish for new category
     setCurrentView('edit-category')
   }
 
@@ -838,6 +854,7 @@ export default function ProductosSimple() {
 
   const handleAddImageFromGallery = () => {
     setShowImageSourceDialog(false)
+    loadGalleryImages() // Cargar imágenes de la galería
     setShowGalleryModal(true)
   }
 
@@ -874,6 +891,7 @@ export default function ProductosSimple() {
 
   const handleAddCategoryImageFromGallery = () => {
     setShowImageSourceDialog(false)
+    loadGalleryImages() // Cargar imágenes de la galería
     setShowGalleryModal(true)
   }
 
@@ -958,58 +976,41 @@ export default function ProductosSimple() {
     
     setSaving(true)
     try {
-      // Simulación de traducción con IA (aquí conectarías con OpenAI/Claude)
-      await new Promise(resolve => setTimeout(resolve, 800))
+      const textToTranslate = categoryForm.nombre.trim()
       
-      // Traducciones básicas de ejemplo
-      const translationsEN: { [key: string]: string } = {
-        'barandillas': 'railings',
-        'barbacoas': 'bbq',
-        'carteles': 'signs',
-        'cobre': 'copper',
-        'corte láser': 'laser cutting',
-        'cristaleras': 'glass walls',
-        'escaleras': 'stairs',
-        'espejos': 'mirrors',
-        'fogoneros': 'fire pits',
-        'latón': 'brass',
-        'mamparas': 'shower screens',
-        'muebles': 'furniture',
-        'pérgolas': 'pergolas',
-        'puertas': 'doors',
-        'tarimas': 'platforms'
-      }
-
-      const translationsIT: { [key: string]: string } = {
-        'barandillas': 'ringhiere',
-        'barbacoas': 'barbecue',
-        'carteles': 'insegne',
-        'cobre': 'rame',
-        'corte láser': 'taglio laser',
-        'cristaleras': 'vetrate',
-        'escaleras': 'scale',
-        'espejos': 'specchi',
-        'fogoneros': 'bracieri',
-        'latón': 'ottone',
-        'mamparas': 'paraventi doccia',
-        'muebles': 'mobili',
-        'pérgolas': 'pergole',
-        'puertas': 'porte',
-        'tarimas': 'pedane'
+      // Función para traducir usando MyMemory API (gratuita)
+      const translateText = async (text: string, targetLang: string): Promise<string> => {
+        try {
+          const response = await fetch(
+            `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=es|${targetLang}`
+          )
+          const data = await response.json()
+          if (data.responseStatus === 200 && data.responseData?.translatedText) {
+            // Capitalizar primera letra
+            const translated = data.responseData.translatedText
+            return translated.charAt(0).toUpperCase() + translated.slice(1).toLowerCase()
+          }
+          return text // Fallback al original si falla
+        } catch {
+          return text
+        }
       }
       
-      const nombreLower = categoryForm.nombre.toLowerCase()
-      const traduccionEN = translationsEN[nombreLower] || categoryForm.nombre
-      const traduccionIT = translationsIT[nombreLower] || categoryForm.nombre
+      // Traducir a inglés e italiano en paralelo
+      const [translatedEN, translatedIT] = await Promise.all([
+        translateText(textToTranslate, 'en'),
+        translateText(textToTranslate, 'it')
+      ])
       
       setCategoryForm({
         ...categoryForm,
-        nombre_en: traduccionEN.charAt(0).toUpperCase() + traduccionEN.slice(1),
-        nombre_it: traduccionIT.charAt(0).toUpperCase() + traduccionIT.slice(1)
+        nombre_en: translatedEN,
+        nombre_it: translatedIT
       })
       
-      toast({ title: '✨ Traducción completada (ES → EN → IT)' })
+      toast({ title: '✨ Traducción completada' })
     } catch (error) {
+      console.error('Error translating:', error)
       toast({ title: 'Error al traducir', variant: 'destructive' })
     } finally {
       setSaving(false)
@@ -1024,165 +1025,43 @@ export default function ProductosSimple() {
     
     setSaving(true)
     try {
-      // Simulación de traducción con IA
-      await new Promise(resolve => setTimeout(resolve, 800))
-      
-      // Traducciones básicas EN
-      const translationsEN: { [key: string]: string } = {
-        'casa': 'house',
-        'prueba': 'test',
-        'pasamanos': 'handrail',
-        'barandilla': 'railing',
-        'barbacoa': 'bbq',
-        'cartel': 'sign',
-        'puerta': 'door',
-        'mesa': 'table',
-        'silla': 'chair',
-        'espejo': 'mirror',
-        'pérgola': 'pergola',
-        'pergola': 'pergola',
-        'tarima': 'platform',
-        'mueble': 'furniture',
-        'mampara': 'shower screen',
-        'escalera': 'staircase',
-        'ventana': 'window',
-        'cocina': 'kitchen',
-        'baño': 'bathroom',
-        'dormitorio': 'bedroom',
-        'salon': 'living room',
-        'salón': 'living room',
-        'jardin': 'garden',
-        'jardín': 'garden',
-        'piscina': 'pool',
-        'garaje': 'garage',
-        'balcon': 'balcony',
-        'balcón': 'balcony',
-        'techo': 'roof',
-        'pared': 'wall',
-        'suelo': 'floor',
-        'cobre': 'copper',
-        'acero': 'steel',
-        'aluminio': 'aluminum',
-        'bronce': 'bronze',
-        'laton': 'brass',
-        'latón': 'brass',
-        'en': 'in',
-        'de': 'of',
-        'con': 'with',
-        'para': 'for',
-        'y': 'and',
-        'el': 'the',
-        'la': 'the',
-        'los': 'the',
-        'las': 'the',
-        'un': 'a',
-        'una': 'a',
-        'moderna': 'modern',
-        'moderno': 'modern',
-        'rustica': 'rustic',
-        'rustico': 'rustic',
-        'rústica': 'rustic',
-        'rústico': 'rustic',
-        'hierro': 'iron',
-        'madera': 'wood',
-        'cristal': 'glass',
-        'terraza': 'terrace',
-        'exterior': 'outdoor',
-        'interior': 'indoor'
-      }
-
-      // Traducciones básicas IT
-      const translationsIT: { [key: string]: string } = {
-        'casa': 'casa',
-        'prueba': 'prova',
-        'pasamanos': 'corrimano',
-        'barandilla': 'ringhiera',
-        'barbacoa': 'barbecue',
-        'cartel': 'insegna',
-        'puerta': 'porta',
-        'mesa': 'tavolo',
-        'silla': 'sedia',
-        'espejo': 'specchio',
-        'pérgola': 'pergola',
-        'pergola': 'pergola',
-        'tarima': 'pedana',
-        'mueble': 'mobile',
-        'mampara': 'paravento doccia',
-        'escalera': 'scala',
-        'ventana': 'finestra',
-        'cocina': 'cucina',
-        'baño': 'bagno',
-        'dormitorio': 'camera da letto',
-        'salon': 'soggiorno',
-        'salón': 'soggiorno',
-        'jardin': 'giardino',
-        'jardín': 'giardino',
-        'piscina': 'piscina',
-        'garaje': 'garage',
-        'balcon': 'balcone',
-        'balcón': 'balcone',
-        'techo': 'tetto',
-        'pared': 'parete',
-        'suelo': 'pavimento',
-        'cobre': 'rame',
-        'acero': 'acciaio',
-        'aluminio': 'alluminio',
-        'bronce': 'bronzo',
-        'laton': 'ottone',
-        'latón': 'ottone',
-        'en': 'in',
-        'de': 'di',
-        'con': 'con',
-        'para': 'per',
-        'y': 'e',
-        'el': 'il',
-        'la': 'la',
-        'los': 'i',
-        'las': 'le',
-        'un': 'un',
-        'una': 'una',
-        'moderna': 'moderna',
-        'moderno': 'moderno',
-        'rustica': 'rustica',
-        'rustico': 'rustico',
-        'rústica': 'rustica',
-        'rústico': 'rustico',
-        'hierro': 'ferro',
-        'madera': 'legno',
-        'cristal': 'vetro',
-        'terraza': 'terrazza',
-        'exterior': 'esterno',
-        'interior': 'interno'
+      // Función para traducir usando MyMemory API (gratuita)
+      const translateText = async (text: string, targetLang: string): Promise<string> => {
+        if (!text.trim()) return ''
+        try {
+          const response = await fetch(
+            `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=es|${targetLang}`
+          )
+          const data = await response.json()
+          if (data.responseStatus === 200 && data.responseData?.translatedText) {
+            const translated = data.responseData.translatedText
+            return translated.charAt(0).toUpperCase() + translated.slice(1)
+          }
+          return text
+        } catch {
+          return text
+        }
       }
       
-      // Traducción palabra por palabra (simulado)
-      const palabras = projectForm.nombre.toLowerCase().split(' ')
-      const traducidasEN = palabras.map(p => translationsEN[p] || p)
-      const traducidasIT = palabras.map(p => translationsIT[p] || p)
-      const nombreTraducidoEN = traducidasEN.join(' ')
-      const nombreTraducidoIT = traducidasIT.join(' ')
-      
-      // Traducir descripción
-      let descripcionTraducidaEN = ''
-      let descripcionTraducidaIT = ''
-      if (projectForm.descripcion) {
-        const palabrasDesc = projectForm.descripcion.toLowerCase().split(' ')
-        const traducidasDescEN = palabrasDesc.map(p => translationsEN[p] || p)
-        const traducidasDescIT = palabrasDesc.map(p => translationsIT[p] || p)
-        descripcionTraducidaEN = traducidasDescEN.join(' ')
-        descripcionTraducidaIT = traducidasDescIT.join(' ')
-      }
+      // Traducir nombre y descripción en paralelo
+      const [nombreEN, nombreIT, descripcionEN, descripcionIT] = await Promise.all([
+        translateText(projectForm.nombre, 'en'),
+        translateText(projectForm.nombre, 'it'),
+        translateText(projectForm.descripcion || '', 'en'),
+        translateText(projectForm.descripcion || '', 'it')
+      ])
       
       setProjectForm({
         ...projectForm,
-        nombre_en: nombreTraducidoEN.charAt(0).toUpperCase() + nombreTraducidoEN.slice(1),
-        nombre_it: nombreTraducidoIT.charAt(0).toUpperCase() + nombreTraducidoIT.slice(1),
-        descripcion_en: descripcionTraducidaEN ? descripcionTraducidaEN.charAt(0).toUpperCase() + descripcionTraducidaEN.slice(1) : '',
-        descripcion_it: descripcionTraducidaIT ? descripcionTraducidaIT.charAt(0).toUpperCase() + descripcionTraducidaIT.slice(1) : ''
+        nombre_en: nombreEN,
+        nombre_it: nombreIT,
+        descripcion_en: descripcionEN,
+        descripcion_it: descripcionIT
       })
       
-      toast({ title: '✨ Traducción completada (ES → EN → IT)' })
+      toast({ title: '✨ Traducción completada' })
     } catch (error) {
+      console.error('Error translating:', error)
       toast({ title: 'Error al traducir', variant: 'destructive' })
     } finally {
       setSaving(false)
@@ -1299,6 +1178,17 @@ export default function ProductosSimple() {
           
           {/* Grid de imágenes */}
           <div className="p-6 overflow-y-auto flex-1">
+            {loadingGalleryImages ? (
+              <div className="flex flex-col items-center justify-center py-20">
+                <Loader2 className="w-10 h-10 text-blue-500 animate-spin mb-4" />
+                <p className="text-gray-500">Cargando imágenes de la galería...</p>
+              </div>
+            ) : filteredImages.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-20 text-gray-500">
+                <ImageIcon className="w-16 h-16 mb-4 text-gray-300" />
+                <p>{gallerySearchTerm ? 'No se encontraron imágenes' : 'No hay imágenes en la galería'}</p>
+              </div>
+            ) : (
             <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4">
               {filteredImages.map((image) => {
                 const isSelected = selectedGalleryImages.includes(image.url)
@@ -1344,13 +1234,6 @@ export default function ProductosSimple() {
                 )
               })}
             </div>
-            
-            {filteredImages.length === 0 && (
-              <div className="text-center py-12 text-gray-500">
-                <ImageIcon className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-                <p className="text-lg font-medium">No se encontraron imágenes</p>
-                <p className="text-sm">Intenta con otro término de búsqueda</p>
-              </div>
             )}
           </div>
           
@@ -1394,6 +1277,19 @@ export default function ProductosSimple() {
 
   // VISTA: Lista de Categorías
   if (currentView === 'categories') {
+    // Calcular total de proyectos
+    const totalProjects = categories.reduce((acc, cat) => acc + cat.projects.length, 0)
+    
+    // Filtrar categorías según búsqueda
+    const filteredCategories = categorySearchTerm.trim() 
+      ? categories.filter(cat => {
+          const search = categorySearchTerm.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+          const nombre = (cat.nombre || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+          const nombreEn = (cat.nombre_en || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+          return nombre.includes(search) || nombreEn.includes(search)
+        })
+      : categories
+
     return (
       <>
         <ImageSourceDialog />
@@ -1410,8 +1306,40 @@ export default function ProductosSimple() {
           }
         />
 
+        {/* Buscador y contador */}
+        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between bg-white p-4 rounded-lg shadow-sm">
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Buscar categoría..."
+              value={categorySearchTerm}
+              onChange={(e) => setCategorySearchTerm(e.target.value)}
+              className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+            />
+            {categorySearchTerm && (
+              <button
+                onClick={() => setCategorySearchTerm('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+          <div className="flex gap-4 text-sm">
+            <div className="bg-gray-100 px-4 py-2 rounded-lg">
+              <span className="text-gray-500">Categorías:</span>{' '}
+              <span className="font-semibold text-black">{categories.length}</span>
+            </div>
+            <div className="bg-blue-50 px-4 py-2 rounded-lg">
+              <span className="text-blue-600">Proyectos totales:</span>{' '}
+              <span className="font-semibold text-blue-700">{totalProjects}</span>
+            </div>
+          </div>
+        </div>
+
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-          {categories.map((category) => (
+          {filteredCategories.map((category) => (
             <div
               key={category.id}
               className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow cursor-pointer overflow-hidden"
@@ -1470,16 +1398,10 @@ export default function ProductosSimple() {
 
   // VISTA: Detalle de Categoría con sus Proyectos
   if (currentView === 'category-detail' && selectedCategory) {
-    // Inicializar formulario con datos de la categoría si no está ya inicializado
-    if (categoryForm.nombre !== selectedCategory.nombre) {
-      setCategoryForm({
-        nombre: selectedCategory.nombre,
-        nombre_en: selectedCategory.nombre_en || '',
-        nombre_it: selectedCategory.nombre_it || '',
-        imagen_portada: selectedCategory.imagen_portada || '',
-      })
-    }
-
+    // Guardar la imagen original para poder deshacer
+    const originalImage = (selectedCategory as any).imagen_portada || selectedCategory.cover_image_url || ''
+    const imageChanged = categoryForm.imagen_portada !== originalImage
+    
     return (
       <>
         <ImageSourceDialog />
@@ -1513,16 +1435,30 @@ export default function ProductosSimple() {
                     </div>
                   )}
                 </div>
-                <Button
-                  type="button"
-                  onClick={handleAddCategoryImage}
-                  variant="outline"
-                  size="sm"
-                  className="w-full mt-2 text-xs whitespace-nowrap"
-                >
-                  <Plus className="w-3 h-3 mr-1" />
-                  {categoryForm.imagen_portada ? 'Cambiar Foto' : 'Agregar Foto'}
-                </Button>
+                <div className="flex gap-1 mt-2">
+                  <Button
+                    type="button"
+                    onClick={handleAddCategoryImage}
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 text-xs whitespace-nowrap"
+                  >
+                    <Plus className="w-3 h-3 mr-1" />
+                    {categoryForm.imagen_portada ? 'Cambiar' : 'Agregar'}
+                  </Button>
+                  {imageChanged && (
+                    <Button
+                      type="button"
+                      onClick={() => setCategoryForm({ ...categoryForm, imagen_portada: originalImage })}
+                      variant="outline"
+                      size="sm"
+                      className="text-xs text-orange-600 border-orange-300 hover:bg-orange-50"
+                      title="Deshacer cambio de imagen"
+                    >
+                      ↩️
+                    </Button>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -1877,10 +1813,14 @@ export default function ProductosSimple() {
                           size="sm"
                           variant="outline"
                           className="text-xs"
+                          title={!categoryForm.nombre ? 'Primero escribe el nombre en español (ES)' : 'Traducir automáticamente'}
                         >
                           ✨ Traducir con IA
                         </Button>
                       </div>
+                      {!categoryForm.nombre && (
+                        <p className="text-xs text-amber-600 mb-2">⚠️ Primero escribe el nombre en español (tab ES)</p>
+                      )}
                       <Input
                         placeholder="Category name"
                         value={categoryForm.nombre_en}
@@ -1901,10 +1841,14 @@ export default function ProductosSimple() {
                           size="sm"
                           variant="outline"
                           className="text-xs"
+                          title={!categoryForm.nombre ? 'Primero escribe el nombre en español (ES)' : 'Traducir automáticamente'}
                         >
                           ✨ Traducir con IA
                         </Button>
                       </div>
+                      {!categoryForm.nombre && (
+                        <p className="text-xs text-amber-600 mb-2">⚠️ Primero escribe el nombre en español (tab ES)</p>
+                      )}
                       <Input
                         placeholder="Nome della categoria"
                         value={categoryForm.nombre_it}
