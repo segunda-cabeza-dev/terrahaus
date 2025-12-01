@@ -73,20 +73,29 @@ export default function Inicio() {
       {/* Marquee Section - Fila 1 */}
       <div className="bg-white py-4">
         <div className="w-full overflow-hidden">
-          <div className="flex animate-marquee whitespace-nowrap will-change-transform">
-            {/* Primera serie de imágenes - orden estético */}
-            {[1, 5, 9, 3, 7, 2, 10, 4, 8, 6, 1, 5, 9, 3, 7, 2, 10, 4, 8, 6].map((num, index) => (
-              <div
-                key={`img1-${index}`}
-                className="inline-block mx-2 h-32 w-56 flex-shrink-0"
-              >
-                <img
-                  src={`/assets/images/Marquee/${num}.jpg`}
-                  alt={`Proyecto ${num}`}
-                  className="h-full w-full object-cover rounded-lg"
-                />
-              </div>
-            ))}
+          <div className="marquee-container">
+            <div className="marquee-content">
+              {[1, 5, 9, 3, 7, 2, 10, 4, 8, 6].map((num, index) => (
+                <div key={`img1-${index}`} className="marquee-item">
+                  <img
+                    src={`/assets/images/Marquee/${num}.jpg`}
+                    alt={`Proyecto ${num}`}
+                    className="h-full w-full object-cover rounded-lg"
+                  />
+                </div>
+              ))}
+            </div>
+            <div className="marquee-content" aria-hidden="true">
+              {[1, 5, 9, 3, 7, 2, 10, 4, 8, 6].map((num, index) => (
+                <div key={`img1-dup-${index}`} className="marquee-item">
+                  <img
+                    src={`/assets/images/Marquee/${num}.jpg`}
+                    alt={`Proyecto ${num}`}
+                    className="h-full w-full object-cover rounded-lg"
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -94,20 +103,29 @@ export default function Inicio() {
       {/* Marquee Section - Fila 2 (dirección inversa) */}
       <div className="bg-white pb-12">
         <div className="w-full overflow-hidden">
-          <div className="flex animate-marquee-reverse whitespace-nowrap will-change-transform">
-            {/* Segunda serie de imágenes - orden estético */}
-            {[11, 15, 19, 13, 17, 12, 20, 14, 18, 16, 11, 15, 19, 13, 17, 12, 20, 14, 18, 16].map((num, index) => (
-              <div
-                key={`img2-${index}`}
-                className="inline-block mx-2 h-32 w-56 flex-shrink-0"
-              >
-                <img
-                  src={`/assets/images/Marquee/${num}.jpg`}
-                  alt={`Proyecto ${num}`}
-                  className="h-full w-full object-cover rounded-lg"
-                />
-              </div>
-            ))}
+          <div className="marquee-container-reverse">
+            <div className="marquee-content">
+              {[11, 15, 19, 13, 17, 12, 20, 14, 18, 16].map((num, index) => (
+                <div key={`img2-${index}`} className="marquee-item">
+                  <img
+                    src={`/assets/images/Marquee/${num}.jpg`}
+                    alt={`Proyecto ${num}`}
+                    className="h-full w-full object-cover rounded-lg"
+                  />
+                </div>
+              ))}
+            </div>
+            <div className="marquee-content" aria-hidden="true">
+              {[11, 15, 19, 13, 17, 12, 20, 14, 18, 16].map((num, index) => (
+                <div key={`img2-dup-${index}`} className="marquee-item">
+                  <img
+                    src={`/assets/images/Marquee/${num}.jpg`}
+                    alt={`Proyecto ${num}`}
+                    className="h-full w-full object-cover rounded-lg"
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -379,22 +397,50 @@ export default function Inicio() {
       </section>
 
       <style>{`
-        @keyframes marquee {
+        @keyframes scroll {
           0% {
-            transform: translateX(0%);
+            transform: translateX(0);
           }
           100% {
-            transform: translateX(-50%);
+            transform: translateX(-100%);
           }
         }
 
-        @keyframes marquee-reverse {
+        @keyframes scroll-reverse {
           0% {
-            transform: translateX(-50%);
+            transform: translateX(-100%);
           }
           100% {
-            transform: translateX(0%);
+            transform: translateX(0);
           }
+        }
+
+        .marquee-container {
+          display: flex;
+          width: 100%;
+        }
+
+        .marquee-container-reverse {
+          display: flex;
+          width: 100%;
+        }
+
+        .marquee-content {
+          display: flex;
+          animation: scroll 40s linear infinite;
+          flex-shrink: 0;
+        }
+
+        .marquee-container-reverse .marquee-content {
+          animation: scroll-reverse 40s linear infinite;
+        }
+
+        .marquee-item {
+          display: inline-block;
+          margin: 0 0.5rem;
+          height: 8rem;
+          width: 14rem;
+          flex-shrink: 0;
         }
 
         @keyframes float-services {
@@ -430,24 +476,6 @@ export default function Inicio() {
           }
           50% {
             transform: translateY(-35px) translateX(25px);
-          }
-        }
-
-        .animate-marquee {
-          animation: marquee 40s linear infinite;
-        }
-
-        .animate-marquee-reverse {
-          animation: marquee-reverse 40s linear infinite;
-        }
-
-        @media (min-width: 768px) {
-          .animate-marquee {
-            animation: marquee 40s linear infinite;
-          }
-
-          .animate-marquee-reverse {
-            animation: marquee-reverse 40s linear infinite;
           }
         }
 
