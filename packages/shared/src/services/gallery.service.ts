@@ -430,6 +430,17 @@ export const galleryService = {
       allImagesCache = null
       imagesCacheTimestamp = 0
 
+      // Si es del bucket de proyectos o categorías, limpiar cache de proyectos
+      if (bucket === 'projects' || bucket === 'categories') {
+        // Importar y limpiar cache de proyectos
+        import('./projects.service').then(({ projectsService }) => {
+          projectsService.clearCache()
+          console.log('[Gallery] Cache de proyectos limpiado después de eliminar imagen')
+        }).catch(err => {
+          console.error('Error limpiando cache de proyectos:', err)
+        })
+      }
+
       return true
     } catch (error) {
       console.error('Delete error:', error)

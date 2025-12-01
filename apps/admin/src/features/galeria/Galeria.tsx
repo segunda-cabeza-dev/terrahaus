@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { PageHeader } from '../../shared'
-import { galleryService, type GalleryImage, type GalleryCategory, type GalleryFilters } from '@beltrame/shared'
+import { galleryService, type GalleryImage, type GalleryCategory, type GalleryFilters, projectsService } from '@beltrame/shared'
 import { Trash2, FileImage, Calendar, Search, RefreshCw, FolderOpen, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react'
 import { useToast } from '@beltrame/shared'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@beltrame/shared/ui/select'
@@ -64,6 +64,7 @@ export function Galeria() {
   async function handleRefresh() {
     galleryService.invalidateImagesCache()
     galleryService.clearCache()
+    projectsService.clearCache() // También limpiar cache de proyectos
     await queryClient.invalidateQueries({ queryKey: ['gallery-images'] })
     await queryClient.invalidateQueries({ queryKey: ['gallery-usage'] })
     toast({ title: 'Actualizado', description: 'La galeria se ha actualizado' })
@@ -83,6 +84,7 @@ export function Galeria() {
       if (success) {
         galleryService.invalidateImagesCache()
         galleryService.clearCache()
+        projectsService.clearCache() // También limpiar cache de proyectos
         await queryClient.invalidateQueries({ queryKey: ['gallery-images'] })
         await queryClient.invalidateQueries({ queryKey: ['gallery-usage'] })
         toast({ title: '✓ Eliminada', description: image.name + ' ha sido eliminada' })

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { USE_MOCK_DATA, mockData, type Category, type Project, supabase, galleryService } from '@beltrame/shared'
+import { USE_MOCK_DATA, mockData, type Category, type Project, supabase, galleryService, projectsService } from '@beltrame/shared'
 import { Button } from '@beltrame/shared/ui/button'
 import { Input } from '@beltrame/shared/ui/input'
 import { Label } from '@beltrame/shared/ui/label'
@@ -412,6 +412,10 @@ export default function ProductosSimple() {
         }
       }
       
+      // Limpiar cache del servicio de proyectos para que la web vea los cambios
+      projectsService.clearCache()
+      console.log('Projects cache cleared after category save')
+      
       toast({
         title: editingCategory ? '✓ Categoría actualizada' : '✓ Categoría creada',
         description: `"${categoryForm.nombre}" se guardó correctamente`,
@@ -478,6 +482,10 @@ export default function ProductosSimple() {
            }
            
            console.log('Category deleted successfully')
+           
+           // Limpiar cache del servicio de proyectos para que la web vea los cambios
+           projectsService.clearCache()
+           console.log('Projects cache cleared after category deletion')
         }
       }
       toast({ title: 'Categoría eliminada' })
@@ -765,6 +773,10 @@ export default function ProductosSimple() {
         }
       }
       
+      // Limpiar cache del servicio de proyectos para que la web vea los cambios
+      projectsService.clearCache()
+      console.log('Projects cache cleared after save')
+      
       toast({
         title: editingProject ? '✓ Proyecto actualizado' : '✓ Proyecto creado',
         description: `"${projectForm.nombre}" se guardó correctamente`,
@@ -838,6 +850,10 @@ export default function ProductosSimple() {
          }
          
          console.log('Project deleted successfully from database')
+         
+         // Limpiar cache del servicio de proyectos para que la web vea los cambios
+         projectsService.clearCache()
+         console.log('Projects cache cleared')
          
          // Actualizar estado local
          setCategories(prevCategories =>
