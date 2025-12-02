@@ -1175,23 +1175,40 @@ export default function ProductosSimple() {
     }
     
     setSaving(true)
+    toast({ title: '🔄 Traduciendo...', description: 'Usando IA para traducción', duration: 2000 })
+    
     try {
       const textToTranslate = categoryForm.nombre.trim()
       
-      // Función para traducir usando MyMemory API (gratuita)
+      // Usar API de traducción gratuita más confiable
       const translateText = async (text: string, targetLang: string): Promise<string> => {
         try {
+          console.log(`🌐 Traduciendo "${text}" a ${targetLang}...`)
+          
+          // Usar translate.googleapis.com (endpoint público, no requiere API key)
           const response = await fetch(
-            `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=es|${targetLang}`
+            `https://translate.googleapis.com/translate_a/single?client=gtx&sl=es&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`
           )
-          const data = await response.json()
-          if (data.responseStatus === 200 && data.responseData?.translatedText) {
-            // Capitalizar primera letra
-            const translated = data.responseData.translatedText
-            return translated.charAt(0).toUpperCase() + translated.slice(1).toLowerCase()
+          
+          console.log(`📡 Response status ${targetLang}:`, response.status)
+          
+          if (!response.ok) {
+            const errorText = await response.text()
+            console.error(`❌ Translation API error for ${targetLang}:`, response.status, errorText)
+            return text
           }
-          return text // Fallback al original si falla
-        } catch {
+          
+          const data = await response.json()
+          console.log(`✅ Translation result ${targetLang}:`, data)
+          
+          // Google Translate retorna un array anidado: [[["texto traducido", "original", null, null, 10]]]
+          if (data && data[0] && data[0][0] && data[0][0][0]) {
+            return data[0][0][0]
+          }
+          
+          return text
+        } catch (error) {
+          console.error(`❌ Translation error for ${targetLang}:`, error)
           return text
         }
       }
@@ -1202,13 +1219,67 @@ export default function ProductosSimple() {
         translateText(textToTranslate, 'it')
       ])
       
-      setCategoryForm({
+      // Actualizar el formulario
+      const updatedForm = {
         ...categoryForm,
         nombre_en: translatedEN,
         nombre_it: translatedIT
-      })
+      }
+      setCategoryForm(updatedForm)
       
-      toast({ title: '✨ Traducción completada' })
+      // 🔥 GUARDAR AUTOMÁTICAMENTE EN LA BASE DE DATOS
+      const categoryToSave = editingCategory || selectedCategory
+      
+      if (!USE_MOCK_DATA && categoryToSave) {
+        console.log('💾 Guardando traducciones automáticamente...', categoryToSave.id)
+        
+        // Guardar traducciones en Supabase
+        const translations = [
+          { lang: 'en', field: 'name', value: translatedEN },
+          { lang: 'it', field: 'name', value: translatedIT },
+        ]
+
+        for (const t of translations) {
+          const result = await supabase.from('translations').upsert({
+            entity_type: 'category',
+            entity_id: categoryToSave.id,
+            field_name: t.field,
+            language_code: t.lang,
+            value: t.value
+          }, { onConflict: 'entity_type,entity_id,field_name,language_code' })
+          
+          console.log(`Upsert ${t.lang}:`, result)
+        }
+
+        // Actualizar estado local
+        setCategories(prevCategories => 
+          prevCategories.map(cat => 
+            cat.id === categoryToSave.id
+              ? {
+                  ...cat,
+                  nombre_en: translatedEN,
+                  nombre_it: translatedIT,
+                }
+              : cat
+          )
+        )
+        
+        // Actualizar selectedCategory si existe
+        if (selectedCategory && selectedCategory.id === categoryToSave.id) {
+          setSelectedCategory({
+            ...selectedCategory,
+            nombre_en: translatedEN,
+            nombre_it: translatedIT,
+          } as any)
+        }
+
+        // Limpiar cache para que se vean los cambios en la web
+        projectsService.clearCache()
+        
+        toast({ title: '✨ Traducción guardada automáticamente', duration: 2000 })
+      } else {
+        toast({ title: '✨ Traducción completada (guarda para aplicar)', duration: 2000 })
+      }
     } catch (error) {
       console.error('Error translating:', error)
       toast({ title: 'Error al traducir', variant: 'destructive' })
@@ -1224,21 +1295,32 @@ export default function ProductosSimple() {
     }
     
     setSaving(true)
+    toast({ title: '🔄 Traduciendo...', description: 'Usando IA para traducción', duration: 2000 })
+    
     try {
-      // Función para traducir usando MyMemory API (gratuita)
+      // Usar API de traducción gratuita más confiable
       const translateText = async (text: string, targetLang: string): Promise<string> => {
         if (!text.trim()) return ''
         try {
+          console.log(`🌐 Traduciendo proyecto "${text}" a ${targetLang}...`)
+          
           const response = await fetch(
-            `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=es|${targetLang}`
+            `https://translate.googleapis.com/translate_a/single?client=gtx&sl=es&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`
           )
-          const data = await response.json()
-          if (data.responseStatus === 200 && data.responseData?.translatedText) {
-            const translated = data.responseData.translatedText
-            return translated.charAt(0).toUpperCase() + translated.slice(1)
+          
+          if (!response.ok) {
+            console.error(`❌ Translation API error for ${targetLang}:`, response.status)
+            return text
           }
+          
+          const data = await response.json()
+          if (data && data[0] && data[0][0] && data[0][0][0]) {
+            return data[0][0][0]
+          }
+          
           return text
-        } catch {
+        } catch (error) {
+          console.error(`❌ Translation error for ${targetLang}:`, error)
           return text
         }
       }
@@ -1251,15 +1333,71 @@ export default function ProductosSimple() {
         translateText(projectForm.descripcion || '', 'it')
       ])
       
-      setProjectForm({
+      // Actualizar el formulario
+      const updatedForm = {
         ...projectForm,
         nombre_en: nombreEN,
         nombre_it: nombreIT,
         descripcion_en: descripcionEN,
         descripcion_it: descripcionIT
-      })
+      }
+      setProjectForm(updatedForm)
       
-      toast({ title: '✨ Traducción completada' })
+      // 🔥 GUARDAR AUTOMÁTICAMENTE EN LA BASE DE DATOS
+      if (!USE_MOCK_DATA && editingProject) {
+        console.log('💾 Guardando traducciones de proyecto automáticamente...', editingProject.id)
+        
+        // Guardar traducciones en Supabase
+        const translations = [
+          { lang: 'en', field: 'name', value: nombreEN },
+          { lang: 'it', field: 'name', value: nombreIT },
+          { lang: 'en', field: 'description', value: descripcionEN },
+          { lang: 'it', field: 'description', value: descripcionIT },
+        ]
+
+        for (const t of translations) {
+          if (t.value) { // Solo guardar si tiene valor
+            const result = await supabase.from('translations').upsert({
+              entity_type: 'project',
+              entity_id: editingProject.id,
+              field_name: t.field,
+              language_code: t.lang,
+              value: t.value
+            }, { onConflict: 'entity_type,entity_id,field_name,language_code' })
+            
+            console.log(`Upsert project ${t.lang}/${t.field}:`, result)
+          }
+        }
+
+        // Actualizar estado local
+        setCategories(prevCategories => 
+          prevCategories.map(cat => 
+            cat.id === projectForm.categoria_id
+              ? {
+                  ...cat,
+                  projects: cat.projects.map(proj =>
+                    proj.id === editingProject.id
+                      ? {
+                          ...proj,
+                          nombre_en: nombreEN,
+                          nombre_it: nombreIT,
+                          descripcion_en: descripcionEN,
+                          descripcion_it: descripcionIT,
+                        }
+                      : proj
+                  )
+                }
+              : cat
+          )
+        )
+
+        // Limpiar cache para que se vean los cambios en la web
+        projectsService.clearCache()
+        
+        toast({ title: '✨ Traducción guardada automáticamente', duration: 2000 })
+      } else {
+        toast({ title: '✨ Traducción completada (guarda para aplicar)', duration: 2000 })
+      }
     } catch (error) {
       console.error('Error translating:', error)
       toast({ title: 'Error al traducir', variant: 'destructive' })
@@ -1677,6 +1815,36 @@ export default function ProductosSimple() {
 
             {/* Información de la Categoría */}
             <div className="flex-1 space-y-4">
+              {/* Botón de traducción alineado a la derecha */}
+              {categoryForm.nombre && (
+                <div className="flex justify-end">
+                  <Button
+                    type="button"
+                    onClick={handleTranslateCategory}
+                    disabled={saving || !categoryForm.nombre}
+                    size="sm"
+                    className={`text-white ${
+                      saving 
+                        ? 'bg-blue-500' 
+                        : 'bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700'
+                    }`}
+                  >
+                    {saving ? (
+                      <>
+                        <svg className="w-4 h-4 mr-1.5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                        Traduciendo...
+                      </>
+                    ) : (
+                      <>
+                        ✨ Traducir con IA
+                      </>
+                    )}
+                  </Button>
+                </div>
+              )}
+
               {/* Tabs de idiomas */}
               <div className="flex border-b border-gray-200">
                 <button
@@ -1700,6 +1868,7 @@ export default function ProductosSimple() {
                   }`}
                 >
                   <span className="text-base">🇬🇧</span> EN
+                  {categoryForm.nombre_en && <span className="text-xs">✓</span>}
                 </button>
                 <button
                   type="button"
@@ -1711,6 +1880,7 @@ export default function ProductosSimple() {
                   }`}
                 >
                   <span className="text-base">🇮🇹</span> IT
+                  {categoryForm.nombre_it && <span className="text-xs">✓</span>}
                 </button>
               </div>
 
@@ -1731,21 +1901,9 @@ export default function ProductosSimple() {
 
                 {activeLanguageTab === 'EN' && (
                   <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <Label className="text-sm font-semibold text-gray-700">Name</Label>
-                      <Button
-                        type="button"
-                        onClick={handleTranslateCategory}
-                        disabled={saving || !categoryForm.nombre}
-                        size="sm"
-                        variant="outline"
-                        className="text-xs"
-                      >
-                        ✨ Traducir con IA
-                      </Button>
-                    </div>
+                    <Label className="text-sm font-semibold text-gray-700">Name</Label>
                     <Input
-                      placeholder="Category name"
+                      placeholder="Category name (English)"
                       value={categoryForm.nombre_en}
                       onChange={(e) => setCategoryForm({ ...categoryForm, nombre_en: e.target.value })}
                       className="text-xl font-bold py-2 px-3"
@@ -1755,21 +1913,9 @@ export default function ProductosSimple() {
 
                 {activeLanguageTab === 'IT' && (
                   <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <Label className="text-sm font-semibold text-gray-700">Nome</Label>
-                      <Button
-                        type="button"
-                        onClick={handleTranslateCategory}
-                        disabled={saving || !categoryForm.nombre}
-                        size="sm"
-                        variant="outline"
-                        className="text-xs"
-                      >
-                        ✨ Traducir con IA
-                      </Button>
-                    </div>
+                    <Label className="text-sm font-semibold text-gray-700">Nome</Label>
                     <Input
-                      placeholder="Nome della categoria"
+                      placeholder="Nome della categoria (Italiano)"
                       value={categoryForm.nombre_it}
                       onChange={(e) => setCategoryForm({ ...categoryForm, nombre_it: e.target.value })}
                       className="text-xl font-bold py-2 px-3"
@@ -1778,7 +1924,7 @@ export default function ProductosSimple() {
                 )}
               </div>
 
-              {/* Alerta de traducciones faltantes */}
+              {/* Alerta de traducciones faltantes (solo si NO están traducidas) */}
               {categoryForm.nombre && (!categoryForm.nombre_en || !categoryForm.nombre_it) && (
                 <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 flex items-start gap-2">
                   <svg className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
@@ -1798,13 +1944,9 @@ export default function ProductosSimple() {
                   type="submit" 
                   disabled={saving} 
                   size="sm"
-                  className={`${
-                    saved || saving
-                      ? 'bg-green-600 hover:bg-green-700 text-white' 
-                      : 'bg-black hover:bg-gray-800 text-white'
-                  }`}
+                  className="bg-black hover:bg-gray-800 text-white"
                 >
-                  {saving ? 'Guardando...' : saved ? '✓ Guardado!' : 'Guardar'}
+                  {saving ? 'Guardando...' : 'Guardar'}
                 </Button>
               </div>
             
@@ -1964,6 +2106,36 @@ export default function ProductosSimple() {
 
               {/* Columna Derecha: Información */}
               <div className="space-y-6">
+                {/* Botón de traducción alineado a la derecha */}
+                {categoryForm.nombre && (
+                  <div className="flex justify-end">
+                    <Button
+                      type="button"
+                      onClick={handleTranslateCategory}
+                      disabled={saving || !categoryForm.nombre}
+                      size="sm"
+                      className={`text-white ${
+                        saving 
+                          ? 'bg-blue-500' 
+                          : 'bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700'
+                      }`}
+                    >
+                      {saving ? (
+                        <>
+                          <svg className="w-4 h-4 mr-1.5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                          </svg>
+                          Traduciendo...
+                        </>
+                      ) : (
+                        <>
+                          ✨ Traducir con IA
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                )}
+
                 {/* Tabs de idiomas */}
                 <div className="flex border-b border-gray-200">
                   <button
@@ -1987,6 +2159,7 @@ export default function ProductosSimple() {
                     }`}
                   >
                     <span className="text-base">🇬🇧</span> EN
+                    {categoryForm.nombre_en && <span className="text-xs">✓</span>}
                   </button>
                   <button
                     type="button"
@@ -1998,6 +2171,7 @@ export default function ProductosSimple() {
                     }`}
                   >
                     <span className="text-base">🇮🇹</span> IT
+                    {categoryForm.nombre_it && <span className="text-xs">✓</span>}
                   </button>
                 </div>
 
@@ -2017,25 +2191,9 @@ export default function ProductosSimple() {
 
                   {activeCategoryLanguageTab === 'EN' && (
                     <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <Label className="text-sm font-semibold text-gray-700">Name</Label>
-                        <Button
-                          type="button"
-                          onClick={handleTranslateCategory}
-                          disabled={saving || !categoryForm.nombre}
-                          size="sm"
-                          variant="outline"
-                          className="text-xs"
-                          title={!categoryForm.nombre ? 'Primero escribe el nombre en español (ES)' : 'Traducir automáticamente'}
-                        >
-                          ✨ Traducir con IA
-                        </Button>
-                      </div>
-                      {!categoryForm.nombre && (
-                        <p className="text-xs text-amber-600 mb-2">⚠️ Primero escribe el nombre en español (tab ES)</p>
-                      )}
+                      <Label className="text-sm font-semibold text-gray-700 mb-2 block">Name</Label>
                       <Input
-                        placeholder="Category name"
+                        placeholder="Category name (English)"
                         value={categoryForm.nombre_en}
                         onChange={(e) => setCategoryForm({ ...categoryForm, nombre_en: e.target.value })}
                         className="text-lg font-semibold"
@@ -2045,25 +2203,9 @@ export default function ProductosSimple() {
 
                   {activeCategoryLanguageTab === 'IT' && (
                     <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <Label className="text-sm font-semibold text-gray-700">Nome</Label>
-                        <Button
-                          type="button"
-                          onClick={handleTranslateCategory}
-                          disabled={saving || !categoryForm.nombre}
-                          size="sm"
-                          variant="outline"
-                          className="text-xs"
-                          title={!categoryForm.nombre ? 'Primero escribe el nombre en español (ES)' : 'Traducir automáticamente'}
-                        >
-                          ✨ Traducir con IA
-                        </Button>
-                      </div>
-                      {!categoryForm.nombre && (
-                        <p className="text-xs text-amber-600 mb-2">⚠️ Primero escribe el nombre en español (tab ES)</p>
-                      )}
+                      <Label className="text-sm font-semibold text-gray-700 mb-2 block">Nome</Label>
                       <Input
-                        placeholder="Nome della categoria"
+                        placeholder="Nome della categoria (Italiano)"
                         value={categoryForm.nombre_it}
                         onChange={(e) => setCategoryForm({ ...categoryForm, nombre_it: e.target.value })}
                         className="text-lg font-semibold"
@@ -2217,7 +2359,37 @@ export default function ProductosSimple() {
               </div>
 
               {/* Columna Derecha: Información */}
-              <div className="space-y-6">
+              <div className="space-y-3">
+                {/* Botón de traducción alineado a la derecha */}
+                {projectForm.nombre && (
+                  <div className="flex justify-end -mb-2">
+                    <Button
+                      type="button"
+                      onClick={handleTranslateProject}
+                      disabled={saving || !projectForm.nombre}
+                      size="sm"
+                      className={`text-white ${
+                        saving 
+                          ? 'bg-blue-500' 
+                          : 'bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700'
+                      }`}
+                    >
+                      {saving ? (
+                        <>
+                          <svg className="w-4 h-4 mr-1.5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                          </svg>
+                          Traduciendo...
+                        </>
+                      ) : (
+                        <>
+                          ✨ Traducir con IA
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                )}
+
                 {/* Tabs de idiomas */}
                 <div className="flex border-b border-gray-200">
                   <button
@@ -2241,6 +2413,7 @@ export default function ProductosSimple() {
                     }`}
                   >
                     <span className="text-base">🇬🇧</span> EN
+                    {projectForm.nombre_en && <span className="text-xs">✓</span>}
                   </button>
                   <button
                     type="button"
@@ -2252,6 +2425,7 @@ export default function ProductosSimple() {
                     }`}
                   >
                     <span className="text-base">🇮🇹</span> IT
+                    {projectForm.nombre_it && <span className="text-xs">✓</span>}
                   </button>
                 </div>
 
@@ -2283,22 +2457,10 @@ export default function ProductosSimple() {
 
                   {activeProjectLanguageTab === 'EN' && (
                     <div className="space-y-3">
-                      <div className="flex items-center justify-between mb-2">
-                        <Label className="text-sm font-semibold text-gray-700">Name</Label>
-                        <Button
-                          type="button"
-                          onClick={handleTranslateProject}
-                          disabled={saving || !projectForm.nombre}
-                          size="sm"
-                          variant="outline"
-                          className="text-xs"
-                        >
-                          ✨ Traducir con IA
-                        </Button>
-                      </div>
                       <div>
+                        <Label className="text-sm font-semibold text-gray-700 mb-2 block">Name</Label>
                         <Input
-                          placeholder="Project name"
+                          placeholder="Project name (English)"
                           value={projectForm.nombre_en}
                           onChange={(e) => setProjectForm({ ...projectForm, nombre_en: e.target.value })}
                           className="text-lg font-semibold"
@@ -2319,22 +2481,10 @@ export default function ProductosSimple() {
 
                   {activeProjectLanguageTab === 'IT' && (
                     <div className="space-y-3">
-                      <div className="flex items-center justify-between mb-2">
-                        <Label className="text-sm font-semibold text-gray-700">Nome</Label>
-                        <Button
-                          type="button"
-                          onClick={handleTranslateProject}
-                          disabled={saving || !projectForm.nombre}
-                          size="sm"
-                          variant="outline"
-                          className="text-xs"
-                        >
-                          ✨ Traducir con IA
-                        </Button>
-                      </div>
                       <div>
+                        <Label className="text-sm font-semibold text-gray-700 mb-2 block">Nome</Label>
                         <Input
-                          placeholder="Nome del progetto"
+                          placeholder="Nome del progetto (Italiano)"
                           value={projectForm.nombre_it}
                           onChange={(e) => setProjectForm({ ...projectForm, nombre_it: e.target.value })}
                           className="text-lg font-semibold"
@@ -2374,13 +2524,9 @@ export default function ProductosSimple() {
                     type="submit" 
                     disabled={saving} 
                     size="sm"
-                    className={`transition-all ${
-                      saved || saving
-                        ? 'bg-green-600 hover:bg-green-700 text-white' 
-                        : 'bg-black hover:bg-gray-800 text-white'
-                    }`}
+                    className="bg-black hover:bg-gray-800 text-white"
                   >
-                    {saving ? '✓ Guardado!' : saved ? '✓ Guardado!' : editingProject ? 'Guardar' : '+ Crear Proyecto'}
+                    {editingProject ? 'Guardar' : '+ Crear Proyecto'}
                   </Button>
                 </div>
               </div>

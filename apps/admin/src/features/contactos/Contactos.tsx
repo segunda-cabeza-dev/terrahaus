@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { PageHeader } from '../../shared';
 import { supabase } from '@beltrame/shared/lib/supabase';
-import { Mail, Phone, Calendar, CheckCircle, Circle, Loader2, Trash2, Eye } from 'lucide-react';
+import { Mail, Phone, CheckCircle, Circle, Loader2, Trash2, Eye } from 'lucide-react';
 
 interface ContactMessage {
   id: string;
@@ -17,7 +17,6 @@ interface ContactMessage {
 export default function Contactos() {
   const [contacts, setContacts] = useState<ContactMessage[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedContact, setSelectedContact] = useState<ContactMessage | null>(null);
 
   useEffect(() => {
     loadContacts();
@@ -58,9 +57,6 @@ export default function Contactos() {
           setContacts(prev => prev.map(c => 
             c.id === updatedContact.id ? updatedContact : c
           ));
-          if (selectedContact?.id === updatedContact.id) {
-            setSelectedContact(updatedContact);
-          }
         }
       )
       .on(
@@ -74,9 +70,6 @@ export default function Contactos() {
           console.log('🗑️ Mensaje eliminado', payload.old);
           const deletedId = (payload.old as { id: string }).id;
           setContacts(prev => prev.filter(c => c.id !== deletedId));
-          if (selectedContact?.id === deletedId) {
-            setSelectedContact(null);
-          }
         }
       )
       .subscribe((status) => {
@@ -142,7 +135,6 @@ export default function Contactos() {
 
       if (error) throw error;
       setContacts(contacts.filter(c => c.id !== id));
-      if (selectedContact?.id === id) setSelectedContact(null);
     } catch (error) {
       console.error('Error deleting contact:', error);
     }
@@ -180,100 +172,101 @@ export default function Contactos() {
         description={`${contacts.length} mensaje${contacts.length !== 1 ? 's' : ''} recibido${contacts.length !== 1 ? 's' : ''}`}
       />
       
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-6">
-        {/* Lista de mensajes */}
-        <div className="space-y-3">
-          {contacts.length === 0 ? (
-            <div className="text-center py-12 bg-white rounded-lg border">
-              <Mail className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-              <p className="text-gray-500">No hay mensajes de contacto</p>
-            </div>
-          ) : (
-            contacts.map((contact) => (
+      {/* Vista de lista estilo inbox */}
+      <div className="bg-white rounded-lg border overflow-hidden">
+        {contacts.length === 0 ? (
+          <div className="text-center py-16">
+            <Mail className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+            <p className="text-gray-500 text-lg">No hay mensajes de contacto</p>
+          </div>
+        ) : (
+          <div className="divide-y">
+            {contacts.map((contact) => (
               <div 
                 key={contact.id} 
-                onClick={() => {
-                  setSelectedContact(contact);
-                  if (!contact.is_read) toggleRead(contact);
-                }}
-                className={`border rounded-lg p-4 bg-white cursor-pointer transition-all hover:shadow-md ${
-                  selectedContact?.id === contact.id ? 'ring-2 ring-black' : ''
-                } ${!contact.is_read ? 'border-l-4 border-l-blue-500' : ''}`}
+                className={`p-4 hover:bg-gray-50 transition-colors ${
+                  !contact.is_read ? 'bg-blue-50/30' : ''
+                }`}
               >
-                <div className="flex items-start justify-between gap-3">
+                <div className="flex items-start gap-4">
+                  {/* Indicador de leído/no leído */}
+                  <div className="pt-1">
+                    {contact.is_read ? (
+                      <CheckCircle className="w-5 h-5 text-green-500" />
+                    ) : (
+                      <Circle className="w-5 h-5 text-blue-500 animate-pulse" />
+                    )}
+                  </div>
+
+                  {/* Contenido principal */}
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      {contact.is_read ? (
-                        <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
-                      ) : (
-                        <Circle className="w-4 h-4 text-blue-500 flex-shrink-0" />
-                      )}
-                      <span className={`font-semibold truncate ${!contact.is_read ? 'text-black' : 'text-gray-700'}`}>
-                        {contact.full_name}
-                      </span>
+                    <div className="flex items-start justify-between gap-4 mb-2">
+                      <div className="flex-1 min-w-0">
+                        <h3 className={`font-semibold text-base truncate ${
+                          !contact.is_read ? 'text-black' : 'text-gray-700'
+                        }`}>
+                          {contact.full_name}
+                        </h3>
+                        <div className="flex items-center gap-4 text-sm text-gray-600 mt-1">
+                          <a 
+                            href={`mailto:${contact.email}`} 
+                            className="hover:text-blue-600 truncate flex items-center gap-1"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <Mail className="w-3.5 h-3.5 flex-shrink-0" />
+                            {contact.email}
+                          </a>
+                          {contact.phone && (
+                            <a 
+                              href={`tel:${contact.phone}`} 
+                              className="hover:text-blue-600 flex items-center gap-1"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <Phone className="w-3.5 h-3.5 flex-shrink-0" />
+                              {contact.phone}
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm text-gray-500 whitespace-nowrap">
+                          {formatDate(contact.created_at)}
+                        </span>
+                      </div>
                     </div>
-                    <p className="text-sm text-gray-500 truncate">{contact.email}</p>
-                    <p className="text-sm text-gray-600 mt-1 line-clamp-2">{contact.message}</p>
+                    
+                    {/* Mensaje */}
+                    <p className="text-sm text-gray-600 line-clamp-2 mt-2">
+                      {contact.message}
+                    </p>
                   </div>
-                  <div className="text-xs text-gray-400 whitespace-nowrap">
-                    {formatDate(contact.created_at)}
+
+                  {/* Acciones */}
+                  <div className="flex gap-1 pt-1">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleRead(contact);
+                      }}
+                      className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
+                      title={contact.is_read ? 'Marcar como no leído' : 'Marcar como leído'}
+                    >
+                      <Eye className={`w-4 h-4 ${contact.is_read ? 'text-green-500' : 'text-gray-400'}`} />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteContact(contact.id);
+                      }}
+                      className="p-2 hover:bg-red-50 rounded-lg transition-colors"
+                      title="Eliminar mensaje"
+                    >
+                      <Trash2 className="w-4 h-4 text-red-500" />
+                    </button>
                   </div>
                 </div>
               </div>
-            ))
-          )}
-        </div>
-
-        {/* Panel de detalle */}
-        {selectedContact && (
-          <div className="bg-white border rounded-lg p-6 h-fit sticky top-6">
-            <div className="flex items-start justify-between mb-4">
-              <h3 className="font-bold text-lg">{selectedContact.full_name}</h3>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => toggleRead(selectedContact)}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                  title={selectedContact.is_read ? 'Marcar como no leído' : 'Marcar como leído'}
-                >
-                  <Eye className={`w-4 h-4 ${selectedContact.is_read ? 'text-green-500' : 'text-gray-400'}`} />
-                </button>
-                <button
-                  onClick={() => deleteContact(selectedContact.id)}
-                  className="p-2 hover:bg-red-50 rounded-lg transition-colors text-red-500"
-                  title="Eliminar mensaje"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-
-            <div className="space-y-3 text-sm">
-              <div className="flex items-center gap-2 text-gray-600">
-                <Mail className="w-4 h-4" />
-                <a href={`mailto:${selectedContact.email}`} className="hover:text-black">
-                  {selectedContact.email}
-                </a>
-              </div>
-              
-              {selectedContact.phone && (
-                <div className="flex items-center gap-2 text-gray-600">
-                  <Phone className="w-4 h-4" />
-                  <a href={`tel:${selectedContact.phone}`} className="hover:text-black">
-                    {selectedContact.phone}
-                  </a>
-                </div>
-              )}
-              
-              <div className="flex items-center gap-2 text-gray-600">
-                <Calendar className="w-4 h-4" />
-                <span>{formatDate(selectedContact.created_at)}</span>
-              </div>
-            </div>
-
-            <div className="mt-6 pt-4 border-t">
-              <h4 className="font-medium text-sm text-gray-500 mb-2">Mensaje</h4>
-              <p className="text-gray-800 whitespace-pre-wrap">{selectedContact.message}</p>
-            </div>
+            ))}
           </div>
         )}
       </div>
