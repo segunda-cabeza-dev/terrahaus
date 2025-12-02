@@ -5,29 +5,20 @@ import { ChevronLeft, Loader2 } from 'lucide-react';
 import { projectsService, type ProjectItem } from '@beltrame/shared';
 import { setCategoryProjectsCache } from './ProyectoDetalle';
 
-// Cache local para evitar spinner en navegación
-const localCache: Map<string, { projects: ProjectItem[]; categoryName: string }> = new Map();
-
 export default function ProyectoCategoria() {
   const { categoria } = useParams<{ categoria: string }>();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const lang = i18n.language || 'es';
-  const cacheKey = `${categoria}_${lang}`;
 
-  // Inicializar con cache si existe
-  const cached = localCache.get(cacheKey);
-  const [projects, setProjects] = useState<ProjectItem[]>(cached?.projects || []);
-  const [categoryName, setCategoryName] = useState(cached?.categoryName || '');
-  const [loading, setLoading] = useState(!cached);
+  const [projects, setProjects] = useState<ProjectItem[]>([]);
+  const [categoryName, setCategoryName] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadProjects = async () => {
       if (!categoria) return;
-      // Solo mostrar loading si no hay datos cacheados
-      if (projects.length === 0) {
-        setLoading(true);
-      }
+      setLoading(true);
       try {
         const data = await projectsService.getProjectsByCategory(categoria, lang);
         setProjects(data);
@@ -43,9 +34,7 @@ export default function ProyectoCategoria() {
         }
         setCategoryName(catName);
         
-        // Guardar en cache local
-        localCache.set(cacheKey, { projects: data, categoryName: catName });
-        // También llenar el cache compartido con ProyectoDetalle
+        // Llenar el cache compartido con ProyectoDetalle
         if (categoria) {
           setCategoryProjectsCache(categoria, lang, data);
         }
@@ -56,7 +45,7 @@ export default function ProyectoCategoria() {
       }
     };
     loadProjects();
-  }, [categoria, lang, cacheKey]);
+  }, [categoria, lang]);
 
   if (loading) {
     return (
@@ -78,7 +67,7 @@ export default function ProyectoCategoria() {
         <div className="container">
           <div className="back-breadcrumb-wrapper">
             <button onClick={() => navigate('/proyectos')} className="back-btn">
-              <ChevronLeft size={20} />
+              <ChevronLeft size={18} />
             </button>
             
             <div className="breadcrumb-content">
@@ -133,7 +122,7 @@ const styles = `
 .proyecto-categoria-page { min-height: 100vh; background: white; padding-top: 0; padding-bottom: 80px; }
 .container { max-width: 1200px; margin: 0 auto; padding: 0 40px; }
 .back-breadcrumb-wrapper { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
-.back-btn { width: 48px; height: 48px; border-radius: 50%; background: white; border: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; flex-shrink: 0; }
+.back-btn { width: 40px; height: 40px; border-radius: 50%; background: white; border: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; flex-shrink: 0; }
 .back-btn:hover { background: #000; color: white; border-color: #000; }
 .breadcrumb-content { display: flex; align-items: center; gap: 8px; font-size: 14px; flex-wrap: wrap; }
 .breadcrumb-link { background: none; border: none; color: #000; cursor: pointer; font-weight: 500; transition: opacity 0.2s; padding: 0; font-size: 14px; }
@@ -141,7 +130,7 @@ const styles = `
 .separator { color: #9ca3af; font-weight: 400; }
 .current { color: #9ca3af; font-weight: 400; }
 .header-section { padding: 12px 0 16px; background: white; padding-top: 70px; }
-.title { font-size: 40px; font-weight: 700; color: #000; line-height: 1.2; text-align: left; }
+.title { font-size: 35px; font-weight: 700; color: #000; line-height: 1.2; text-align: left; }
 .projects-section { padding: 0 0 40px; background: white; }
 .projects-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; }
 .project-card { cursor: pointer; }

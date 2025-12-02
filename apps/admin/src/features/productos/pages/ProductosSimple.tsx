@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { USE_MOCK_DATA, mockData, type Category, type Project, supabase, galleryService, projectsService } from '@beltrame/shared'
 import { Button } from '@beltrame/shared/ui/button'
 import { Input } from '@beltrame/shared/ui/input'
@@ -14,11 +15,17 @@ interface CategoryWithProjects extends Category {
 type View = 'categories' | 'category-detail' | 'edit-category' | 'edit-project'
 
 export default function ProductosSimple() {
+  const [searchParams, setSearchParams] = useSearchParams()
   const [categories, setCategories] = useState<CategoryWithProjects[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
-  const [currentView, setCurrentView] = useState<View>('categories')
+  
+  // Leer estado inicial desde URL
+  const [currentView, setCurrentView] = useState<View>(() => {
+    const view = searchParams.get('view')
+    return (view as View) || 'categories'
+  })
   const [selectedCategory, setSelectedCategory] = useState<CategoryWithProjects | null>(null)
   const [editingCategory, setEditingCategory] = useState<Category | null>(null)
   const [editingProject, setEditingProject] = useState<Project | null>(null)
@@ -78,6 +85,60 @@ export default function ProductosSimple() {
     loadData()
   }, [])
 
+  // Scroll to top cuando cambia la vista
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [currentView])
+
+  // Restaurar estado desde URL
+  useEffect(() => {
+    if (categories.length === 0) return
+
+    const view = searchParams.get('view') as View
+    const categoryId = searchParams.get('categoryId')
+    const projectId = searchParams.get('projectId')
+
+    if (view && view !== 'categories') {
+      setCurrentView(view)
+      
+      if (categoryId) {
+        const category = categories.find(cat => cat.id === parseInt(categoryId))
+        if (category) {
+          setSelectedCategory(category)
+          
+          if (view === 'edit-project' && projectId) {
+            setActiveProjectLanguageTab('ES') // Reset to Spanish for projects
+            const project = category.projects.find(p => p.id === parseInt(projectId))
+            if (project) {
+              setEditingProject(project)
+              setProjectForm({
+                categoria_id: category.id,
+                nombre: project.nombre,
+                nombre_en: project.nombre_en || '',
+                nombre_it: project.nombre_it || '',
+                descripcion: project.descripcion || '',
+                descripcion_en: project.descripcion_en || '',
+                descripcion_it: project.descripcion_it || '',
+                imagenes: project.imagenes || [],
+              })
+            }
+          } else if (view === 'edit-category') {
+            setActiveCategoryLanguageTab('ES') // Reset to Spanish for categories
+            setEditingCategory(category)
+            setCategoryForm({
+              nombre: category.nombre,
+              nombre_en: category.nombre_en || '',
+              nombre_it: category.nombre_it || '',
+              imagen_portada: category.imagen_portada || '',
+            })
+          } else if (view === 'category-detail') {
+            setActiveLanguageTab('ES') // Reset to Spanish for category detail
+          }
+        }
+      }
+    }
+  }, [categories, searchParams])
+
   const loadData = async () => {
     try {
       if (USE_MOCK_DATA) {
@@ -113,35 +174,45 @@ export default function ProductosSimple() {
         if (translationsError) throw translationsError
 
         // Process categories
+        const normalizeLanguageCode = (code: string | null | undefined) => (code ?? '').toLowerCase()
+        const getTranslationValue = (items: any[], lang: string, field: string) =>
+          items.find((t: any) => normalizeLanguageCode(t.language_code) === lang && t.field_name === field)?.value?.trim() ?? ''
+        const slugToTitle = (value: string) =>
+          value ? value.replace(/[-_]+/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase()) : ''
+
         const processedCategories: any[] = categoriesData.map((cat: any) => {
           const catTranslations = translationsData.filter((t: any) => t.entity_type === 'category' && t.entity_id === cat.id)
-          
-          const nombre = catTranslations.find((t: any) => t.language_code === 'es' && t.field_name === 'name')?.value || ''
-          const nombre_en = catTranslations.find((t: any) => t.language_code === 'en' && t.field_name === 'name')?.value || ''
-          const nombre_it = catTranslations.find((t: any) => t.language_code === 'it' && t.field_name === 'name')?.value || ''
-          
+
+          const nombreEs = getTranslationValue(catTranslations, 'es', 'name') || slugToTitle(cat.slug)
+          const nombreEn = getTranslationValue(catTranslations, 'en', 'name') || nombreEs
+          const nombreIt = getTranslationValue(catTranslations, 'it', 'name') || nombreEs
+
+          const descripcionEs = getTranslationValue(catTranslations, 'es', 'description')
+          const descripcionEn = getTranslationValue(catTranslations, 'en', 'description') || descripcionEs
+          const descripcionIt = getTranslationValue(catTranslations, 'it', 'description') || descripcionEs
+
           // Filter projects for this category
           const catProjects = projectsData.filter((p: any) => p.category_id === cat.id).map((p: any) => {
             const projTranslations = translationsData.filter((t: any) => t.entity_type === 'project' && t.entity_id === p.id)
-            
-            const pNombre = projTranslations.find((t: any) => t.language_code === 'es' && t.field_name === 'name')?.value || ''
-            const pNombre_en = projTranslations.find((t: any) => t.language_code === 'en' && t.field_name === 'name')?.value || ''
-            const pNombre_it = projTranslations.find((t: any) => t.language_code === 'it' && t.field_name === 'name')?.value || ''
-            
-            const pDesc = projTranslations.find((t: any) => t.language_code === 'es' && t.field_name === 'description')?.value || ''
-            const pDesc_en = projTranslations.find((t: any) => t.language_code === 'en' && t.field_name === 'description')?.value || ''
-            const pDesc_it = projTranslations.find((t: any) => t.language_code === 'it' && t.field_name === 'description')?.value || ''
+
+            const pNombreEs = getTranslationValue(projTranslations, 'es', 'name') || slugToTitle(p.slug)
+            const pNombreEn = getTranslationValue(projTranslations, 'en', 'name') || pNombreEs
+            const pNombreIt = getTranslationValue(projTranslations, 'it', 'name') || pNombreEs
+
+            const pDescEs = getTranslationValue(projTranslations, 'es', 'description')
+            const pDescEn = getTranslationValue(projTranslations, 'en', 'description') || pDescEs
+            const pDescIt = getTranslationValue(projTranslations, 'it', 'description') || pDescEs
 
             return {
               id: p.id,
               categoria_id: p.category_id,
               slug: p.slug,
-              nombre: pNombre,
-              nombre_en: pNombre_en,
-              nombre_it: pNombre_it,
-              descripcion: pDesc,
-              descripcion_en: pDesc_en,
-              descripcion_it: pDesc_it,
+              nombre: pNombreEs,
+              nombre_en: pNombreEn,
+              nombre_it: pNombreIt,
+              descripcion: pDescEs,
+              descripcion_en: pDescEn,
+              descripcion_it: pDescIt,
               imagenes: p.image_urls || [],
               orden: p.display_order,
               activo: p.is_active,
@@ -152,12 +223,12 @@ export default function ProductosSimple() {
 
           return {
             id: cat.id,
-            nombre: nombre,
-            nombre_en: nombre_en,
-            nombre_it: nombre_it,
-            descripcion: '',
-            descripcion_en: '',
-            descripcion_it: '',
+            nombre: nombreEs,
+            nombre_en: nombreEn,
+            nombre_it: nombreIt,
+            descripcion: descripcionEs,
+            descripcion_en: descripcionEn,
+            descripcion_it: descripcionIt,
             imagen_portada: cat.cover_image_url || '',
             slug: cat.slug,
             orden: cat.display_order,
@@ -182,6 +253,35 @@ export default function ProductosSimple() {
     }
   }
 
+  // Funciones helper para navegación con URL
+  const navigateToCategories = () => {
+    setCurrentView('categories')
+    setSearchParams({})
+  }
+
+  const navigateToCategoryDetail = (category: CategoryWithProjects) => {
+    setCurrentView('category-detail')
+    setSearchParams({ view: 'category-detail', categoryId: category.id.toString() })
+  }
+
+  const navigateToEditCategory = (category: CategoryWithProjects | null) => {
+    setCurrentView('edit-category')
+    if (category) {
+      setSearchParams({ view: 'edit-category', categoryId: category.id.toString() })
+    } else {
+      setSearchParams({ view: 'edit-category' })
+    }
+  }
+
+  const navigateToEditProject = (category: CategoryWithProjects, project: Project) => {
+    setCurrentView('edit-project')
+    setSearchParams({ 
+      view: 'edit-project', 
+      categoryId: category.id.toString(),
+      projectId: project.id.toString()
+    })
+  }
+
   // Ver detalle de categoría y sus proyectos
   const handleViewCategory = (category: CategoryWithProjects) => {
     setSelectedCategory(category)
@@ -194,7 +294,7 @@ export default function ProductosSimple() {
     })
     setActiveLanguageTab('ES') // Reset tab to Spanish
     setSaved(false) // Reset saved state when viewing a category
-    setCurrentView('category-detail')
+    navigateToCategoryDetail(category)
   }
 
   // Nueva categoría
@@ -202,7 +302,7 @@ export default function ProductosSimple() {
     setEditingCategory(null)
     setCategoryForm({ nombre: '', nombre_en: '', nombre_it: '', imagen_portada: '' })
     setActiveCategoryLanguageTab('ES') // Reset tab to Spanish for new category
-    setCurrentView('edit-category')
+    navigateToEditCategory(null)
   }
 
   // Guardar categoría
@@ -425,17 +525,13 @@ export default function ProductosSimple() {
       
       // Si es nueva categoría, ir directamente a ella para agregar proyectos
       if (!editingCategory && createdCategoryRef) {
-        setTimeout(() => {
-          setSelectedCategory(createdCategoryRef)
-          setCurrentView('category-detail')
-          setEditingCategory(null)
-        }, 500)
+        setSelectedCategory(createdCategoryRef)
+        navigateToCategoryDetail(createdCategoryRef)
+        setEditingCategory(null)
       } else {
         // Si es edición, volver a la vista de categorías
-        setTimeout(() => {
-          setCurrentView('categories')
-          setEditingCategory(null)
-        }, 500)
+        navigateToCategories()
+        setEditingCategory(null)
       }
     } catch (error) {
       console.error(error)
@@ -497,6 +593,23 @@ export default function ProductosSimple() {
   const handleNewProject = () => {
     if (!selectedCategory) return
     setEditingProject(null)
+    setActiveProjectLanguageTab('ES') // Reset tab to Spanish for projects
+    const newProject: Project = {
+      id: 0, // Temporal
+      nombre: '',
+      nombre_en: '',
+      nombre_it: '',
+      descripcion: '',
+      descripcion_en: '',
+      descripcion_it: '',
+      imagenes: [],
+      categoria_id: selectedCategory.id,
+      slug: '',
+      orden: 0,
+      activo: true,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    }
     setProjectForm({
       categoria_id: selectedCategory.id,
       nombre: '',
@@ -507,12 +620,13 @@ export default function ProductosSimple() {
       descripcion_it: '',
       imagenes: [],
     })
-    setCurrentView('edit-project')
+    navigateToEditProject(selectedCategory, newProject)
   }
 
   // Editar proyecto
   const handleEditProject = (project: Project) => {
     setSaved(false) // Reset saved state
+    setActiveProjectLanguageTab('ES') // Reset tab to Spanish for projects
     
     // Si está en modo mock, buscar los datos más recientes
     let currentProject = project
@@ -534,7 +648,10 @@ export default function ProductosSimple() {
       descripcion_it: currentProject.descripcion_it || '',
       imagenes: currentProject.imagenes || [],
     })
-    setCurrentView('edit-project')
+    // Usar la función helper para navegar
+    if (selectedCategory) {
+      navigateToEditProject(selectedCategory, currentProject)
+    }
   }
 
   // Guardar proyecto
@@ -559,8 +676,8 @@ export default function ProductosSimple() {
       if (USE_MOCK_DATA) {
         if (editingProject) {
           // Actualizar proyecto existente en el estado
-          setCategories(prevCategories => 
-            prevCategories.map(cat => 
+          setCategories(prevCategories => {
+            const updated = prevCategories.map(cat => 
               cat.id === projectForm.categoria_id
                 ? {
                     ...cat,
@@ -582,7 +699,15 @@ export default function ProductosSimple() {
                   }
                 : cat
             )
-          )
+            
+            // Actualizar selectedCategory inmediatamente
+            const updatedCategory = updated.find(cat => cat.id === projectForm.categoria_id)
+            if (updatedCategory && selectedCategory?.id === projectForm.categoria_id) {
+              setSelectedCategory(updatedCategory)
+            }
+            
+            return updated
+          })
           
           // También actualizar en mockData
           const projectIndex = mockData.projects.findIndex(p => p.id === editingProject.id)
@@ -615,21 +740,21 @@ export default function ProductosSimple() {
           }
           
           // Actualizar el estado
-          setCategories(prevCategories =>
-            prevCategories.map(cat =>
+          setCategories(prevCategories => {
+            const updated = prevCategories.map(cat =>
               cat.id === projectForm.categoria_id
                 ? { ...cat, projects: [...cat.projects, newProject] }
                 : cat
             )
-          )
-          
-          // Actualizar selectedCategory si existe
-          if (selectedCategory && selectedCategory.id === projectForm.categoria_id) {
-            setSelectedCategory({
-              ...selectedCategory,
-              projects: [...selectedCategory.projects, newProject]
-            })
-          }
+            
+            // Actualizar selectedCategory inmediatamente
+            const updatedCategory = updated.find(cat => cat.id === projectForm.categoria_id)
+            if (updatedCategory && selectedCategory?.id === projectForm.categoria_id) {
+              setSelectedCategory(updatedCategory)
+            }
+            
+            return updated
+          })
           
           // Agregar a mockData
           mockData.projects.push(newProject as any)
@@ -783,11 +908,12 @@ export default function ProductosSimple() {
         className: 'bg-green-600 text-white border-green-600',
       })
       setSaved(true)
-      // Volver a la vista de detalle de categoría
-      setTimeout(() => {
-        setCurrentView('category-detail')
-        setEditingProject(null)
-      }, 500)
+      
+      // Volver a la vista de detalle de categoría inmediatamente
+      if (selectedCategory) {
+        navigateToCategoryDetail(selectedCategory)
+      }
+      setEditingProject(null)
     } catch (error) {
       console.error(error)
       toast({
@@ -1484,7 +1610,7 @@ export default function ProductosSimple() {
         <div className="space-y-6">
         <div className="flex items-center justify-between">
           <button
-            onClick={() => setCurrentView('categories')}
+            onClick={navigateToCategories}
             className="flex items-center text-gray-600 hover:text-gray-900"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
@@ -1774,7 +1900,7 @@ export default function ProductosSimple() {
         <GalleryModal />
         <div className="space-y-6">
         <button
-          onClick={() => setCurrentView('categories')}
+          onClick={navigateToCategories}
           className="flex items-center text-gray-600 hover:text-gray-900"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
@@ -1973,7 +2099,7 @@ export default function ProductosSimple() {
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={() => setCurrentView('categories')}
+                    onClick={navigateToCategories}
                     size="sm"
                   >
                     Cancelar
@@ -2000,7 +2126,7 @@ export default function ProductosSimple() {
         <div className="space-y-6">
         <div className="flex items-center justify-between">
           <button
-            onClick={() => setCurrentView('category-detail')}
+            onClick={() => selectedCategory && navigateToCategoryDetail(selectedCategory)}
             className="flex items-center text-gray-600 hover:text-gray-900"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />

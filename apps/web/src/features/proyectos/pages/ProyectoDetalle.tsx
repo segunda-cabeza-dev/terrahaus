@@ -148,7 +148,7 @@ export default function ProyectoDetalle() {
         <div className="container">
           <div className="back-breadcrumb-wrapper">
             <button onClick={() => navigate('/proyectos/' + categoria)} className="back-btn">
-              <ChevronLeft size={20} />
+              <ChevronLeft size={18} />
             </button>
             
             <div className="breadcrumb-content">
@@ -229,7 +229,7 @@ const styles = `
 .container { max-width: 1200px; margin: 0 auto; padding: 0 40px; }
 .main-content { padding: 40px 0 60px; background: white; padding-top: 70px; }
 .back-breadcrumb-wrapper { display: flex; align-items: center; gap: 16px; margin-bottom: 32px; }
-.back-btn { width: 48px; height: 48px; border-radius: 50%; background: white; border: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; flex-shrink: 0; }
+.back-btn { width: 40px; height: 40px; border-radius: 50%; background: white; border: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; flex-shrink: 0; }
 .back-btn:hover { background: #000; color: white; border-color: #000; }
 .breadcrumb-content { display: flex; align-items: center; gap: 8px; font-size: 14px; flex-wrap: wrap; }
 .breadcrumb-link { background: none; border: none; color: #000; cursor: pointer; font-weight: 500; transition: opacity 0.2s; padding: 0; font-size: 14px; }
@@ -238,7 +238,7 @@ const styles = `
 .current { color: #9ca3af; font-weight: 400; }
 .content-grid { display: grid; grid-template-columns: 350px 1fr; gap: 50px; align-items: start; }
 .info-column { position: sticky; top: 100px; }
-.project-title { font-size: 40px; font-weight: 700; color: #000; line-height: 1.1; margin-bottom: 20px; }
+.project-title { font-size: 30px; font-weight: 700; color: #000; line-height: 1.1; margin-bottom: 20px; }
 .project-description { font-size: 15px; line-height: 1.6; color: #6b7280; }
 .images-column { width: 100%; max-width: 700px; }
 .image-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }

@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase'
+import type { RealtimeChannel } from '@supabase/supabase-js'
 
 export interface ProjectCategory {
   id: number
@@ -24,64 +25,162 @@ export interface ProjectItem {
   is_active: boolean
 }
 
-// Cache para categorías y proyectos
-let categoriesCache: Map<string, ProjectCategory[]> = new Map() // por idioma
-let projectsCache: Map<string, ProjectItem[]> = new Map()
-let cacheTimestamp: Map<string, number> = new Map()
-const CACHE_TTL = 5 * 60 * 1000 // 5 minutos
-const STORAGE_KEY_PREFIX = 'beltrame_projects_'
+// ==========================================
+// SISTEMA DE DATOS EN TIEMPO REAL
+// ==========================================
+// Caché mínimo (2 segundos) solo para evitar requests duplicados
+// Realtime invalida el caché instantáneamente cuando hay cambios
+// Comportamiento WordPress: desactivar proyecto = ocultar al instante
 
-// Helpers para localStorage (con try-catch por si está deshabilitado)
-const getFromStorage = <T>(key: string): { data: T | null; timestamp: number } => {
+const CACHE_TTL = 2 * 1000 // 2 segundos - solo anti-duplicados
+const STORAGE_KEY_PREFIX = 'beltrame_projects_'
+const CACHE_VERSION = 'v3' // Incrementado para limpiar cachés antiguos
+
+interface CacheEntry<T> {
+  data: T
+  timestamp: number
+  version: string
+}
+
+// Cache en memoria (más rápido, se pierde al recargar)
+const memoryCache = {
+  categories: new Map<string, CacheEntry<ProjectCategory[]>>(),
+  projects: new Map<string, CacheEntry<ProjectItem[]>>(),
+  projectDetail: new Map<string, CacheEntry<ProjectItem>>()
+}
+
+// Helpers para localStorage con versionado
+const getFromStorage = <T>(key: string): CacheEntry<T> | null => {
   try {
     const item = localStorage.getItem(STORAGE_KEY_PREFIX + key)
     if (item) {
-      return JSON.parse(item)
+      const parsed = JSON.parse(item) as CacheEntry<T>
+      // Validar versión del caché
+      if (parsed.version === CACHE_VERSION) {
+        return parsed
+      }
+      // Caché antiguo, eliminarlo
+      localStorage.removeItem(STORAGE_KEY_PREFIX + key)
     }
   } catch {
     // localStorage no disponible o error de parsing
   }
-  return { data: null, timestamp: 0 }
+  return null
 }
 
 const setToStorage = <T>(key: string, data: T): void => {
   try {
-    localStorage.setItem(STORAGE_KEY_PREFIX + key, JSON.stringify({
+    const entry: CacheEntry<T> = {
       data,
-      timestamp: Date.now()
-    }))
+      timestamp: Date.now(),
+      version: CACHE_VERSION
+    }
+    localStorage.setItem(STORAGE_KEY_PREFIX + key, JSON.stringify(entry))
   } catch {
     // localStorage no disponible o quota exceeded
   }
 }
 
+// Validar si un caché es válido (sin type guard estricto para evitar problemas de inferencia)
+const isCacheValid = <T>(entry: CacheEntry<T> | null | undefined): boolean => {
+  if (!entry) return false
+  if (entry.version !== CACHE_VERSION) return false
+  const now = Date.now()
+  return (now - entry.timestamp) < CACHE_TTL
+}
+
+// ==========================================
+// SUPABASE REALTIME - Invalidación automática
+// ==========================================
+let realtimeChannel: RealtimeChannel | null = null
+let isRealtimeInitialized = false
+
+/**
+ * Inicializa las suscripciones de Realtime para invalidar caché automáticamente
+ */
+const initializeRealtime = () => {
+  if (isRealtimeInitialized) return
+  
+  try {
+    // Crear un canal para escuchar cambios en projects y categories
+    realtimeChannel = supabase
+      .channel('projects_cache_invalidation')
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // INSERT, UPDATE, DELETE
+          schema: 'public',
+          table: 'projects'
+        },
+        (payload) => {
+          console.log('🔄 Cambio detectado en projects:', payload.eventType)
+          projectsService.clearCache()
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'categories'
+        },
+        (payload) => {
+          console.log('🔄 Cambio detectado en categories:', payload.eventType)
+          projectsService.clearCache()
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'translations'
+        },
+        (payload) => {
+          console.log('🔄 Cambio detectado en translations:', payload.eventType)
+          projectsService.clearCache()
+        }
+      )
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          console.log('✅ Realtime activo - Caché se actualizará automáticamente')
+          isRealtimeInitialized = true
+        }
+      })
+  } catch (error) {
+    console.warn('⚠️ No se pudo inicializar Realtime:', error)
+  }
+}
+
+// Inicializar Realtime automáticamente cuando se importa el módulo
+if (typeof window !== 'undefined') {
+  // Solo en el navegador
+  setTimeout(initializeRealtime, 1000) // Pequeño delay para evitar problemas de inicialización
+}
+
 export const projectsService = {
   /**
    * Obtiene todas las categorías activas con sus traducciones
-   * Usa cache en memoria + localStorage para cargas instantáneas
+   * Sistema de caché unificado: memoria + localStorage con validación
    */
   async getCategories(lang: string = 'es'): Promise<ProjectCategory[]> {
     const cacheKey = `categories_${lang}`
-    const now = Date.now()
     
-    // 1. Primero revisar memoria cache
-    const memoryCacheTime = cacheTimestamp.get(cacheKey) || 0
-    if (categoriesCache.has(cacheKey) && (now - memoryCacheTime) < CACHE_TTL) {
-      return categoriesCache.get(cacheKey)!
+    // 1. Revisar caché en memoria (más rápido)
+    const memCache = memoryCache.categories.get(cacheKey)
+    if (memCache && isCacheValid(memCache)) {
+      return memCache.data
     }
 
-    // 2. Si no hay en memoria, revisar localStorage (carga instantánea)
-    const stored = getFromStorage<ProjectCategory[]>(cacheKey)
-    const hasValidStoredData = stored.data && stored.data.length > 0
-    
-    // Si tenemos datos en storage y son recientes, usarlos
-    if (hasValidStoredData && (now - stored.timestamp) < CACHE_TTL) {
-      categoriesCache.set(cacheKey, stored.data!)
-      cacheTimestamp.set(cacheKey, stored.timestamp)
-      return stored.data!
+    // 2. Revisar localStorage como fallback
+    const storageCache = getFromStorage<ProjectCategory[]>(cacheKey)
+    if (storageCache && isCacheValid(storageCache)) {
+      // Guardar en memoria para próximas llamadas
+      memoryCache.categories.set(cacheKey, storageCache)
+      return storageCache.data
     }
 
-    // 3. Fetch desde Supabase (en paralelo las 3 queries)
+    // 3. Fetch desde Supabase (datos no en caché o expirados)
     const fetchFreshData = async (): Promise<ProjectCategory[]> => {
       const [categoriesResult, projectCountsResult] = await Promise.all([
         supabase
@@ -97,7 +196,8 @@ export const projectsService = {
 
       if (categoriesResult.error || !categoriesResult.data || categoriesResult.data.length === 0) {
         console.error('Error fetching categories:', categoriesResult.error)
-        return stored.data || []
+        // Devolver datos viejos si existen
+        return []
       }
 
       const categories = categoriesResult.data
@@ -135,25 +235,25 @@ export const projectsService = {
         project_count: countMap.get(cat.id) || 0
       }))
 
-      // Guardar en ambos caches
-      categoriesCache.set(cacheKey, result)
-      cacheTimestamp.set(cacheKey, Date.now())
+      // Guardar en ambos cachés con timestamp actual
+      const entry: CacheEntry<ProjectCategory[]> = {
+        data: result,
+        timestamp: Date.now(),
+        version: CACHE_VERSION
+      }
+      memoryCache.categories.set(cacheKey, entry)
       setToStorage(cacheKey, result)
       
       return result
     }
 
-    // Si hay datos en storage (aunque estén viejos), devolverlos inmediatamente
-    // y refrescar en background
-    if (hasValidStoredData) {
-      // Guardar en memoria los datos de storage
-      categoriesCache.set(cacheKey, stored.data!)
-      cacheTimestamp.set(cacheKey, stored.timestamp)
-      
-      // Refrescar en background (stale-while-revalidate)
+    // Si hay datos viejos en storage (aunque expirados), devolverlos mientras se refresca
+    // esto asegura que el usuario vea algo inmediatamente
+    if (storageCache && storageCache.data && storageCache.data.length > 0) {
+      // Stale-while-revalidate: devolver datos viejos y actualizar en background
+      memoryCache.categories.set(cacheKey, storageCache)
       fetchFreshData().catch(console.error)
-      
-      return stored.data!
+      return storageCache.data
     }
 
     // No hay datos cacheados, esperar el fetch
@@ -162,27 +262,25 @@ export const projectsService = {
 
   /**
    * Obtiene los proyectos de una categoría por slug
+   * Sistema de caché unificado
    */
   async getProjectsByCategory(categorySlug: string, lang: string = 'es'): Promise<ProjectItem[]> {
     const cacheKey = `projects_${categorySlug}_${lang}`
-    const now = Date.now()
     
-    // Revisar memoria cache
-    const memoryCacheTime = cacheTimestamp.get(cacheKey) || 0
-    if (projectsCache.has(cacheKey) && (now - memoryCacheTime) < CACHE_TTL) {
-      return projectsCache.get(cacheKey)!
+    // 1. Revisar caché en memoria
+    const memCache = memoryCache.projects.get(cacheKey)
+    if (memCache && isCacheValid(memCache)) {
+      return memCache.data
     }
 
-    // Revisar localStorage
-    const stored = getFromStorage<ProjectItem[]>(cacheKey)
-    const hasValidStoredData = stored.data && stored.data.length > 0
-
-    if (hasValidStoredData && (now - stored.timestamp) < CACHE_TTL) {
-      projectsCache.set(cacheKey, stored.data!)
-      cacheTimestamp.set(cacheKey, stored.timestamp)
-      return stored.data!
+    // 2. Revisar localStorage
+    const storageCache = getFromStorage<ProjectItem[]>(cacheKey)
+    if (storageCache && isCacheValid(storageCache)) {
+      memoryCache.projects.set(cacheKey, storageCache)
+      return storageCache.data
     }
 
+    // 3. Fetch desde Supabase
     const fetchFreshData = async (): Promise<ProjectItem[]> => {
       // Primero obtener la categoría
       const { data: category } = await supabase
@@ -215,7 +313,7 @@ export const projectsService = {
       const categoryName = catTranslationsResult.data?.[0]?.value || categorySlug
 
       if (projectsResult.error || !projectsResult.data || projectsResult.data.length === 0) {
-        return stored.data || []
+        return []
       }
 
       const projects = projectsResult.data
@@ -248,20 +346,23 @@ export const projectsService = {
         is_active: proj.is_active
       }))
 
-      // Guardar en caches
-      projectsCache.set(cacheKey, result)
-      cacheTimestamp.set(cacheKey, Date.now())
+      // Guardar en ambos cachés
+      const entry: CacheEntry<ProjectItem[]> = {
+        data: result,
+        timestamp: Date.now(),
+        version: CACHE_VERSION
+      }
+      memoryCache.projects.set(cacheKey, entry)
       setToStorage(cacheKey, result)
 
       return result
     }
 
-    // Stale-while-revalidate
-    if (hasValidStoredData) {
-      projectsCache.set(cacheKey, stored.data!)
-      cacheTimestamp.set(cacheKey, stored.timestamp)
+    // Stale-while-revalidate: si hay datos viejos, devolverlos y actualizar
+    if (storageCache && storageCache.data) {
+      memoryCache.projects.set(cacheKey, storageCache)
       fetchFreshData().catch(console.error)
-      return stored.data!
+      return storageCache.data
     }
 
     return fetchFreshData()
@@ -269,28 +370,25 @@ export const projectsService = {
 
   /**
    * Obtiene un proyecto por slug con cache
+   * Sistema de caché unificado
    */
   async getProject(projectSlug: string, lang: string = 'es'): Promise<ProjectItem | null> {
     const cacheKey = `project_${projectSlug}_${lang}`
-    const now = Date.now()
     
-    // Revisar memoria cache
-    const memoryCacheTime = cacheTimestamp.get(cacheKey) || 0
-    if (projectsCache.has(cacheKey) && (now - memoryCacheTime) < CACHE_TTL) {
-      const cached = projectsCache.get(cacheKey)
-      return cached && cached.length > 0 ? cached[0] : null
+    // 1. Revisar caché en memoria
+    const memCache = memoryCache.projectDetail.get(cacheKey)
+    if (memCache && isCacheValid(memCache)) {
+      return memCache.data
     }
 
-    // Revisar localStorage
-    const stored = getFromStorage<ProjectItem[]>(cacheKey)
-    const hasValidStoredData = stored.data && stored.data.length > 0
-
-    if (hasValidStoredData && (now - stored.timestamp) < CACHE_TTL) {
-      projectsCache.set(cacheKey, stored.data!)
-      cacheTimestamp.set(cacheKey, stored.timestamp)
-      return stored.data![0]
+    // 2. Revisar localStorage
+    const storageCache = getFromStorage<ProjectItem>(cacheKey)
+    if (storageCache && isCacheValid(storageCache)) {
+      memoryCache.projectDetail.set(cacheKey, storageCache)
+      return storageCache.data
     }
 
+    // 3. Fetch desde Supabase
     const fetchFreshData = async (): Promise<ProjectItem | null> => {
       // Obtener proyecto con categoría en una sola query
       const { data: project, error } = await supabase
@@ -304,7 +402,7 @@ export const projectsService = {
         .single()
 
       if (error || !project) {
-        return stored.data?.[0] || null
+        return null
       }
 
       const categorySlug = (project.categories as unknown as { slug: string }).slug
@@ -346,20 +444,23 @@ export const projectsService = {
         is_active: project.is_active
       }
 
-      // Guardar en caches (como array para consistencia con el tipo)
-      projectsCache.set(cacheKey, [result])
-      cacheTimestamp.set(cacheKey, Date.now())
-      setToStorage(cacheKey, [result])
+      // Guardar en ambos cachés
+      const entry: CacheEntry<ProjectItem> = {
+        data: result,
+        timestamp: Date.now(),
+        version: CACHE_VERSION
+      }
+      memoryCache.projectDetail.set(cacheKey, entry)
+      setToStorage(cacheKey, result)
 
       return result
     }
 
     // Stale-while-revalidate
-    if (hasValidStoredData) {
-      projectsCache.set(cacheKey, stored.data!)
-      cacheTimestamp.set(cacheKey, stored.timestamp)
+    if (storageCache && storageCache.data) {
+      memoryCache.projectDetail.set(cacheKey, storageCache)
       fetchFreshData().catch(console.error)
-      return stored.data![0]
+      return storageCache.data
     }
 
     return fetchFreshData()
@@ -509,12 +610,15 @@ export const projectsService = {
   },
 
   /**
-   * Limpia el cache (memoria y localStorage)
+   * Limpia todo el caché (memoria y localStorage)
+   * Se llama automáticamente vía Realtime o manualmente desde el admin
    */
   clearCache() {
-    categoriesCache.clear()
-    projectsCache.clear()
-    cacheTimestamp.clear()
+    // Limpiar caché en memoria
+    memoryCache.categories.clear()
+    memoryCache.projects.clear()
+    memoryCache.projectDetail.clear()
+    
     // Limpiar localStorage
     try {
       const keys = Object.keys(localStorage)
@@ -526,5 +630,26 @@ export const projectsService = {
     } catch {
       // localStorage no disponible
     }
+    
+    console.log('✅ Caché de proyectos limpiado completamente')
+  },
+
+  /**
+   * Desuscribirse de Realtime (útil para cleanup)
+   */
+  unsubscribeRealtime() {
+    if (realtimeChannel) {
+      supabase.removeChannel(realtimeChannel)
+      realtimeChannel = null
+      isRealtimeInitialized = false
+      console.log('🔌 Realtime desconectado')
+    }
+  },
+
+  /**
+   * Forzar inicialización de Realtime (por si no se inicializó automáticamente)
+   */
+  initializeRealtime() {
+    initializeRealtime()
   }
 }
