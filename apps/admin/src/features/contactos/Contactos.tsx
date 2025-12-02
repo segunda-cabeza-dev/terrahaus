@@ -21,6 +21,81 @@ export default function Contactos() {
 
   useEffect(() => {
     loadContacts();
+
+    // 🔄 Configurar Realtime para recibir nuevos mensajes al instante
+    const channel = supabase
+      .channel('contact_messages_realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'contact_messages'
+        },
+        (payload) => {
+          console.log('📬 Nuevo mensaje de contacto recibido!', payload.new);
+          const newContact = payload.new as ContactMessage;
+          setContacts(prev => [newContact, ...prev]);
+          // Opcional: notificación sonora o visual
+          if ('Notification' in window && Notification.permission === 'granted') {
+            new Notification('Nuevo mensaje de contacto', {
+              body: `${newContact.full_name}: ${newContact.message.substring(0, 50)}...`,
+              icon: '/favicon.ico'
+            });
+          }
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'contact_messages'
+        },
+        (payload) => {
+          console.log('📝 Mensaje actualizado', payload.new);
+          const updatedContact = payload.new as ContactMessage;
+          setContacts(prev => prev.map(c => 
+            c.id === updatedContact.id ? updatedContact : c
+          ));
+          if (selectedContact?.id === updatedContact.id) {
+            setSelectedContact(updatedContact);
+          }
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'DELETE',
+          schema: 'public',
+          table: 'contact_messages'
+        },
+        (payload) => {
+          console.log('🗑️ Mensaje eliminado', payload.old);
+          const deletedId = (payload.old as { id: string }).id;
+          setContacts(prev => prev.filter(c => c.id !== deletedId));
+          if (selectedContact?.id === deletedId) {
+            setSelectedContact(null);
+          }
+        }
+      )
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          console.log('✅ Realtime activo en Contactos - Recibirás mensajes al instante');
+        }
+      });
+
+    // Limpiar suscripción al desmontar
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  // Solicitar permisos de notificación al cargar
+  useEffect(() => {
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
   }, []);
 
   const loadContacts = async () => {

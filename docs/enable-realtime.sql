@@ -13,4 +13,9 @@ ALTER PUBLICATION supabase_realtime ADD TABLE categories;
 -- Habilitar Realtime para la tabla translations
 ALTER PUBLICATION supabase_realtime ADD TABLE translations;
 
--- ¡Listo! Ahora cuando cambies algo en el admin, se verá al instante en la web
+-- Habilitar Realtime para mensajes de contacto (nuevos mensajes aparecen al instante)
+ALTER PUBLICATION supabase_realtime ADD TABLE contact_messages;
+
+-- ¡Listo! Ahora:
+-- - Los cambios en proyectos se ven al instante en la web
+-- - Los nuevos mensajes de contacto aparecen automáticamente en el admin (sin refrescar)
