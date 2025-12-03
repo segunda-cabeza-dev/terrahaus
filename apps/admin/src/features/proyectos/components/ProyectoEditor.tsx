@@ -310,17 +310,9 @@ export function ProyectoEditor({ proyectoId, categoriaInicial, onBack }: Proyect
         // Actualizar proyecto existente
         const projectIdNum = parseInt(proyectoId);
         
-        // Generar slug a partir del título
-        const slug = form.titulo
-          .toLowerCase()
-          .normalize('NFD')
-          .replace(/[\u0300-\u036f]/g, '')
-          .replace(/[^a-z0-9]+/g, '-')
-          .replace(/^-+|-+$/g, '');
-        
+        // NO actualizar el slug en proyectos existentes para evitar conflictos
         const updateData = {
           category_id: parseInt(form.categoria),
-          slug: slug,
           image_urls: form.imagenes,
           is_active: form.estado === 'publicado',
         };

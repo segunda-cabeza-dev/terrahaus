@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase, type Project, type Category, useToast } from '@beltrame/shared';
 import { PageHeader } from '@/shared/components/PageHeader';
 import { Plus, Edit, Trash2, Folder, Search, Settings, LayoutGrid, X } from 'lucide-react';
@@ -28,6 +29,10 @@ interface CategoryWithTranslations extends Category {
 
 export function ProyectosUnificado() {
   const { toast } = useToast();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  
   const [proyectos, setProyectos] = useState<ProjectWithTranslations[]>([]);
   const [categorias, setCategorias] = useState<CategoryWithTranslations[]>([]);
   const [loading, setLoading] = useState(true);
@@ -39,10 +44,70 @@ export function ProyectosUnificado() {
   const [categoriaEditando, setCategoriaEditando] = useState<number | undefined>(undefined);
   const [paginaActual, setPaginaActual] = useState(1);
   const proyectosPorPagina = 12;
+  const [dropdownAbierto, setDropdownAbierto] = useState(false);
+
+  // Inicializar vista desde URL al cargar
+  useEffect(() => {
+    const vista = searchParams.get('vista') as 'proyectos' | 'categorias' | 'editor' | 'editor-categoria' | 'nueva-categoria' | null;
+    const proyectoId = searchParams.get('proyectoId');
+    const categoriaId = searchParams.get('categoriaId');
+    
+    if (vista) {
+      setVistaActual(vista);
+      if (proyectoId) setProyectoEditando(parseInt(proyectoId));
+      if (categoriaId) setCategoriaEditando(parseInt(categoriaId));
+    }
+  }, []);
 
   useEffect(() => {
     cargarDatos();
   }, []);
+
+  // Resetear vista solo cuando se hace clic en el botón del menú
+  useEffect(() => {
+    if (location.state?.resetView) {
+      navigate('/admin/proyectos', { replace: true });
+      setVistaActual('proyectos');
+      setProyectoEditando(undefined);
+      setCategoriaProyectoEditando(undefined);
+      setCategoriaEditando(undefined);
+    }
+  }, [location.state]);
+
+  // Funciones helper para cambiar vista y actualizar URL
+  const irAEditarProyecto = (proyectoId?: number) => {
+    if (proyectoId) {
+      navigate(`/admin/proyectos?vista=editor&proyectoId=${proyectoId}`);
+      setProyectoEditando(proyectoId);
+    } else {
+      navigate(`/admin/proyectos?vista=editor`);
+      setProyectoEditando(undefined);
+    }
+    setVistaActual('editor');
+  };
+
+  const irAEditarCategoria = (categoriaId: number) => {
+    navigate(`/admin/proyectos?vista=editor-categoria&categoriaId=${categoriaId}`);
+    setCategoriaEditando(categoriaId);
+    setVistaActual('editor-categoria');
+  };
+
+  const irACategorias = () => {
+    navigate(`/admin/proyectos?vista=categorias`);
+    setVistaActual('categorias');
+  };
+
+  const irANuevaCategoria = () => {
+    navigate(`/admin/proyectos?vista=nueva-categoria`);
+    setVistaActual('nueva-categoria');
+  };
+
+  const volverAProyectos = () => {
+    navigate('/admin/proyectos');
+    setVistaActual('proyectos');
+    setProyectoEditando(undefined);
+    setCategoriaEditando(undefined);
+  };
 
   const cargarDatos = async () => {
     setLoading(true);
@@ -273,11 +338,8 @@ export function ProyectosUnificado() {
         proyectoId={proyectoEditando?.toString()}
         categoriaInicial={categoriaProyectoEditando?.toString()}
         onBack={() => {
-          setVistaActual('proyectos');
-          setProyectoEditando(undefined);
-          setCategoriaProyectoEditando(undefined);
-          // Recargar proyectos después de editar
           cargarDatos();
+          volverAProyectos();
         }}
       />
     );
@@ -289,10 +351,8 @@ export function ProyectosUnificado() {
       <CategoriaEditor
         categoriaId={categoriaEditando}
         onBack={() => {
-          setVistaActual('categorias');
-          setCategoriaEditando(undefined);
-          // Recargar datos después de editar
           cargarDatos();
+          irACategorias();
         }}
       />
     );
@@ -303,9 +363,8 @@ export function ProyectosUnificado() {
     return (
       <CategoriaNueva
         onBack={() => {
-          setVistaActual('categorias');
-          // Recargar datos después de crear
           cargarDatos();
+          irACategorias();
         }}
       />
     );
@@ -323,7 +382,7 @@ export function ProyectosUnificado() {
             {/* Toggle de vista */}
             <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
               <button
-                onClick={() => setVistaActual('proyectos')}
+                onClick={volverAProyectos}
                 className={`flex items-center gap-2 px-4 py-2 rounded-md transition-all ${
                   vistaActual === 'proyectos'
                     ? 'bg-white text-blue-600 shadow-sm'
@@ -334,7 +393,7 @@ export function ProyectosUnificado() {
                 <span className="font-medium">Proyectos</span>
               </button>
               <button
-                onClick={() => setVistaActual('categorias')}
+                onClick={irACategorias}
                 className={`flex items-center gap-2 px-4 py-2 rounded-md transition-all ${
                   vistaActual === 'categorias'
                     ? 'bg-white text-blue-600 shadow-sm'
@@ -349,11 +408,7 @@ export function ProyectosUnificado() {
             {/* Botón principal */}
             {vistaActual === 'proyectos' ? (
               <button
-                onClick={() => {
-                  setProyectoEditando(undefined);
-                  setCategoriaProyectoEditando(undefined);
-                  setVistaActual('editor');
-                }}
+                onClick={() => irAEditarProyecto()}
                 className="flex items-center gap-2 px-3 sm:px-5 py-2.5 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium"
               >
                 <Plus size={18} />
@@ -361,9 +416,7 @@ export function ProyectosUnificado() {
               </button>
             ) : vistaActual === 'categorias' && (
               <button
-                onClick={() => {
-                  setVistaActual('nueva-categoria');
-                }}
+                onClick={irANuevaCategoria}
                 className="flex items-center gap-2 px-3 sm:px-5 py-2.5 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium"
               >
                 <Plus size={18} />
@@ -411,14 +464,98 @@ export function ProyectosUnificado() {
               <div className="flex items-center justify-between mb-3">
                 <h3 className="font-semibold text-gray-900">Filtrar por categoría</h3>
                 <button
-                  onClick={() => setVistaActual('categorias')}
+                  onClick={irACategorias}
                   className="text-blue-600 hover:text-blue-700"
                   title="Gestionar categorías"
                 >
                   <Settings size={18} />
                 </button>
               </div>
-              <div className="space-y-1">
+              
+              {/* Dropdown personalizado - Solo móvil */}
+              <div className="lg:hidden relative">
+                <button
+                  onClick={() => setDropdownAbierto(!dropdownAbierto)}
+                  className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-lg text-gray-900 font-medium hover:border-gray-400 transition-all flex items-center justify-between"
+                >
+                  <span>
+                    {categoriaActiva === 'todos' 
+                      ? `Todos los proyectos (${proyectos.length})`
+                      : `${categorias.find(c => c.id === categoriaActiva)?.nombre || ''} (${categorias.find(c => c.id === categoriaActiva)?.projectCount || 0})`
+                    }
+                  </span>
+                  <svg 
+                    className={`w-5 h-5 transition-transform ${dropdownAbierto ? 'rotate-180' : ''}`}
+                    fill="none" 
+                    viewBox="0 0 24 24" 
+                    stroke="currentColor"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+
+                {dropdownAbierto && (
+                  <>
+                    {/* Overlay para cerrar al hacer clic fuera */}
+                    <div 
+                      className="fixed inset-0 z-10"
+                      onClick={() => setDropdownAbierto(false)}
+                    />
+                    
+                    {/* Menú desplegable */}
+                    <div 
+                      className="absolute top-full left-0 right-0 mt-2 bg-white border-2 border-gray-300 rounded-lg shadow-lg z-20 max-h-80 overflow-y-auto"
+                      style={{
+                        scrollbarWidth: 'thin',
+                        scrollbarColor: '#999 transparent'
+                      }}
+                    >
+                      <style>
+                        {`
+                          .dropdown-menu::-webkit-scrollbar {
+                            width: 6px;
+                          }
+                          .dropdown-menu::-webkit-scrollbar-track {
+                            background: transparent;
+                          }
+                          .dropdown-menu::-webkit-scrollbar-thumb {
+                            background-color: #999;
+                            border-radius: 3px;
+                          }
+                        `}
+                      </style>
+                      <button
+                        onClick={() => {
+                          setCategoriaActiva('todos');
+                          setDropdownAbierto(false);
+                        }}
+                        className={`w-full px-4 py-3 text-left hover:bg-black hover:text-white transition-colors ${
+                          categoriaActiva === 'todos' ? 'font-bold bg-gray-50' : ''
+                        }`}
+                      >
+                        Todos los proyectos ({proyectos.length})
+                      </button>
+                      {categorias.map((cat) => (
+                        <button
+                          key={cat.id}
+                          onClick={() => {
+                            setCategoriaActiva(cat.id);
+                            setDropdownAbierto(false);
+                          }}
+                          className={`w-full px-4 py-3 text-left hover:bg-black hover:text-white transition-colors border-t border-gray-100 ${
+                            categoriaActiva === cat.id ? 'font-bold bg-gray-50' : ''
+                          }`}
+                        >
+                          {cat.nombre} ({cat.projectCount})
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {/* Botones - Solo desktop */}
+              <div className="hidden lg:block space-y-1">
                 <button
                   onClick={() => setCategoriaActiva('todos')}
                   className={`w-full flex items-center justify-between px-3 py-2 rounded-lg transition-colors ${
@@ -497,7 +634,7 @@ export function ProyectosUnificado() {
                 )}
                 
                 {/* Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                   {proyectosPaginados.map((proyecto) => (
                     <div
                       key={proyecto.id}
@@ -537,11 +674,7 @@ export function ProyectosUnificado() {
                         {/* Acciones */}
                         <div className="flex items-center gap-2 mt-auto">
                           <button
-                            onClick={() => {
-                              setProyectoEditando(proyecto.id);
-                              setCategoriaProyectoEditando(proyecto.category_id);
-                              setVistaActual('editor');
-                            }}
+                            onClick={() => irAEditarProyecto(proyecto.id)}
                             className="flex-1 flex items-center justify-center gap-1.5 px-2.5 py-1.5 text-xs bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors font-medium border border-blue-200"
                           >
                             <Edit size={14} />
@@ -571,7 +704,8 @@ export function ProyectosUnificado() {
                       Anterior
                     </button>
                     
-                    <div className="flex items-center gap-2">
+                    {/* Números de página - Solo en desktop */}
+                    <div className="hidden md:flex items-center gap-2">
                       {Array.from({ length: totalPaginas }, (_, i) => i + 1).map(numero => (
                         <button
                           key={numero}
@@ -585,6 +719,11 @@ export function ProyectosUnificado() {
                           {numero}
                         </button>
                       ))}
+                    </div>
+
+                    {/* Indicador de página - Solo en móvil */}
+                    <div className="md:hidden px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg">
+                      {paginaActual} / {totalPaginas}
                     </div>
 
                     <button
@@ -674,10 +813,7 @@ export function ProyectosUnificado() {
                     
                     <div className="flex items-center gap-2">
                       <button
-                        onClick={() => {
-                          setCategoriaEditando(categoria.id);
-                          setVistaActual('editor-categoria');
-                        }}
+                        onClick={() => irAEditarCategoria(categoria.id)}
                         className="flex-1 flex items-center justify-center gap-1.5 px-2.5 py-1.5 text-xs bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors font-medium border border-blue-200"
                         title="Editar"
                       >

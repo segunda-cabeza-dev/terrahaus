@@ -43,12 +43,12 @@ function App() {
             </ProtectedRoute>
           }
         />
-  <Route path="contenido" element={<Contenido />} />
-  <Route path="whatsapp" element={<WhatsAppConfig />} />
+        <Route path="contenido" element={<Contenido />} />
+        <Route path="whatsapp" element={<WhatsAppConfig />} />
         <Route path="imagenes" element={<Imagenes />} />
         <Route path="contactos" element={<Contactos />} />
         <Route path="productos" element={<ProductosSimple />} />
-        <Route path="proyectos" element={<ProyectosUnificado />} />
+        <Route path="proyectos/*" element={<ProyectosUnificado />} />
         <Route path="wp-importer" element={<WPImporter />} />
       </Route>
     </Routes>
