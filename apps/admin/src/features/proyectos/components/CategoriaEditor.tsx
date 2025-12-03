@@ -20,6 +20,7 @@ export function CategoriaEditor({ categoriaId, onBack }: CategoriaEditorProps) {
   const [galleryImages, setGalleryImages] = useState<{ id: string | number; url: string; name: string }[]>([]);
   const [loadingGalleryImages, setLoadingGalleryImages] = useState(false);
   const [gallerySearchTerm, setGallerySearchTerm] = useState('');
+  const [categorySlug, setCategorySlug] = useState<string>('');
   
   const [form, setForm] = useState({
     nombre: '',
@@ -143,6 +144,9 @@ export function CategoriaEditor({ categoriaId, onBack }: CategoriaEditorProps) {
         nombre_it: nombreIt,
         imagen_portada: categoryData.cover_image_url || '',
       });
+
+      // Guardar el slug para el botón "Ver en web"
+      setCategorySlug(categoryData.slug || '');
     } catch (error) {
       console.error('Error cargando categoría:', error);
       toast({
@@ -296,8 +300,29 @@ export function CategoriaEditor({ categoriaId, onBack }: CategoriaEditorProps) {
       </button>
 
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Editar Categoría</h1>
-        <p className="text-sm text-gray-600 mt-1">Actualiza el nombre y la imagen de portada</p>
+        <div className="flex items-start justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Editar Categoría</h1>
+            <p className="text-sm text-gray-600 mt-1">Actualiza el nombre y la imagen de portada</p>
+          </div>
+          
+          {categorySlug && (
+            <button
+              onClick={() => {
+                const webUrl = `http://localhost:5173/es/proyectos/${categorySlug}`;
+                window.open(webUrl, '_blank');
+              }}
+              className="flex items-center gap-1.5 px-3 py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-blue-200"
+              title="Ver categoría en la web"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+              <span>Ver en web</span>
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-6xl">

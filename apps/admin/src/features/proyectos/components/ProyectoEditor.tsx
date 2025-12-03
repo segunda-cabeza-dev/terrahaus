@@ -34,9 +34,10 @@ export function ProyectoEditor({ proyectoId, categoriaInicial, onBack }: Proyect
   const [galleryImages, setGalleryImages] = useState<{ id: string | number; url: string; name: string }[]>([]);
   const [loadingGalleryImages, setLoadingGalleryImages] = useState(false);
   const [gallerySearchTerm, setGallerySearchTerm] = useState('');
-  const [categoriasDisponibles, setCategoriasDisponibles] = useState<{id: number, nombre: string}[]>([]);
+  const [categoriasDisponibles, setCategoriasDisponibles] = useState<{id: number, nombre: string, slug: string}[]>([]);
   const [showNuevaCategoriaInput, setShowNuevaCategoriaInput] = useState(false);
   const [nuevaCategoria, setNuevaCategoria] = useState('');
+  const [projectSlug, setProjectSlug] = useState<string>('');
   
   const [form, setForm] = useState<ProyectoFormData>({
     titulo: '',
@@ -172,7 +173,7 @@ export function ProyectoEditor({ proyectoId, categoriaInicial, onBack }: Proyect
       
       console.log('✅ Traducciones cargadas:', translationsData.length);
 
-      // Procesar categorías con sus nombres en español
+      // Procesar categorías con sus nombres en español y slug
       const categorias = categoriesData.map((cat: any) => {
         const nombreEs = translationsData.find(
           (t: any) => t.entity_id === cat.id && t.language_code === 'es' && t.field_name === 'name'
@@ -180,7 +181,8 @@ export function ProyectoEditor({ proyectoId, categoriaInicial, onBack }: Proyect
         
         return {
           id: cat.id,
-          nombre: nombreEs
+          nombre: nombreEs,
+          slug: cat.slug
         };
       });
 
@@ -242,6 +244,9 @@ export function ProyectoEditor({ proyectoId, categoriaInicial, onBack }: Proyect
         estado: projectData.is_active ? 'publicado' : 'borrador',
         imagenes: projectData.image_urls || [],
       });
+
+      // Guardar el slug del proyecto para el link de vista previa
+      setProjectSlug(projectData.slug || '');
 
       console.log('✅ Formulario cargado');
     } catch (error) {
@@ -343,7 +348,7 @@ export function ProyectoEditor({ proyectoId, categoriaInicial, onBack }: Proyect
           throw projectError;
         }
 
-        // Actualizar traducciones - BATCH INSERT (1 sola llamada en vez de 6)
+        // Actualizar traducciones - BATCH UPSERT (1 sola llamada en vez de 6)
         const translations = [
           { entity_type: 'project', entity_id: projectIdNum, language_code: 'es', field_name: 'name', value: form.titulo },
           { entity_type: 'project', entity_id: projectIdNum, language_code: 'en', field_name: 'name', value: form.titulo_en || form.titulo },
@@ -353,14 +358,19 @@ export function ProyectoEditor({ proyectoId, categoriaInicial, onBack }: Proyect
           { entity_type: 'project', entity_id: projectIdNum, language_code: 'it', field_name: 'description', value: form.descripcion_it || form.descripcion || '' },
         ];
 
-        const { error: translationsError } = await supabase
+        console.log('🔄 Actualizando traducciones:', translations);
+
+        const { data: translationsData, error: translationsError } = await supabase
           .from('translations')
           .upsert(translations, {
             onConflict: 'entity_type,entity_id,language_code,field_name'
-          });
+          })
+          .select();
+
+        console.log('📊 Respuesta traducciones:', { data: translationsData, error: translationsError });
 
         if (translationsError) {
-          console.error('Error guardando traducciones:', translationsError);
+          console.error('❌ Error guardando traducciones:', translationsError);
           throw translationsError;
         }
 
@@ -850,21 +860,27 @@ export function ProyectoEditor({ proyectoId, categoriaInicial, onBack }: Proyect
             <div className="bg-white rounded-lg shadow p-4">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-base font-semibold text-gray-900">Vista previa</h3>
-                <button
-                  onClick={() => {
-                    // Abrir la web de Beltrame en localhost en la sección de proyectos
-                    const webUrl = 'http://localhost:5173/proyectos';
-                    window.open(webUrl, '_blank');
-                  }}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                  title="Ver cómo se verá en la web"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                  </svg>
-                  <span>Ver en web</span>
-                </button>
+                {proyectoId && projectSlug && form.categoria && (
+                  <button
+                    onClick={() => {
+                      // Obtener el slug de la categoría seleccionada
+                      const categoria = categoriasDisponibles.find(c => c.id.toString() === form.categoria);
+                      if (categoria) {
+                        // Construir URL: /es/proyectos/:categoriaSlug/:proyectoSlug
+                        const webUrl = `http://localhost:5173/es/proyectos/${categoria.slug}/${projectSlug}`;
+                        window.open(webUrl, '_blank');
+                      }
+                    }}
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                    title="Ver cómo se verá en la web"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                    <span>Ver en web</span>
+                  </button>
+                )}
               </div>
               <div className="space-y-2">
                 <img
