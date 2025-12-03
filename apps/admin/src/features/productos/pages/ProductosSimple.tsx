@@ -591,7 +591,14 @@ export default function ProductosSimple() {
 
   // Nuevo proyecto
   const handleNewProject = () => {
-    if (!selectedCategory) return
+    if (!selectedCategory) {
+      console.error('ERROR: selectedCategory is null in handleNewProject!')
+      return
+    }
+    console.log('=== handleNewProject called ===')
+    console.log('selectedCategory:', selectedCategory)
+    console.log('selectedCategory.id:', selectedCategory.id)
+    
     setEditingProject(null)
     setActiveProjectLanguageTab('ES') // Reset tab to Spanish for projects
     const newProject: Project = {
@@ -620,6 +627,7 @@ export default function ProductosSimple() {
       descripcion_it: '',
       imagenes: [],
     })
+    console.log('projectForm set with categoria_id:', selectedCategory.id)
     navigateToEditProject(selectedCategory, newProject)
   }
 
@@ -657,6 +665,10 @@ export default function ProductosSimple() {
   // Guardar proyecto
   const handleSaveProject = async (e: React.FormEvent) => {
     e.preventDefault()
+    console.log('=== handleSaveProject called ===')
+    console.log('projectForm:', projectForm)
+    console.log('editingProject:', editingProject)
+    console.log('USE_MOCK_DATA:', USE_MOCK_DATA)
     
     // Solo validar que el nombre en español esté completo
     if (!projectForm.nombre.trim()) {
@@ -739,22 +751,23 @@ export default function ProductosSimple() {
             updated_at: new Date().toISOString(),
           }
           
-          // Actualizar el estado
+          // Actualizar el estado y selectedCategory
           setCategories(prevCategories => {
             const updated = prevCategories.map(cat =>
               cat.id === projectForm.categoria_id
                 ? { ...cat, projects: [...cat.projects, newProject] }
                 : cat
             )
-            
-            // Actualizar selectedCategory inmediatamente
-            const updatedCategory = updated.find(cat => cat.id === projectForm.categoria_id)
-            if (updatedCategory && selectedCategory?.id === projectForm.categoria_id) {
-              setSelectedCategory(updatedCategory)
-            }
-            
             return updated
           })
+          
+          // Actualizar selectedCategory con el nuevo proyecto
+          if (selectedCategory && selectedCategory.id === projectForm.categoria_id) {
+            setSelectedCategory({
+              ...selectedCategory,
+              projects: [...selectedCategory.projects, newProject]
+            })
+          }
           
           // Agregar a mockData
           mockData.projects.push(newProject as any)
@@ -821,6 +834,19 @@ export default function ProductosSimple() {
 
         } else {
           // Create project
+          console.log('Creating project with category_id:', projectForm.categoria_id)
+          console.log('selectedCategory:', selectedCategory)
+          
+          if (!projectForm.categoria_id) {
+            console.error('ERROR: categoria_id is missing!')
+            toast({
+              title: 'Error: Categoría no definida',
+              description: 'No se puede crear el proyecto sin una categoría.',
+              variant: 'destructive',
+            })
+            throw new Error('category_id is required')
+          }
+          
           const { data: newProjData, error: createError } = await supabase
             .from('projects')
             .insert({
@@ -910,8 +936,12 @@ export default function ProductosSimple() {
       setSaved(true)
       
       // Volver a la vista de detalle de categoría inmediatamente
+      // Usar selectedCategory actualizado que ya tiene el nuevo proyecto
       if (selectedCategory) {
-        navigateToCategoryDetail(selectedCategory)
+        // Forzar una actualización del estado antes de navegar
+        setTimeout(() => {
+          navigateToCategoryDetail(selectedCategory)
+        }, 0)
       }
       setEditingProject(null)
     } catch (error) {
@@ -2041,13 +2071,26 @@ export default function ProductosSimple() {
         <ImageSourceDialog />
         <GalleryModal />
         <div className="space-y-6">
-        <button
-          onClick={navigateToCategories}
-          className="flex items-center text-gray-600 hover:text-gray-900"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Cancelar
-        </button>
+        <div className="flex items-center justify-between">
+          <button
+            onClick={navigateToCategories}
+            className="flex items-center text-gray-600 hover:text-gray-900"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Cancelar
+          </button>
+
+          {selectedCategory && selectedCategory.slug && (
+            <button
+              type="button"
+              onClick={() => window.open(`http://localhost:5173/es/proyectos/${selectedCategory.slug}`, '_blank')}
+              className="flex items-center gap-1.5 text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline"
+            >
+              <Eye className="w-4 h-4" />
+              Ver en web
+            </button>
+          )}
+        </div>
 
         <div className="bg-white rounded-lg shadow-sm p-6">
           <div className="mb-6">

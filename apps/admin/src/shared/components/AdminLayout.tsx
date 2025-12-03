@@ -53,7 +53,7 @@ export default function AdminLayout() {
     },
     {
       name: 'Proyectos',
-      href: '/admin/productos',
+      href: '/admin/proyectos',
       icon: Package,
       role: ['dueño', 'admin', 'empleado'],
     },

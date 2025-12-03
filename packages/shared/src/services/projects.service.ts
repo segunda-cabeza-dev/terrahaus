@@ -26,6 +26,31 @@ export interface ProjectItem {
 }
 
 // ==========================================
+// UTILIDADES
+// ==========================================
+/**
+ * Función de debounce para evitar múltiples ejecuciones en rápida sucesión
+ */
+function debounce<T extends (...args: any[]) => void>(
+  func: T,
+  wait: number
+): (...args: Parameters<T>) => void {
+  let timeout: ReturnType<typeof setTimeout> | null = null
+  
+  return function(this: any, ...args: Parameters<T>) {
+    const later = () => {
+      timeout = null
+      func.apply(this, args)
+    }
+    
+    if (timeout !== null) {
+      clearTimeout(timeout)
+    }
+    timeout = setTimeout(later, wait)
+  }
+}
+
+// ==========================================
 // SISTEMA DE DATOS EN TIEMPO REAL
 // ==========================================
 // Caché mínimo (2 segundos) solo para evitar requests duplicados
@@ -96,6 +121,14 @@ let realtimeChannel: RealtimeChannel | null = null
 let isRealtimeInitialized = false
 
 /**
+ * Versión debounced de clearCache para evitar múltiples limpiezas
+ * Espera 1000ms después del último cambio antes de limpiar el caché
+ */
+const debouncedClearCache = debounce(() => {
+  projectsService.clearCache()
+}, 1000)
+
+/**
  * Inicializa las suscripciones de Realtime para invalidar caché automáticamente
  */
 const initializeRealtime = () => {
@@ -114,7 +147,7 @@ const initializeRealtime = () => {
         },
         (payload) => {
           console.log('🔄 Cambio detectado en projects:', payload.eventType)
-          projectsService.clearCache()
+          debouncedClearCache()
         }
       )
       .on(
@@ -126,7 +159,7 @@ const initializeRealtime = () => {
         },
         (payload) => {
           console.log('🔄 Cambio detectado en categories:', payload.eventType)
-          projectsService.clearCache()
+          debouncedClearCache()
         }
       )
       .on(
@@ -138,7 +171,7 @@ const initializeRealtime = () => {
         },
         (payload) => {
           console.log('🔄 Cambio detectado en translations:', payload.eventType)
-          projectsService.clearCache()
+          debouncedClearCache()
         }
       )
       .subscribe((status) => {

@@ -9,6 +9,7 @@ import { Contactos } from './features/contactos'
 import { ProductosSimple } from './features/productos'
 import { Recordatorios } from './features/recordatorios'
 import { WPImporter } from './features/wp-importer'
+import { ProyectosUnificado } from './features/proyectos'
 import { AdminLayout } from './shared'
 import './App.css'
 
@@ -47,6 +48,7 @@ function App() {
         <Route path="imagenes" element={<Imagenes />} />
         <Route path="contactos" element={<Contactos />} />
         <Route path="productos" element={<ProductosSimple />} />
+        <Route path="proyectos" element={<ProyectosUnificado />} />
         <Route path="wp-importer" element={<WPImporter />} />
       </Route>
     </Routes>
