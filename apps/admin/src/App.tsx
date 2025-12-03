@@ -9,7 +9,13 @@ import { Contactos } from './features/contactos'
 import { ProductosSimple } from './features/productos'
 import { Recordatorios } from './features/recordatorios'
 import { WPImporter } from './features/wp-importer'
-import { ProyectosUnificado } from './features/proyectos'
+import { 
+  ProyectosList, 
+  CategoriasList, 
+  ProyectoEditorPage, 
+  CategoriaEditorPage, 
+  CategoriaNuevaPage 
+} from './features/proyectos'
 import { AdminLayout } from './shared'
 import './App.css'
 
@@ -48,7 +54,14 @@ function App() {
         <Route path="imagenes" element={<Imagenes />} />
         <Route path="contactos" element={<Contactos />} />
         <Route path="productos" element={<ProductosSimple />} />
-        <Route path="proyectos/*" element={<ProyectosUnificado />} />
+        <Route path="proyectos">
+          <Route index element={<ProyectosList />} />
+          <Route path="nuevo" element={<ProyectoEditorPage />} />
+          <Route path=":id" element={<ProyectoEditorPage />} />
+          <Route path="categorias" element={<CategoriasList />} />
+          <Route path="categorias/nueva" element={<CategoriaNuevaPage />} />
+          <Route path="categorias/:id" element={<CategoriaEditorPage />} />
+        </Route>
         <Route path="wp-importer" element={<WPImporter />} />
       </Route>
     </Routes>

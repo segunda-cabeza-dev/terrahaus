@@ -57,10 +57,12 @@ export function ProyectosUnificado() {
       if (proyectoId) setProyectoEditando(parseInt(proyectoId));
       if (categoriaId) setCategoriaEditando(parseInt(categoriaId));
     }
-  }, []);
-
-  useEffect(() => {
-    cargarDatos();
+    
+    // Solo cargar datos si estamos en vistas que los necesitan
+    const needsData = !vista || vista === 'proyectos' || vista === 'categorias';
+    if (needsData) {
+      cargarDatos();
+    }
   }, []);
 
   // Resetear vista solo cuando se hace clic en el botón del menú
@@ -103,10 +105,19 @@ export function ProyectosUnificado() {
   };
 
   const volverAProyectos = () => {
-    navigate('/admin/proyectos');
+    // Usar navigate(-1) para ir hacia atrás en el historial
+    // Esto permite que el botón "Atrás" del navegador funcione
+    navigate(-1);
+    
+    // Actualizar estado local
     setVistaActual('proyectos');
     setProyectoEditando(undefined);
     setCategoriaEditando(undefined);
+    
+    // Solo recargar si no hay datos cargados
+    if (proyectos.length === 0 || categorias.length === 0) {
+      cargarDatos();
+    }
   };
 
   const cargarDatos = async () => {
@@ -196,14 +207,16 @@ export function ProyectosUnificado() {
           imagen_portada: cat.cover_image_url || ''
         };
       });
-
-      console.log('✅ Proyectos cargados:', processedProjects.length);
-      console.log('✅ Categorías cargadas:', processedCategories.length);
       
       setProyectos(processedProjects);
       setCategorias(processedCategories);
     } catch (error) {
       console.error('Error en cargarDatos:', error);
+      toast({
+        title: 'Error',
+        description: 'No se pudieron cargar los datos',
+        variant: 'destructive'
+      });
     } finally {
       setLoading(false);
     }
@@ -213,19 +226,7 @@ export function ProyectosUnificado() {
     if (!confirm('¿Estás seguro de eliminar este proyecto?')) return;
     
     try {
-      // Primero eliminar las traducciones
-      const { error: translationsError } = await supabase
-        .from('translations')
-        .delete()
-        .eq('entity_type', 'project')
-        .eq('entity_id', id);
-
-      if (translationsError) {
-        console.error('Error eliminando traducciones:', translationsError);
-        throw translationsError;
-      }
-
-      // Luego eliminar el proyecto
+      // Eliminar el proyecto (el trigger eliminará automáticamente las traducciones)
       const { error: projectError } = await supabase
         .from('projects')
         .delete()
@@ -271,19 +272,7 @@ export function ProyectosUnificado() {
         return;
       }
 
-      // Primero eliminar las traducciones
-      const { error: translationsError } = await supabase
-        .from('translations')
-        .delete()
-        .eq('entity_type', 'category')
-        .eq('entity_id', id);
-
-      if (translationsError) {
-        console.error('Error eliminando traducciones:', translationsError);
-        throw translationsError;
-      }
-
-      // Luego eliminar la categoría
+      // Eliminar la categoría (el trigger eliminará automáticamente las traducciones)
       const { error: categoryError } = await supabase
         .from('categories')
         .delete()
@@ -338,7 +327,6 @@ export function ProyectosUnificado() {
         proyectoId={proyectoEditando?.toString()}
         categoriaInicial={categoriaProyectoEditando?.toString()}
         onBack={() => {
-          cargarDatos();
           volverAProyectos();
         }}
       />
@@ -351,6 +339,7 @@ export function ProyectosUnificado() {
       <CategoriaEditor
         categoriaId={categoriaEditando}
         onBack={() => {
+          // Recargar solo categorías (son pocas)
           cargarDatos();
           irACategorias();
         }}
@@ -363,6 +352,7 @@ export function ProyectosUnificado() {
     return (
       <CategoriaNueva
         onBack={() => {
+          // Recargar porque se creó una nueva categoría
           cargarDatos();
           irACategorias();
         }}
@@ -441,10 +431,7 @@ export function ProyectosUnificado() {
                 <input
                   type="text"
                   value={busqueda}
-                  onChange={(e) => {
-                    setBusqueda(e.target.value);
-                    console.log('Búsqueda actualizada:', e.target.value);
-                  }}
+                  onChange={(e) => setBusqueda(e.target.value)}
                   placeholder="Buscar proyectos..."
                   className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />

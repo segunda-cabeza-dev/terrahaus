@@ -1,6 +1,5 @@
-export { default as Proyectos } from './Proyectos';
-export { ProyectosLista } from './pages/ProyectosLista';
-export { ProyectosListaConSidebar } from './pages/ProyectosListaConSidebar';
-export { ProyectosUnificado } from './pages/ProyectosUnificado';
-export { CategoriaEditor } from './components/CategoriaEditor';
-export { CategoriaNueva } from './components/CategoriaNueva';
+export { ProyectosList } from './pages/ProyectosList';
+export { CategoriasList } from './pages/CategoriasList';
+export { ProyectoEditorPage } from './pages/ProyectoEditorPage';
+export { CategoriaEditorPage } from './pages/CategoriaEditorPage';
+export { CategoriaNuevaPage } from './pages/CategoriaNuevaPage';

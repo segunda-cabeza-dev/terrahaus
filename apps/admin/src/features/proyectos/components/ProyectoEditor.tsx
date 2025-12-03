@@ -54,12 +54,25 @@ export function ProyectoEditor({ proyectoId, categoriaInicial, onBack }: Proyect
   const { toast } = useToast();
 
   useEffect(() => {
-    // Siempre cargar categorías disponibles
-    cargarCategorias();
+    const cancelledRef = { current: false };
     
-    if (proyectoId) {
-      cargarProyecto();
-    }
+    const loadData = async () => {
+      if (cancelledRef.current) return;
+      
+      // Siempre cargar categorías disponibles
+      await cargarCategorias(cancelledRef);
+      
+      if (proyectoId && !cancelledRef.current) {
+        await cargarProyecto(cancelledRef);
+      }
+    };
+    
+    loadData();
+    
+    // Cleanup para evitar actualizaciones si el componente se desmonta
+    return () => {
+      cancelledRef.current = true;
+    };
   }, [proyectoId]);
 
   // Función de traducción automática con Google Translate
@@ -109,12 +122,17 @@ export function ProyectoEditor({ proyectoId, categoriaInicial, onBack }: Proyect
         }
       };
 
-      // Traducir título y descripción en paralelo
+      // Traducir solo lo que falta
+      const needsENTitle = !form.titulo_en?.trim();
+      const needsITTitle = !form.titulo_it?.trim();
+      const needsENDesc = form.descripcion && !form.descripcion_en?.trim();
+      const needsITDesc = form.descripcion && !form.descripcion_it?.trim();
+
       const [tituloEN, tituloIT, descripcionEN, descripcionIT] = await Promise.all([
-        translateText(form.titulo, 'en'),
-        translateText(form.titulo, 'it'),
-        form.descripcion ? translateText(form.descripcion, 'en') : Promise.resolve(''),
-        form.descripcion ? translateText(form.descripcion, 'it') : Promise.resolve(''),
+        needsENTitle ? translateText(form.titulo, 'en') : Promise.resolve(form.titulo_en),
+        needsITTitle ? translateText(form.titulo, 'it') : Promise.resolve(form.titulo_it),
+        needsENDesc ? translateText(form.descripcion, 'en') : Promise.resolve(form.descripcion_en || ''),
+        needsITDesc ? translateText(form.descripcion, 'it') : Promise.resolve(form.descripcion_it || ''),
       ]);
 
       // Actualizar el formulario
@@ -126,11 +144,44 @@ export function ProyectoEditor({ proyectoId, categoriaInicial, onBack }: Proyect
         descripcion_it: descripcionIT,
       }));
 
-      toast({
-        title: '✨ Traducción completada',
-        description: 'Revisa las traducciones antes de guardar',
-        duration: 3000,
-      });
+      // Si estamos editando un proyecto existente, guardar traducciones inmediatamente
+      if (proyectoId) {
+        const projectIdNum = parseInt(proyectoId);
+        const translations = [
+          { entity_type: 'project', entity_id: projectIdNum, language_code: 'en', field_name: 'name', value: tituloEN },
+          { entity_type: 'project', entity_id: projectIdNum, language_code: 'it', field_name: 'name', value: tituloIT },
+          { entity_type: 'project', entity_id: projectIdNum, language_code: 'en', field_name: 'description', value: descripcionEN },
+          { entity_type: 'project', entity_id: projectIdNum, language_code: 'it', field_name: 'description', value: descripcionIT },
+        ];
+
+        const { error: translationsError } = await supabase
+          .from('translations')
+          .upsert(translations, {
+            onConflict: 'entity_type,entity_id,language_code,field_name'
+          });
+
+        if (translationsError) {
+          console.error('❌ Error guardando traducciones automáticas:', translationsError);
+          toast({
+            title: '⚠️ Traducción completada',
+            description: 'Pero hubo un error al guardar. Guarda el proyecto manualmente.',
+            variant: 'destructive',
+          });
+          return;
+        }
+
+        toast({
+          title: '✨ Traducción guardada',
+          description: 'Las traducciones se guardaron automáticamente',
+          duration: 3000,
+        });
+      } else {
+        toast({
+          title: '✨ Traducción completada',
+          description: 'Guarda el proyecto para conservar las traducciones',
+          duration: 3000,
+        });
+      }
     } catch (error) {
       console.error('Error translating:', error);
       toast({
@@ -143,64 +194,58 @@ export function ProyectoEditor({ proyectoId, categoriaInicial, onBack }: Proyect
     }
   };
 
-  const cargarCategorias = async () => {
+  const cargarCategorias = async (cancelledRef?: { current: boolean }) => {
     try {
-      console.log('🔄 Cargando categorías...');
-      
-      // Cargar categorías desde la tabla categories
+      // Cargar categorías
       const { data: categoriesData, error: categoriesError } = await supabase
         .from('categories')
-        .select('*')
+        .select('id, slug, display_order')
         .order('display_order', { ascending: true });
       
-      if (categoriesError) {
-        console.error('❌ Error cargando categorías:', categoriesError);
-        throw categoriesError;
-      }
+      if (cancelledRef?.current) return;
       
-      console.log('✅ Categorías cargadas:', categoriesData.length);
+      if (categoriesError) throw categoriesError;
 
-      // Cargar traducciones
+      // Cargar SOLO las traducciones en español de categorías (nombre)
       const { data: translationsData, error: translationsError } = await supabase
         .from('translations')
-        .select('*')
-        .eq('entity_type', 'category');
+        .select('entity_id, value')
+        .eq('entity_type', 'category')
+        .eq('language_code', 'es')
+        .eq('field_name', 'name');
       
-      if (translationsError) {
-        console.error('❌ Error cargando traducciones:', translationsError);
-        throw translationsError;
-      }
-      
-      console.log('✅ Traducciones cargadas:', translationsData.length);
+      if (cancelledRef?.current) return;
+      if (translationsError) throw translationsError;
 
-      // Procesar categorías con sus nombres en español y slug
+      // Procesar categorías con sus nombres en español
       const categorias = categoriesData.map((cat: any) => {
-        const nombreEs = translationsData.find(
-          (t: any) => t.entity_id === cat.id && t.language_code === 'es' && t.field_name === 'name'
-        )?.value || cat.slug.replace(/[-_]/g, ' ').replace(/\b\w/g, (char: string) => char.toUpperCase());
-        
+        const translation = translationsData.find((t: any) => t.entity_id === cat.id);
         return {
           id: cat.id,
-          nombre: nombreEs,
+          nombre: translation?.value || cat.slug.replace(/[-_]/g, ' ').replace(/\b\w/g, (char: string) => char.toUpperCase()),
           slug: cat.slug
         };
       });
 
-      console.log('✅ Categorías procesadas:', categorias);
-      setCategoriasDisponibles(categorias);
+      if (!cancelledRef?.current) {
+        setCategoriasDisponibles(categorias);
+      }
     } catch (error) {
-      console.error('❌ Error general en cargarCategorias:', error);
+      console.error('❌ Error cargando categorías:', error);
       setCategoriasDisponibles([]);
     }
   };
 
-  const cargarProyecto = async () => {
+  const cargarProyecto = async (cancelledRef?: { current: boolean }) => {
     if (!proyectoId) return;
     
-    setLoading(true);
+    // Solo mostrar loading si no hay datos cargados
+    const shouldShowLoading = !form.titulo;
+    if (shouldShowLoading) {
+      setLoading(true);
+    }
+    
     try {
-      console.log('🔄 Cargando proyecto ID:', proyectoId);
-      
       // Cargar proyecto desde la tabla projects
       const { data: projectData, error: projectError } = await supabase
         .from('projects')
@@ -208,56 +253,58 @@ export function ProyectoEditor({ proyectoId, categoriaInicial, onBack }: Proyect
         .eq('id', proyectoId)
         .single();
 
-      if (projectError) {
-        console.error('❌ Error cargando proyecto:', projectError);
-        throw projectError;
+      if (cancelledRef?.current) {
+        if (shouldShowLoading) setLoading(false);
+        return;
       }
 
-      console.log('✅ Proyecto cargado:', projectData);
+      if (projectError) throw projectError;
 
-      // Cargar traducciones
+      // Cargar SOLO las traducciones de este proyecto específico
       const { data: translationsData, error: translationsError } = await supabase
         .from('translations')
         .select('*')
         .eq('entity_type', 'project')
         .eq('entity_id', proyectoId);
 
-      if (translationsError) {
-        console.error('❌ Error cargando traducciones:', translationsError);
-        throw translationsError;
+      if (cancelledRef?.current) {
+        if (shouldShowLoading) setLoading(false);
+        return;
       }
 
-      console.log('✅ Traducciones cargadas:', translationsData);
+      if (translationsError) throw translationsError;
 
       // Procesar traducciones
       const getTrans = (lang: string, field: string) => 
         translationsData.find(t => t.language_code === lang && t.field_name === field)?.value || '';
 
-      setForm({
-        titulo: getTrans('es', 'name'),
-        titulo_en: getTrans('en', 'name'),
-        titulo_it: getTrans('it', 'name'),
-        descripcion: getTrans('es', 'description'),
-        descripcion_en: getTrans('en', 'description'),
-        descripcion_it: getTrans('it', 'description'),
-        categoria: projectData.category_id?.toString() || '',
-        estado: projectData.is_active ? 'publicado' : 'borrador',
-        imagenes: projectData.image_urls || [],
-      });
+      if (!cancelledRef?.current) {
+        setForm({
+          titulo: getTrans('es', 'name'),
+          titulo_en: getTrans('en', 'name'),
+          titulo_it: getTrans('it', 'name'),
+          descripcion: getTrans('es', 'description'),
+          descripcion_en: getTrans('en', 'description'),
+          descripcion_it: getTrans('it', 'description'),
+          categoria: projectData.category_id?.toString() || '',
+          estado: projectData.is_active ? 'publicado' : 'borrador',
+          imagenes: projectData.image_urls || [],
+        });
 
-      // Guardar el slug del proyecto para el link de vista previa
-      setProjectSlug(projectData.slug || '');
-
-      console.log('✅ Formulario cargado');
+        // Guardar el slug del proyecto para el link de vista previa
+        setProjectSlug(projectData.slug || '');
+      }
     } catch (error) {
-      console.error('❌ Error general:', error);
+      console.error('Error cargando proyecto:', error);
       toast({
         title: 'Error',
         description: 'No se pudo cargar el proyecto',
         variant: 'destructive',
       });
     } finally {
-      setLoading(false);
+      if (!cancelledRef?.current && shouldShowLoading) {
+        setLoading(false);
+      }
     }
   };
 
@@ -281,11 +328,6 @@ export function ProyectoEditor({ proyectoId, categoriaInicial, onBack }: Proyect
   };
 
   const handleSave = async () => {
-    console.log('=== handleSave called ===');
-    console.log('form:', form);
-    console.log('form.categoria:', form.categoria);
-    console.log('parseInt(form.categoria):', parseInt(form.categoria));
-    
     if (!form.titulo.trim()) {
       toast({
         title: 'Error',
@@ -317,49 +359,33 @@ export function ProyectoEditor({ proyectoId, categoriaInicial, onBack }: Proyect
           is_active: form.estado === 'publicado',
         };
         
-        console.log('🔄 Actualizando proyecto:', { 
-          id: projectIdNum, 
-          datos: updateData 
-        });
-        
-        const { data, error: projectError } = await supabase
+        const { error: projectError } = await supabase
           .from('projects')
           .update(updateData)
           .eq('id', projectIdNum)
           .select();
 
-        console.log('📊 Respuesta de Supabase:', { data, error: projectError });
-
         if (projectError) {
-          console.error('❌ Error completo del servidor:', {
-            message: projectError.message,
-            details: projectError.details,
-            hint: projectError.hint,
-            code: projectError.code
-          });
+          console.error('❌ Error actualizando proyecto:', projectError);
           throw projectError;
         }
 
         // Actualizar traducciones - BATCH UPSERT (1 sola llamada en vez de 6)
         const translations = [
           { entity_type: 'project', entity_id: projectIdNum, language_code: 'es', field_name: 'name', value: form.titulo },
-          { entity_type: 'project', entity_id: projectIdNum, language_code: 'en', field_name: 'name', value: form.titulo_en || form.titulo },
-          { entity_type: 'project', entity_id: projectIdNum, language_code: 'it', field_name: 'name', value: form.titulo_it || form.titulo },
+          { entity_type: 'project', entity_id: projectIdNum, language_code: 'en', field_name: 'name', value: form.titulo_en || '' },
+          { entity_type: 'project', entity_id: projectIdNum, language_code: 'it', field_name: 'name', value: form.titulo_it || '' },
           { entity_type: 'project', entity_id: projectIdNum, language_code: 'es', field_name: 'description', value: form.descripcion || '' },
-          { entity_type: 'project', entity_id: projectIdNum, language_code: 'en', field_name: 'description', value: form.descripcion_en || form.descripcion || '' },
-          { entity_type: 'project', entity_id: projectIdNum, language_code: 'it', field_name: 'description', value: form.descripcion_it || form.descripcion || '' },
+          { entity_type: 'project', entity_id: projectIdNum, language_code: 'en', field_name: 'description', value: form.descripcion_en || '' },
+          { entity_type: 'project', entity_id: projectIdNum, language_code: 'it', field_name: 'description', value: form.descripcion_it || '' },
         ];
 
-        console.log('🔄 Actualizando traducciones:', translations);
-
-        const { data: translationsData, error: translationsError } = await supabase
+        const { error: translationsError } = await supabase
           .from('translations')
           .upsert(translations, {
             onConflict: 'entity_type,entity_id,language_code,field_name'
           })
           .select();
-
-        console.log('📊 Respuesta traducciones:', { data: translationsData, error: translationsError });
 
         if (translationsError) {
           console.error('❌ Error guardando traducciones:', translationsError);
@@ -401,11 +427,11 @@ export function ProyectoEditor({ proyectoId, categoriaInicial, onBack }: Proyect
         // Crear traducciones - BATCH INSERT (1 sola llamada en vez de 6)
         const translations = [
           { entity_type: 'project', entity_id: projectData.id, language_code: 'es', field_name: 'name', value: form.titulo },
-          { entity_type: 'project', entity_id: projectData.id, language_code: 'en', field_name: 'name', value: form.titulo_en || form.titulo },
-          { entity_type: 'project', entity_id: projectData.id, language_code: 'it', field_name: 'name', value: form.titulo_it || form.titulo },
+          { entity_type: 'project', entity_id: projectData.id, language_code: 'en', field_name: 'name', value: form.titulo_en || '' },
+          { entity_type: 'project', entity_id: projectData.id, language_code: 'it', field_name: 'name', value: form.titulo_it || '' },
           { entity_type: 'project', entity_id: projectData.id, language_code: 'es', field_name: 'description', value: form.descripcion || '' },
-          { entity_type: 'project', entity_id: projectData.id, language_code: 'en', field_name: 'description', value: form.descripcion_en || form.descripcion || '' },
-          { entity_type: 'project', entity_id: projectData.id, language_code: 'it', field_name: 'description', value: form.descripcion_it || form.descripcion || '' },
+          { entity_type: 'project', entity_id: projectData.id, language_code: 'en', field_name: 'description', value: form.descripcion_en || '' },
+          { entity_type: 'project', entity_id: projectData.id, language_code: 'it', field_name: 'description', value: form.descripcion_it || '' },
         ];
 
         const { error: translationsError } = await supabase
@@ -543,46 +569,84 @@ export function ProyectoEditor({ proyectoId, categoriaInicial, onBack }: Proyect
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Formulario principal */}
         <div className="lg:col-span-2 space-y-6">
+          {/* Alerta de estado de traducciones */}
+          {form.titulo && proyectoId && (
+            (() => {
+              // Solo verificar traducciones si existe contenido en español
+              const hasSpanishTitle = form.titulo.trim().length > 0;
+              const hasSpanishDesc = form.descripcion && form.descripcion.trim().length > 0;
+              
+              // Verificar traducciones solo para campos que existen en español
+              const titleMissingEN = hasSpanishTitle && !form.titulo_en?.trim();
+              const titleMissingIT = hasSpanishTitle && !form.titulo_it?.trim();
+              
+              const descMissingEN = hasSpanishDesc && !form.descripcion_en?.trim();
+              const descMissingIT = hasSpanishDesc && !form.descripcion_it?.trim();
+              
+              // Si hay descripción en español, debe estar traducida. Si no hay descripción, no importa.
+              const missingEN = titleMissingEN || descMissingEN;
+              const missingIT = titleMissingIT || descMissingIT;
+              
+              const allTranslated = !missingEN && !missingIT;
+
+              if (allTranslated) {
+                return (
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-start gap-3">
+                    <span className="text-green-600 text-xl">✓</span>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-green-900">Todas las traducciones completas</p>
+                      <p className="text-xs text-green-700 mt-0.5">Este proyecto está disponible en los 3 idiomas</p>
+                    </div>
+                  </div>
+                );
+              }
+
+              if (missingEN && missingIT) {
+                return (
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex items-start gap-3">
+                    <span className="text-yellow-600 text-xl">⚠️</span>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-yellow-900">Faltan traducciones</p>
+                      <p className="text-xs text-yellow-700 mt-0.5">Este proyecto no está traducido al inglés ni italiano</p>
+                    </div>
+                    <Button
+                      type="button"
+                      onClick={handleTranslateProject}
+                      disabled={saving}
+                      size="sm"
+                      className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
+                    >
+                      {saving ? 'Traduciendo...' : '✨ Traducir todo'}
+                    </Button>
+                  </div>
+                );
+              }
+
+              return (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-start gap-3">
+                  <span className="text-blue-600 text-xl">ℹ️</span>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-blue-900">Traducciones incompletas</p>
+                    <p className="text-xs text-blue-700 mt-0.5">
+                      Faltan: {missingEN && 'Inglés'}{missingEN && missingIT && ', '}{missingIT && 'Italiano'}
+                    </p>
+                  </div>
+                  <Button
+                    type="button"
+                    onClick={handleTranslateProject}
+                    disabled={saving}
+                    size="sm"
+                    className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
+                  >
+                    {saving ? 'Traduciendo...' : '✨ Completar'}
+                  </Button>
+                </div>
+              );
+            })()
+          )}
+
           {/* Tabs de idiomas con botón de traducción */}
           <div className="bg-white rounded-lg shadow p-6">
-            {/* Botón de traducción - solo visible en tabs EN o IT */}
-            {form.titulo && activeLanguageTab !== 'ES' && (
-              <div className="flex justify-end mb-4">
-                <Button
-                  type="button"
-                  onClick={handleTranslateProject}
-                  disabled={saving || !form.titulo}
-                  size="sm"
-                  className={`text-white ${
-                    saving
-                      ? 'bg-blue-500'
-                      : 'bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700'
-                  }`}
-                >
-                  {saving ? (
-                    <>
-                      <svg
-                        className="w-4 h-4 mr-1.5 animate-spin"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                        />
-                      </svg>
-                      Traduciendo...
-                    </>
-                  ) : (
-                    <>✨ Traducir con IA</>
-                  )}
-                </Button>
-              </div>
-            )}
-
             {/* Tabs */}
             <div className="flex border-b border-gray-200 mb-6">
               <button
@@ -599,26 +663,62 @@ export function ProyectoEditor({ proyectoId, categoriaInicial, onBack }: Proyect
               <button
                 type="button"
                 onClick={() => setActiveLanguageTab('EN')}
-                className={`flex items-center gap-1.5 px-5 py-2.5 text-sm font-semibold transition-colors ${
+                className={`flex items-center gap-1.5 px-5 py-2.5 text-sm font-semibold transition-colors relative ${
                   activeLanguageTab === 'EN'
                     ? 'border-b-2 border-black text-black'
                     : 'text-gray-400 hover:text-gray-600'
                 }`}
               >
                 <span className="text-base">🇬🇧</span> EN
-                {form.titulo_en && <span className="text-xs">✓</span>}
+                {(() => {
+                  const hasSpanishTitle = form.titulo.trim().length > 0;
+                  const hasSpanishDesc = form.descripcion && form.descripcion.trim().length > 0;
+                  
+                  const hasTitleEN = form.titulo_en?.trim().length > 0;
+                  const hasDescEN = form.descripcion_en?.trim().length > 0;
+                  
+                  // Si hay título en español, debe tener traducción. Mismo para descripción.
+                  const titleComplete = hasSpanishTitle ? hasTitleEN : true;
+                  const descComplete = hasSpanishDesc ? hasDescEN : true;
+                  
+                  if (titleComplete && descComplete) {
+                    return <span className="text-xs text-green-600 font-bold">✓</span>;
+                  } else if (hasTitleEN || hasDescEN) {
+                    return <span className="text-xs text-yellow-600">◐</span>;
+                  } else {
+                    return <span className="text-xs text-red-600">✗</span>;
+                  }
+                })()}
               </button>
               <button
                 type="button"
                 onClick={() => setActiveLanguageTab('IT')}
-                className={`flex items-center gap-1.5 px-5 py-2.5 text-sm font-semibold transition-colors ${
+                className={`flex items-center gap-1.5 px-5 py-2.5 text-sm font-semibold transition-colors relative ${
                   activeLanguageTab === 'IT'
                     ? 'border-b-2 border-black text-black'
                     : 'text-gray-400 hover:text-gray-600'
                 }`}
               >
                 <span className="text-base">🇮🇹</span> IT
-                {form.titulo_it && <span className="text-xs">✓</span>}
+                {(() => {
+                  const hasSpanishTitle = form.titulo.trim().length > 0;
+                  const hasSpanishDesc = form.descripcion && form.descripcion.trim().length > 0;
+                  
+                  const hasTitleIT = form.titulo_it?.trim().length > 0;
+                  const hasDescIT = form.descripcion_it?.trim().length > 0;
+                  
+                  // Si hay título en español, debe tener traducción. Mismo para descripción.
+                  const titleComplete = hasSpanishTitle ? hasTitleIT : true;
+                  const descComplete = hasSpanishDesc ? hasDescIT : true;
+                  
+                  if (titleComplete && descComplete) {
+                    return <span className="text-xs text-green-600 font-bold">✓</span>;
+                  } else if (hasTitleIT || hasDescIT) {
+                    return <span className="text-xs text-yellow-600">◐</span>;
+                  } else {
+                    return <span className="text-xs text-red-600">✗</span>;
+                  }
+                })()}
               </button>
             </div>
 

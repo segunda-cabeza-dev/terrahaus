@@ -137,8 +137,8 @@ export function CategoriaNueva({ onBack }: CategoriaNuevaProps) {
       // Crear traducciones
       const translations = [
         { language_code: 'es', field_name: 'name', value: form.nombre },
-        { language_code: 'en', field_name: 'name', value: form.nombre_en || form.nombre },
-        { language_code: 'it', field_name: 'name', value: form.nombre_it || form.nombre },
+        { language_code: 'en', field_name: 'name', value: form.nombre_en || '' },
+        { language_code: 'it', field_name: 'name', value: form.nombre_it || '' },
       ];
 
       for (const translation of translations) {

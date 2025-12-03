@@ -82,10 +82,13 @@ export function CategoriaEditor({ categoriaId, onBack }: CategoriaEditorProps) {
         }
       };
 
-      // Traducir nombre en paralelo
+      // Traducir solo lo que falta
+      const needsENName = !form.nombre_en?.trim();
+      const needsITName = !form.nombre_it?.trim();
+
       const [nombreEN, nombreIT] = await Promise.all([
-        translateText(form.nombre, 'en'),
-        translateText(form.nombre, 'it'),
+        needsENName ? translateText(form.nombre, 'en') : Promise.resolve(form.nombre_en),
+        needsITName ? translateText(form.nombre, 'it') : Promise.resolve(form.nombre_it),
       ]);
 
       // Actualizar el formulario
@@ -95,9 +98,31 @@ export function CategoriaEditor({ categoriaId, onBack }: CategoriaEditorProps) {
         nombre_it: nombreIT,
       }));
 
+      // Si estamos editando, guardar traducciones inmediatamente
+      const translations = [
+        { entity_type: 'category', entity_id: categoriaId, language_code: 'en', field_name: 'name', value: nombreEN },
+        { entity_type: 'category', entity_id: categoriaId, language_code: 'it', field_name: 'name', value: nombreIT },
+      ];
+
+      const { error: translationsError } = await supabase
+        .from('translations')
+        .upsert(translations, {
+          onConflict: 'entity_type,entity_id,language_code,field_name'
+        });
+
+      if (translationsError) {
+        console.error('❌ Error guardando traducciones automáticas:', translationsError);
+        toast({
+          title: '⚠️ Traducción completada',
+          description: 'Pero hubo un error al guardar. Guarda la categoría manualmente.',
+          variant: 'destructive',
+        });
+        return;
+      }
+
       toast({
-        title: '✨ Traducción completada',
-        description: 'Revisa las traducciones antes de guardar',
+        title: '✨ Traducción guardada',
+        description: 'Las traducciones se guardaron automáticamente',
         duration: 3000,
       });
     } catch (error) {
@@ -182,8 +207,8 @@ export function CategoriaEditor({ categoriaId, onBack }: CategoriaEditorProps) {
       // Actualizar traducciones
       const translations = [
         { language_code: 'es', field_name: 'name', value: form.nombre },
-        { language_code: 'en', field_name: 'name', value: form.nombre_en || form.nombre },
-        { language_code: 'it', field_name: 'name', value: form.nombre_it || form.nombre },
+        { language_code: 'en', field_name: 'name', value: form.nombre_en || '' },
+        { language_code: 'it', field_name: 'name', value: form.nombre_it || '' },
       ];
 
       for (const translation of translations) {
@@ -325,6 +350,72 @@ export function CategoriaEditor({ categoriaId, onBack }: CategoriaEditorProps) {
         </div>
       </div>
 
+      {/* Alerta de estado de traducciones */}
+      {form.nombre?.trim() && (
+        (() => {
+          const hasSpanishName = form.nombre.trim().length > 0;
+          
+          // Solo verificar traducciones si existe nombre en español
+          const missingEN = hasSpanishName && !form.nombre_en?.trim();
+          const missingIT = hasSpanishName && !form.nombre_it?.trim();
+          const allTranslated = !missingEN && !missingIT;
+
+          if (allTranslated) {
+            return (
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-start gap-3 mb-6">
+                <span className="text-green-600 text-xl">✓</span>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-green-900">Todas las traducciones completas</p>
+                  <p className="text-xs text-green-700 mt-0.5">Esta categoría está disponible en los 3 idiomas</p>
+                </div>
+              </div>
+            );
+          }
+
+          if (missingEN && missingIT) {
+            return (
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex items-start gap-3 mb-6">
+                <span className="text-yellow-600 text-xl">⚠️</span>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-yellow-900">Faltan traducciones</p>
+                  <p className="text-xs text-yellow-700 mt-0.5">Esta categoría no está traducida al inglés ni italiano</p>
+                </div>
+                <Button
+                  type="button"
+                  onClick={handleTranslateCategory}
+                  disabled={saving}
+                  size="sm"
+                  className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
+                >
+                  {saving ? 'Traduciendo...' : '✨ Traducir todo'}
+                </Button>
+              </div>
+            );
+          }
+
+          return (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-start gap-3 mb-6">
+              <span className="text-blue-600 text-xl">ℹ️</span>
+              <div className="flex-1">
+                <p className="text-sm font-medium text-blue-900">Traducciones incompletas</p>
+                <p className="text-xs text-blue-700 mt-0.5">
+                  Faltan: {missingEN && 'Inglés'}{missingEN && missingIT && ', '}{missingIT && 'Italiano'}
+                </p>
+              </div>
+              <Button
+                type="button"
+                onClick={handleTranslateCategory}
+                disabled={saving}
+                size="sm"
+                className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
+              >
+                {saving ? 'Traduciendo...' : '✨ Completar'}
+              </Button>
+            </div>
+          );
+        })()
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-6xl">
         {/* Foto de Portada */}
         <div className="space-y-4">
@@ -367,44 +458,6 @@ export function CategoriaEditor({ categoriaId, onBack }: CategoriaEditorProps) {
 
         {/* Formulario */}
         <div className="space-y-4">
-          {/* Botón de traducción - solo visible en tabs EN o IT */}
-          {form.nombre && activeLanguageTab !== 'ES' && (
-            <div className="flex justify-end">
-              <Button
-                type="button"
-                onClick={handleTranslateCategory}
-                disabled={saving || !form.nombre}
-                size="sm"
-                className={`text-white ${
-                  saving
-                    ? 'bg-blue-500'
-                    : 'bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700'
-                }`}
-              >
-                {saving ? (
-                  <>
-                    <svg
-                      className="w-4 h-4 mr-1.5 animate-spin"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                      />
-                    </svg>
-                    Traduciendo...
-                  </>
-                ) : (
-                  <>✨ Traducir con IA</>
-                )}
-              </Button>
-            </div>
-          )}
-
           {/* Tabs de idiomas */}
           <div className="flex border-b border-gray-200">
               <button
@@ -428,6 +481,11 @@ export function CategoriaEditor({ categoriaId, onBack }: CategoriaEditorProps) {
               >
                 <span className="text-lg">🇬🇧</span>
                 <span>EN</span>
+                {form.nombre_en?.trim() ? (
+                  <span className="text-xs text-green-600 font-bold">✓</span>
+                ) : (
+                  <span className="text-xs text-red-600">✗</span>
+                )}
               </button>
               <button
                 onClick={() => setActiveLanguageTab('IT')}
@@ -439,6 +497,11 @@ export function CategoriaEditor({ categoriaId, onBack }: CategoriaEditorProps) {
               >
                 <span className="text-lg">🇮🇹</span>
                 <span>IT</span>
+                {form.nombre_it?.trim() ? (
+                  <span className="text-xs text-green-600 font-bold">✓</span>
+                ) : (
+                  <span className="text-xs text-red-600">✗</span>
+                )}
               </button>
             </div>
 
