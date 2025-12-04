@@ -11,6 +11,7 @@ const LOGO_URL = import.meta.env.VITE_LOGO_URL || '/beltrame-logo.png'
 
 export default function AdminLayout() {
   const [profile, setProfile] = useState<Profile | null>(null)
+  const [userEmail, setUserEmail] = useState<string | null>(null)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [unreadContactsCount, setUnreadContactsCount] = useState(0)
   const navigate = useNavigate()
@@ -45,6 +46,7 @@ export default function AdminLayout() {
   const loadProfile = async () => {
     const user = await auth.getCurrentUser()
     if (user) {
+      setUserEmail(user.email || null)
       const userProfile = await auth.getUserProfile(user.id)
       setProfile(userProfile)
     }
@@ -78,9 +80,9 @@ export default function AdminLayout() {
 
   const menuItems = [
     {
-      name: 'Contactos',
-      href: '/admin/contactos',
-      icon: Mail,
+      name: 'Proyectos',
+      href: '/admin/proyectos',
+      icon: Package,
       role: ['dueño', 'admin', 'empleado'],
     },
     {
@@ -90,9 +92,9 @@ export default function AdminLayout() {
       role: ['dueño', 'admin', 'empleado'],
     },
     {
-      name: 'Proyectos',
-      href: '/admin/proyectos',
-      icon: Package,
+      name: 'Contactos',
+      href: '/admin/contactos',
+      icon: Mail,
       role: ['dueño', 'admin', 'empleado'],
     },
     // {
@@ -115,9 +117,13 @@ export default function AdminLayout() {
     },
   ]
 
-  const filteredMenuItems = menuItems.filter(item =>
-    profile && item.role.includes(profile.role)
-  )
+  const filteredMenuItems = menuItems.filter(item => {
+    // Ocultar Usuarios si el email es info@beltramehierro.com
+    if (item.name === 'Usuarios' && userEmail === 'info@beltramehierro.com') {
+      return false
+    }
+    return profile && item.role.includes(profile.role)
+  })
 
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false)
@@ -127,7 +133,9 @@ export default function AdminLayout() {
     <div className="min-h-screen bg-gray-50">
       {/* Mobile Header con hamburguesa */}
       <header className="lg:hidden fixed top-0 left-0 right-0 bg-white shadow-md z-40 h-16 flex items-center justify-between px-4">
-        <img src={LOGO_URL} alt="Logo Beltrame" className="h-10 w-auto object-contain" />
+        <Link to="/admin/proyectos">
+          <img src={LOGO_URL} alt="Logo Beltrame" className="h-10 w-auto object-contain cursor-pointer" />
+        </Link>
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
@@ -144,7 +152,9 @@ export default function AdminLayout() {
       <header className="hidden lg:block fixed top-0 left-0 right-0 bg-white shadow-md z-40">
         <div className="px-6 lg:px-12 py-4 flex items-center justify-between">
           {/* Logo */}
-          <img src={LOGO_URL} alt="Logo Beltrame" className="h-10 w-auto object-contain" />
+          <Link to="/admin/proyectos">
+            <img src={LOGO_URL} alt="Logo Beltrame" className="h-10 w-auto object-contain cursor-pointer" />
+          </Link>
           
           {/* Desktop Navigation */}
           <nav className="flex items-center gap-1">

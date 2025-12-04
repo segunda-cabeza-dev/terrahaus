@@ -31,7 +31,7 @@ function App() {
           </ProtectedRoute>
         }
       >
-        <Route index element={<Galeria />} />
+        <Route index element={<ProyectosList />} />
         <Route path="galeria" element={<Galeria />} />
         <Route
           path="usuarios"
