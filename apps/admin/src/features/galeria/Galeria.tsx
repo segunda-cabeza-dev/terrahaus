@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { PageHeader } from '../../shared'
 import { galleryService, type GalleryImage, type GalleryCategory, type GalleryFilters, projectsService } from '@beltrame/shared'
@@ -42,14 +42,15 @@ export function Galeria() {
   const images = result?.data || []
   const pagination = result?.pagination || { page: 1, pageSize: PAGE_SIZE, total: 0, totalPages: 0, hasMore: false }
 
-  function handleSearch() {
-    setFilters(prev => ({ ...prev, search: searchInput }))
-    setPage(1)
-  }
-
-  function handleKeyPress(e: React.KeyboardEvent) {
-    if (e.key === 'Enter') handleSearch()
-  }
+  // Búsqueda en tiempo real
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setFilters(prev => ({ ...prev, search: searchInput }))
+      setPage(1)
+    }, 300) // Debounce de 300ms
+    
+    return () => clearTimeout(timer)
+  }, [searchInput])
 
   function handleBucketChange(value: string) {
     setFilters(prev => ({ ...prev, bucket: value === 'all' ? undefined : value }))
@@ -196,7 +197,7 @@ export function Galeria() {
     <div className="space-y-6">
       <PageHeader title="Galeria de Imagenes" description="Visualiza y gestiona las imagenes almacenadas en el sistema." />
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-white rounded-lg shadow p-4">
           <div className="text-2xl font-bold">{pagination.total}</div>
           <div className="text-sm text-gray-500">Total imagenes</div>
@@ -222,20 +223,16 @@ export function Galeria() {
             {isFetching && <RefreshCw className="w-4 h-4 animate-spin text-gray-400" />}
           </h2>
           <Button variant="outline" size="sm" onClick={handleRefresh} disabled={isFetching}>
-            <RefreshCw className={'w-4 h-4 mr-2 ' + (isFetching ? 'animate-spin' : '')} />
-            Actualizar
+            <RefreshCw className={'w-4 h-4 sm:mr-2 ' + (isFetching ? 'animate-spin' : '')} />
+            <span className="hidden sm:inline">Actualizar</span>
           </Button>
         </div>
         
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <input type="text" placeholder="Buscar por nombre... (Enter para buscar)" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} onKeyDown={handleKeyPress} className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white" />
+            <input type="text" placeholder="Buscar por nombre..." value={searchInput} onChange={(e) => setSearchInput(e.target.value)} className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white" />
           </div>
-          <Button variant="default" onClick={handleSearch} disabled={isFetching}>
-            <Search className="w-4 h-4 mr-2" />
-            Buscar
-          </Button>
           <Select value={filters.bucket || 'all'} onValueChange={handleBucketChange}>
             <SelectTrigger className="w-full sm:w-40 bg-white border-gray-300 h-[42px]">
               <SelectValue placeholder="Bucket" />

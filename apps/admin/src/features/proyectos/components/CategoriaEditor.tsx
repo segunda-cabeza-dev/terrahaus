@@ -48,14 +48,15 @@ export function CategoriaEditor({ categoriaId, onBack }: CategoriaEditorProps) {
 
     setSaving(true);
     toast({
-      title: '🔄 Traduciendo...',
-      description: 'Usando IA para traducción',
+      title: '🔄 Traduciendo categoría y proyectos...',
+      description: 'Esto puede tomar unos segundos',
       duration: 2000,
     });
 
     try {
       // Función para traducir texto usando Google Translate API pública
       const translateText = async (text: string, targetLang: string): Promise<string> => {
+        if (!text || !text.trim()) return text;
         try {
           const response = await fetch(
             `https://translate.googleapis.com/translate_a/single?client=gtx&sl=es&tl=${targetLang}&dt=t&q=${encodeURIComponent(
@@ -82,7 +83,7 @@ export function CategoriaEditor({ categoriaId, onBack }: CategoriaEditorProps) {
         }
       };
 
-      // Traducir solo lo que falta
+      // 1. Traducir categoría
       const needsENName = !form.nombre_en?.trim();
       const needsITName = !form.nombre_it?.trim();
 
@@ -98,31 +99,150 @@ export function CategoriaEditor({ categoriaId, onBack }: CategoriaEditorProps) {
         nombre_it: nombreIT,
       }));
 
-      // Si estamos editando, guardar traducciones inmediatamente
-      const translations = [
+      // Guardar traducciones de categoría
+      const categoryTranslations = [
         { entity_type: 'category', entity_id: categoriaId, language_code: 'en', field_name: 'name', value: nombreEN },
         { entity_type: 'category', entity_id: categoriaId, language_code: 'it', field_name: 'name', value: nombreIT },
       ];
 
-      const { error: translationsError } = await supabase
+      const { error: categoryTranslationsError } = await supabase
         .from('translations')
-        .upsert(translations, {
+        .upsert(categoryTranslations, {
           onConflict: 'entity_type,entity_id,language_code,field_name'
         });
 
-      if (translationsError) {
-        console.error('❌ Error guardando traducciones automáticas:', translationsError);
+      if (categoryTranslationsError) {
+        console.error('❌ Error guardando traducciones de categoría:', categoryTranslationsError);
+      }
+
+      // 2. Obtener todos los proyectos de esta categoría
+      const { data: proyectos, error: proyectosError } = await supabase
+        .from('projects')
+        .select('id')
+        .eq('category_id', categoriaId);
+
+      if (proyectosError) {
+        console.error('Error obteniendo proyectos:', proyectosError);
         toast({
-          title: '⚠️ Traducción completada',
-          description: 'Pero hubo un error al guardar. Guarda la categoría manualmente.',
-          variant: 'destructive',
+          title: '✨ Categoría traducida',
+          description: 'No se pudieron traducir los proyectos',
         });
         return;
       }
 
+      if (!proyectos || proyectos.length === 0) {
+        toast({
+          title: '✨ Categoría traducida',
+          description: 'No hay proyectos para traducir',
+          duration: 3000,
+        });
+        return;
+      }
+
+      // 3. Para cada proyecto, obtener traducciones existentes
       toast({
-        title: '✨ Traducción guardada',
-        description: 'Las traducciones se guardaron automáticamente',
+        title: '🔄 Traduciendo proyectos...',
+        description: `Procesando ${proyectos.length} proyecto(s)`,
+        duration: 2000,
+      });
+
+      let proyectosTraducidos = 0;
+
+      for (const proyecto of proyectos) {
+        // Obtener traducciones existentes del proyecto
+        const { data: translationsData, error: translationsError } = await supabase
+          .from('translations')
+          .select('*')
+          .eq('entity_type', 'project')
+          .eq('entity_id', proyecto.id);
+
+        if (translationsError) {
+          console.error(`Error obteniendo traducciones del proyecto ${proyecto.id}:`, translationsError);
+          continue;
+        }
+
+        // Obtener valores actuales
+        const nombreES = translationsData?.find(t => t.language_code === 'es' && t.field_name === 'name')?.value || '';
+        const nombreEN = translationsData?.find(t => t.language_code === 'en' && t.field_name === 'name')?.value || '';
+        const nombreIT = translationsData?.find(t => t.language_code === 'it' && t.field_name === 'name')?.value || '';
+        const descES = translationsData?.find(t => t.language_code === 'es' && t.field_name === 'description')?.value || '';
+        const descEN = translationsData?.find(t => t.language_code === 'en' && t.field_name === 'description')?.value || '';
+        const descIT = translationsData?.find(t => t.language_code === 'it' && t.field_name === 'description')?.value || '';
+
+        // Solo traducir lo que falta
+        const needsTranslation = (nombreES && (!nombreEN || !nombreIT)) || (descES && (!descEN || !descIT));
+        
+        if (!needsTranslation) {
+          continue; // Este proyecto ya está completamente traducido
+        }
+
+        const projectTranslations = [];
+
+        // Traducir nombre si falta
+        if (nombreES && !nombreEN) {
+          const traducidoEN = await translateText(nombreES, 'en');
+          projectTranslations.push({ 
+            entity_type: 'project', 
+            entity_id: proyecto.id, 
+            language_code: 'en', 
+            field_name: 'name', 
+            value: traducidoEN 
+          });
+        }
+
+        if (nombreES && !nombreIT) {
+          const traducidoIT = await translateText(nombreES, 'it');
+          projectTranslations.push({ 
+            entity_type: 'project', 
+            entity_id: proyecto.id, 
+            language_code: 'it', 
+            field_name: 'name', 
+            value: traducidoIT 
+          });
+        }
+
+        // Traducir descripción si falta
+        if (descES && !descEN) {
+          const traducidoEN = await translateText(descES, 'en');
+          projectTranslations.push({ 
+            entity_type: 'project', 
+            entity_id: proyecto.id, 
+            language_code: 'en', 
+            field_name: 'description', 
+            value: traducidoEN 
+          });
+        }
+
+        if (descES && !descIT) {
+          const traducidoIT = await translateText(descES, 'it');
+          projectTranslations.push({ 
+            entity_type: 'project', 
+            entity_id: proyecto.id, 
+            language_code: 'it', 
+            field_name: 'description', 
+            value: traducidoIT 
+          });
+        }
+
+        // Guardar traducciones del proyecto
+        if (projectTranslations.length > 0) {
+          const { error: projectTranslationError } = await supabase
+            .from('translations')
+            .upsert(projectTranslations, {
+              onConflict: 'entity_type,entity_id,language_code,field_name'
+            });
+
+          if (!projectTranslationError) {
+            proyectosTraducidos++;
+          } else {
+            console.error(`Error guardando traducciones del proyecto ${proyecto.id}:`, projectTranslationError);
+          }
+        }
+      }
+
+      toast({
+        title: '✨ Traducción completada',
+        description: `Categoría y ${proyectosTraducidos} proyecto(s) traducidos`,
         duration: 3000,
       });
     } catch (error) {
@@ -378,7 +498,7 @@ export function CategoriaEditor({ categoriaId, onBack }: CategoriaEditorProps) {
                 <span className="text-yellow-600 text-xl">⚠️</span>
                 <div className="flex-1">
                   <p className="text-sm font-medium text-yellow-900">Faltan traducciones</p>
-                  <p className="text-xs text-yellow-700 mt-0.5">Esta categoría no está traducida al inglés ni italiano</p>
+                  <p className="text-xs text-yellow-700 mt-0.5">Traduce automáticamente la categoría y todos sus proyectos a inglés e italiano</p>
                 </div>
                 <Button
                   type="button"
@@ -386,6 +506,7 @@ export function CategoriaEditor({ categoriaId, onBack }: CategoriaEditorProps) {
                   disabled={saving}
                   size="sm"
                   className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
+                  title="Traduce la categoría y todos sus proyectos con IA"
                 >
                   {saving ? 'Traduciendo...' : '✨ Traducir todo'}
                 </Button>
@@ -399,7 +520,7 @@ export function CategoriaEditor({ categoriaId, onBack }: CategoriaEditorProps) {
               <div className="flex-1">
                 <p className="text-sm font-medium text-blue-900">Traducciones incompletas</p>
                 <p className="text-xs text-blue-700 mt-0.5">
-                  Faltan: {missingEN && 'Inglés'}{missingEN && missingIT && ', '}{missingIT && 'Italiano'}
+                  Completa automáticamente: {missingEN && 'Inglés'}{missingEN && missingIT && ', '}{missingIT && 'Italiano'} (categoría + proyectos)
                 </p>
               </div>
               <Button
@@ -408,6 +529,7 @@ export function CategoriaEditor({ categoriaId, onBack }: CategoriaEditorProps) {
                 disabled={saving}
                 size="sm"
                 className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
+                title="Traduce la categoría y todos sus proyectos con IA"
               >
                 {saving ? 'Traduciendo...' : '✨ Completar'}
               </Button>

@@ -13,7 +13,8 @@ import {
   CategoriasList, 
   ProyectoEditorPage, 
   CategoriaEditorPage, 
-  CategoriaNuevaPage 
+  CategoriaNuevaPage,
+  TraduccionMasiva
 } from './features/proyectos'
 import { AdminLayout } from './shared'
 import './App.css'
@@ -56,6 +57,7 @@ function App() {
           <Route index element={<ProyectosList />} />
           <Route path="nuevo" element={<ProyectoEditorPage />} />
           <Route path=":id" element={<ProyectoEditorPage />} />
+          <Route path="traduccion-masiva" element={<TraduccionMasiva />} />
           <Route path="categorias" element={<CategoriasList />} />
           <Route path="categorias/nueva" element={<CategoriaNuevaPage />} />
           <Route path="categorias/:id" element={<CategoriaEditorPage />} />
