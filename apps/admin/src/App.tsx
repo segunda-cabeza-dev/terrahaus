@@ -6,7 +6,6 @@ import { Contenido } from './features/contenido'
 import WhatsAppConfig from './features/contenido/WhatsAppConfig'
 import { Imagenes } from './features/imagenes'
 import { Contactos } from './features/contactos'
-import { ProductosSimple } from './features/productos'
 import { Recordatorios } from './features/recordatorios'
 import { WPImporter } from './features/wp-importer'
 import { 
@@ -53,7 +52,6 @@ function App() {
         <Route path="whatsapp" element={<WhatsAppConfig />} />
         <Route path="imagenes" element={<Imagenes />} />
         <Route path="contactos" element={<Contactos />} />
-        <Route path="productos" element={<ProductosSimple />} />
         <Route path="proyectos">
           <Route index element={<ProyectosList />} />
           <Route path="nuevo" element={<ProyectoEditorPage />} />
