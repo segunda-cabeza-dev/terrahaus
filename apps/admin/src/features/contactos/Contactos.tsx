@@ -182,101 +182,170 @@ export default function Contactos() {
         description={`${contacts.length} mensaje${contacts.length !== 1 ? 's' : ''} recibido${contacts.length !== 1 ? 's' : ''}`}
       />
       
-      {/* Vista de lista estilo inbox */}
-      <div className="bg-white rounded-lg border overflow-hidden">
+      <div className="bg-white rounded-xl shadow-lg overflow-hidden">
         {contacts.length === 0 ? (
           <div className="text-center py-16">
             <Mail className="w-16 h-16 text-gray-300 mx-auto mb-4" />
             <p className="text-gray-500 text-lg">No hay mensajes de contacto</p>
           </div>
         ) : (
-          <div className="divide-y">
-            {contacts.map((contact) => (
-              <div 
-                key={contact.id} 
-                className={`p-4 hover:bg-gray-50 transition-colors ${
-                  !contact.is_read ? 'bg-blue-50/30' : ''
-                }`}
-              >
-                <div className="flex items-start gap-4">
-                  {/* Indicador de leído/no leído */}
-                  <div className="pt-1">
-                    {contact.is_read ? (
-                      <CheckCircle className="w-5 h-5 text-green-500" />
-                    ) : (
-                      <Circle className="w-5 h-5 text-blue-500 animate-pulse" />
-                    )}
-                  </div>
-
-                  {/* Contenido principal */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-4 mb-2">
-                      <div className="flex-1 min-w-0">
-                        <h3 className={`font-semibold text-base truncate ${
-                          !contact.is_read ? 'text-black' : 'text-gray-700'
-                        }`}>
-                          {contact.full_name}
-                        </h3>
-                        <div className="flex items-center gap-4 text-sm text-gray-600 mt-1">
-                          <a 
-                            href={`mailto:${contact.email}`} 
-                            className="hover:text-blue-600 truncate flex items-center gap-1"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <Mail className="w-3.5 h-3.5 flex-shrink-0" />
-                            {contact.email}
-                          </a>
-                          {contact.phone && (
-                            <a 
-                              href={`tel:${contact.phone}`} 
-                              className="hover:text-blue-600 flex items-center gap-1"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              <Phone className="w-3.5 h-3.5 flex-shrink-0" />
-                              {contact.phone}
-                            </a>
-                          )}
-                        </div>
+          <div className="overflow-x-auto">
+            {/* Tabla Desktop */}
+            <table className="min-w-full hidden md:table">
+              <thead>
+                <tr className="bg-gray-50 border-b border-gray-200">
+                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Estado</th>
+                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Nombre</th>
+                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Email</th>
+                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Teléfono</th>
+                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Mensaje</th>
+                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Fecha</th>
+                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Acciones</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {contacts.map((contact) => (
+                  <tr 
+                    key={contact.id}
+                    className={`hover:bg-gray-50 transition-colors ${
+                      !contact.is_read ? 'bg-blue-50/30' : ''
+                    }`}
+                  >
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {contact.is_read ? (
+                        <CheckCircle className="w-5 h-5 text-green-500" />
+                      ) : (
+                        <Circle className="w-5 h-5 text-blue-500 animate-pulse" />
+                      )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`text-sm ${
+                        !contact.is_read ? 'font-semibold text-black' : 'text-gray-700'
+                      }`}>
+                        {contact.full_name}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <a 
+                        href={`mailto:${contact.email}`}
+                        className="text-sm text-blue-600 hover:underline flex items-center gap-1"
+                      >
+                        <Mail className="w-3.5 h-3.5" />
+                        {contact.email}
+                      </a>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {contact.phone ? (
+                        <a 
+                          href={`tel:${contact.phone}`}
+                          className="text-sm text-blue-600 hover:underline flex items-center gap-1"
+                        >
+                          <Phone className="w-3.5 h-3.5" />
+                          {contact.phone}
+                        </a>
+                      ) : (
+                        <span className="text-sm text-gray-400">-</span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4">
+                      <p className="text-sm text-gray-600 max-w-xs truncate">
+                        {contact.message}
+                      </p>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="text-sm text-gray-500">
+                        {formatDate(contact.created_at)}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => toggleRead(contact)}
+                          className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
+                          title={contact.is_read ? 'Marcar como no leído' : 'Marcar como leído'}
+                        >
+                          <Eye className={`w-4 h-4 ${contact.is_read ? 'text-green-500' : 'text-gray-400'}`} />
+                        </button>
+                        <button
+                          onClick={() => deleteContact(contact.id)}
+                          className="p-2 hover:bg-red-50 rounded-lg transition-colors"
+                          title="Eliminar mensaje"
+                        >
+                          <Trash2 className="w-4 h-4 text-red-500" />
+                        </button>
                       </div>
-                      <div className="flex items-center gap-3">
-                        <span className="text-sm text-gray-500 whitespace-nowrap">
-                          {formatDate(contact.created_at)}
-                        </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            {/* Vista Mobile - Cards */}
+            <div className="md:hidden divide-y divide-gray-200">
+              {contacts.map((contact) => (
+                <div 
+                  key={contact.id}
+                  className={`p-4 ${!contact.is_read ? 'bg-blue-50/30' : ''}`}
+                >
+                  <div className="flex items-start gap-3 mb-3">
+                    {contact.is_read ? (
+                      <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                    ) : (
+                      <Circle className="w-5 h-5 text-blue-500 animate-pulse flex-shrink-0" />
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <h3 className={`font-semibold text-base ${
+                        !contact.is_read ? 'text-black' : 'text-gray-700'
+                      }`}>
+                        {contact.full_name}
+                      </h3>
+                      <div className="text-xs text-gray-500 mt-1">
+                        {formatDate(contact.created_at)}
                       </div>
                     </div>
-                    
-                    {/* Mensaje */}
-                    <p className="text-sm text-gray-600 line-clamp-2 mt-2">
+                  </div>
+
+                  <div className="space-y-2 text-sm">
+                    <a 
+                      href={`mailto:${contact.email}`}
+                      className="flex items-center gap-2 text-blue-600"
+                    >
+                      <Mail className="w-4 h-4" />
+                      {contact.email}
+                    </a>
+                    {contact.phone && (
+                      <a 
+                        href={`tel:${contact.phone}`}
+                        className="flex items-center gap-2 text-blue-600"
+                      >
+                        <Phone className="w-4 h-4" />
+                        {contact.phone}
+                      </a>
+                    )}
+                    <p className="text-gray-600 mt-3">
                       {contact.message}
                     </p>
                   </div>
 
-                  {/* Acciones */}
-                  <div className="flex gap-1 pt-1">
+                  <div className="flex items-center gap-2 mt-4 pt-3 border-t">
                     <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleRead(contact);
-                      }}
-                      className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
-                      title={contact.is_read ? 'Marcar como no leído' : 'Marcar como leído'}
+                      onClick={() => toggleRead(contact)}
+                      className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
                     >
-                      <Eye className={`w-4 h-4 ${contact.is_read ? 'text-green-500' : 'text-gray-400'}`} />
+                      <Eye className="w-4 h-4" />
+                      {contact.is_read ? 'No leído' : 'Leído'}
                     </button>
                     <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        deleteContact(contact.id);
-                      }}
-                      className="p-2 hover:bg-red-50 rounded-lg transition-colors"
-                      title="Eliminar mensaje"
+                      onClick={() => deleteContact(contact.id)}
+                      className="flex items-center justify-center gap-2 px-3 py-2 text-sm bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors"
                     >
-                      <Trash2 className="w-4 h-4 text-red-500" />
+                      <Trash2 className="w-4 h-4" />
+                      Eliminar
                     </button>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         )}
       </div>
