@@ -127,16 +127,26 @@ export default function Contactos() {
   const deleteContact = async (id: string) => {
     if (!confirm('¿Estás seguro de eliminar este mensaje?')) return;
     
+    console.log('🗑️ Intentando eliminar mensaje:', id);
+    
     try {
-      const { error } = await supabase
-        .from('contact_messages')
-        .delete()
-        .eq('id', id);
+      // Usar función RPC que bypasea RLS
+      const { error, data } = await supabase
+        .rpc('delete_contact_message', { message_id: id });
 
-      if (error) throw error;
+      console.log('Resultado del borrado:', { error, data });
+
+      if (error) {
+        console.error('❌ Error al borrar:', error);
+        throw error;
+      }
+
+      console.log('✅ Mensaje eliminado correctamente');
+      // Actualizar estado local
       setContacts(contacts.filter(c => c.id !== id));
     } catch (error) {
       console.error('Error deleting contact:', error);
+      alert('Error al eliminar el mensaje. Verifica los permisos en Supabase.');
     }
   };
 

@@ -127,27 +127,41 @@ export function CategoriasList() {
   const eliminarCategoria = async (id: number, nombre: string) => {
     if (!confirm(`¿Estás seguro de eliminar la categoría "${nombre}"? Esto NO eliminará los proyectos.`)) return;
     
+    console.log('Intentando eliminar categoría:', id, nombre);
+    
     try {
       // Verificar si hay proyectos en esta categoría
-      const { data: proyectosEnCategoria } = await supabase
+      const { data: proyectosEnCategoria, error: checkError } = await supabase
         .from('projects')
         .select('id')
         .eq('category_id', id);
 
+      console.log('Proyectos en categoría:', proyectosEnCategoria, 'Error:', checkError);
+
+      if (checkError) {
+        console.error('Error verificando proyectos:', checkError);
+        throw checkError;
+      }
+
       if (proyectosEnCategoria && proyectosEnCategoria.length > 0) {
+        console.log('❌ No se puede eliminar: La categoría tiene proyectos');
         toast({
-          title: 'No se puede eliminar',
-          description: `Esta categoría tiene ${proyectosEnCategoria.length} proyecto(s). Elimínalos primero.`,
+          title: '❌ No se puede eliminar',
+          description: `Esta categoría tiene ${proyectosEnCategoria.length} proyecto(s). Debes eliminar o reasignar los proyectos primero.`,
           variant: 'destructive',
         });
         return;
       }
+
+      console.log('Eliminando categoría ID:', id);
 
       // Eliminar la categoría (el trigger eliminará automáticamente las traducciones)
       const { error: categoryError } = await supabase
         .from('categories')
         .delete()
         .eq('id', id);
+
+      console.log('Resultado de eliminación:', categoryError);
 
       if (categoryError) {
         console.error('Error eliminando categoría:', categoryError);
@@ -174,7 +188,7 @@ export function CategoriasList() {
     <div className="space-y-6">
       <PageHeader
         title="Proyectos"
-        description="Organiza tus categorías y personaliza sus portadas"
+        description={`Organiza tus categorías y personaliza sus portadas • ${categorias.length} ${categorias.length === 1 ? 'categoría' : 'categorías'}`}
         actions={
           <div className="flex items-center gap-3">
             {/* Toggle de vista */}

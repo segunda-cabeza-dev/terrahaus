@@ -402,13 +402,33 @@ export function ProyectoEditor({ proyectoId, categoriaInicial, onBack }: Proyect
         }, 500);
       } else {
         // Crear nuevo proyecto
-        // Primero generar slug
-        const slug = form.titulo
+        // Primero generar slug base
+        let baseSlug = form.titulo
           .toLowerCase()
           .normalize('NFD')
           .replace(/[\u0300-\u036f]/g, '')
           .replace(/[^a-z0-9]+/g, '-')
           .replace(/^-+|-+$/g, '');
+
+        // Verificar si el slug ya existe y generar uno único
+        let slug = baseSlug;
+        let counter = 1;
+        let slugExists = true;
+        
+        while (slugExists) {
+          const { data: existingProject } = await supabase
+            .from('projects')
+            .select('id')
+            .eq('slug', slug)
+            .maybeSingle();
+          
+          if (!existingProject) {
+            slugExists = false;
+          } else {
+            slug = `${baseSlug}-${counter}`;
+            counter++;
+          }
+        }
 
         const { data: projectData, error: projectError } = await supabase
           .from('projects')
@@ -570,7 +590,7 @@ export function ProyectoEditor({ proyectoId, categoriaInicial, onBack }: Proyect
         {/* Formulario principal */}
         <div className="lg:col-span-2 space-y-6">
           {/* Alerta de estado de traducciones */}
-          {form.titulo && proyectoId && (
+          {form.titulo && (
             (() => {
               // Solo verificar traducciones si existe contenido en español
               const hasSpanishTitle = form.titulo.trim().length > 0;
