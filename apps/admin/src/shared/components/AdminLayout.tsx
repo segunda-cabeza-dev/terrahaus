@@ -170,6 +170,7 @@ export default function AdminLayout() {
                   to={item.href}
                   state={isProyectos ? { resetView: true } : undefined}
                   className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-700 hover:bg-black hover:text-white transition-colors relative"
+                  style={{ fontSize: '14px' }}
                 >
                   <Icon className="w-5 h-5" />
                   <span className="font-medium">{item.name}</span>
@@ -188,6 +189,7 @@ export default function AdminLayout() {
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-700 hover:bg-black hover:text-white transition-colors"
+              style={{ fontSize: '14px' }}
             >
               <ExternalLink className="w-5 h-5" />
               <span className="font-medium">Vista Web</span>
