@@ -36,8 +36,8 @@ const Header: React.FC = () => {
               className="h-12 w-auto"
             />
           </a>
-          {/* Menú centrado */}
-          <nav className="flex-1 flex justify-center">
+          {/* Menú y botón: solo visible en desktop */}
+          <nav className="flex-1 flex justify-center hidden md:flex">
             <ul className="flex gap-14">
               <li>
                 <a href="#cost-calculator" className="text-white font-bold text-[20px] uppercase tracking-wide hover:opacity-80" style={{fontFamily: 'Bebas Neue, sans-serif'}}>Calculadora de coste</a>
@@ -50,8 +50,16 @@ const Header: React.FC = () => {
               </li>
             </ul>
           </nav>
-          {/* Botón derecho */}
-          <a ref={btnRef} href="#contacto" className="bg-[#b35427] hover:bg-[#a3471d] text-white font-bold py-2 px-6 rounded transition text-[20px] uppercase shadow-lg min-w-[150px] text-center" style={{fontFamily: 'Bebas Neue, sans-serif'}}>Contáctanos</a>
+          {/* Botón derecho: solo visible en desktop */}
+          <a ref={btnRef} href="#contacto" className="bg-[#b35427] hover:bg-[#a3471d] text-white font-bold py-2 px-6 rounded transition text-[20px] uppercase shadow-lg min-w-[150px] text-center hidden md:inline-block" style={{fontFamily: 'Bebas Neue, sans-serif'}}>Contáctanos</a>
+          {/* Hamburguesa: solo visible en móvil */}
+          <button className="md:hidden flex items-center justify-center ml-4" aria-label="Abrir menú">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+          </button>
         </div>
         {/* Línea inferior perfectamente alineada */}
         <div style={lineStyle}></div>

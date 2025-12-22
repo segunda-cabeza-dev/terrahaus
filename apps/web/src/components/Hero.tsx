@@ -16,9 +16,9 @@ const Hero: React.FC = () => {
       {/* Header Terrahaus */}
       <Header />
       {/* Contenido Hero */}
-  <div className="relative z-20 flex flex-col items-center justify-center text-center text-white px-0 flex-1" style={{paddingTop: '120px'}}>
+  <div className="relative z-20 flex flex-col items-center justify-center text-center text-white px-0 flex-1 hero-content-responsive" style={{paddingTop: '120px'}}>
         <h1
-          className="mb-6 uppercase tracking-tight mx-auto"
+          className="mb-6 uppercase tracking-tight mx-auto hero-title-responsive"
           style={{
             fontFamily: 'Bebas Neue, sans-serif',
             fontSize: '78px',
@@ -31,18 +31,67 @@ const Hero: React.FC = () => {
             borderRadius: 0
           }}
         >
+          <style>{`
+            @media (max-width: 640px) {
+              .hero-title-responsive {
+                font-size: 55px !important;
+                line-height: 1 !important;
+              }
+            }
+          `}</style>
           CONSTRUIMOS LUGARES UNICOS EN TODO ALICANTE
         </h1>
-        <div className="mb-6 mx-auto" style={{fontFamily: 'Inter Tight, Inter, sans-serif', fontSize: '20px', fontWeight: 400, maxWidth: '700px', lineHeight: 1.3}}>
-          <div>Casas, bungalows y glampings diseñadas y dirigidas por arquitectos detallistas.</div>
-          <div><span className="font-bold">Muy detallistas.</span></div>
+        <div 
+          className="mb-6 mx-auto text-center hero-desc-responsive"
+          style={{
+            fontFamily: 'Barlow, sans-serif',
+            fontWeight: 400,
+            maxWidth: '1200px',
+            lineHeight: 1.3,
+            fontSize: '20px',
+          }}
+        >
+          <style>{`
+            @media (max-width: 640px) {
+              .hero-desc-responsive {
+                font-size: 19px !important;
+              }
+            }
+          `}</style>
+          <style>{`
+            @media (max-width: 640px) {
+              .hero-content-responsive {
+                padding-left: 14px !important;
+                padding-right: 14px !important;
+              }
+            }
+            @media (max-width: 640px) {
+              .hero-main-title {
+                font-size: 19px !important;
+                line-height: 1.3 !important;
+                font-weight: 400 !important;
+              }
+              .hero-secondary-text {
+                font-size: 18px !important;
+                font-weight: 700 !important;
+                display: block;
+                margin-top: 0.2em;
+              }
+            }
+          `}</style>
+          <div className="hero-main-title">
+            Casas, bungalows y glampings diseñadas y dirigidas por arquitectos detallistas.
+          </div>
+          <div className="hero-secondary-text font-bold">
+            Muy detallistas.
+          </div>
         </div>
         <a
           href="#cost-calculator"
-          className="bg-[#b35427] hover:bg-[#a3471d] text-white py-3 px-8 rounded transition mb-4 shadow-lg text-[20px] uppercase"
-          style={{fontFamily: 'Bebas Neue, sans-serif', fontWeight: 400}}
+          className="bg-[#b35427] hover:bg-[#a3471d] text-white py-3 px-10 rounded transition mb-4 shadow-lg text-[23px] uppercase"
+          style={{fontFamily: 'Bebas Neue, sans-serif', fontWeight: 400, fontSize: '23px'}}
         >
-          CALCULA EL COSTO DE TU PROYECTO
+          PONTE EN CONTACTO AHORA
         </a>
       </div>
       {/* Botón WhatsApp flotante */}
