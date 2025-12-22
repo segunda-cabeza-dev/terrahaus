@@ -1,4 +1,7 @@
 import { useTranslation } from 'react-i18next';
+import Hero from '../../../components/Hero';
+
+// Eliminar el slider/marquee y preparar para Especializaciones
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { projectsService, type ProjectItem } from '@beltrame/shared';
@@ -45,90 +48,14 @@ export default function Inicio() {
     loadRecentProjects();
   }, [lang]);
   
+
   return (
     <div className="inicio-page">
-      {/* ATF Hero Section */}
-      <section className="pt-16 pb-16 px-6 bg-white">
-        <div className="max-w-4xl mx-auto text-center">
-          {/* Subtítulo */}
-          <p className="font-medium tracking-wider uppercase mb-4 text-black" style={{ fontSize: '16px' }}>
-            {t('inicio.subtitle')}
-          </p>
+      {/* Hero personalizado Terrahaus */}
+      <Hero />
 
-          {/* Título principal */}
-          <h1 className="font-bold mb-8 text-[35px] md:text-[50px]" style={{ lineHeight: '1.1' }}>
-            {t('inicio.title')}
-          </h1>
 
-          {/* CTA Button */}
-          <a
-            href={getLocalizedPath('projects')}
-            className="inline-block bg-black text-white px-8 py-3 rounded-md hover:bg-white hover:text-black hover:ring-2 hover:ring-black transition-all font-medium"
-          >
-            {t('inicio.cta')}
-          </a>
-        </div>
-      </section>
-
-      {/* Marquee Section - Fila 1 */}
-      <div className="bg-white py-4">
-        <div className="w-full overflow-hidden">
-          <div className="marquee-container">
-            <div className="marquee-content">
-              {[1, 5, 9, 3, 7, 2, 10, 4, 8, 6].map((num, index) => (
-                <div key={`img1-${index}`} className="marquee-item">
-                  <img
-                    src={`/assets/images/Marquee/${num}.jpg`}
-                    alt={`Proyecto ${num}`}
-                    className="h-full w-full object-cover rounded-lg"
-                  />
-                </div>
-              ))}
-            </div>
-            <div className="marquee-content" aria-hidden="true">
-              {[1, 5, 9, 3, 7, 2, 10, 4, 8, 6].map((num, index) => (
-                <div key={`img1-dup-${index}`} className="marquee-item">
-                  <img
-                    src={`/assets/images/Marquee/${num}.jpg`}
-                    alt={`Proyecto ${num}`}
-                    className="h-full w-full object-cover rounded-lg"
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Marquee Section - Fila 2 (dirección inversa) */}
-      <div className="bg-white pb-12">
-        <div className="w-full overflow-hidden">
-          <div className="marquee-container-reverse">
-            <div className="marquee-content">
-              {[11, 15, 19, 13, 17, 12, 20, 14, 18, 16].map((num, index) => (
-                <div key={`img2-${index}`} className="marquee-item">
-                  <img
-                    src={`/assets/images/Marquee/${num}.jpg`}
-                    alt={`Proyecto ${num}`}
-                    className="h-full w-full object-cover rounded-lg"
-                  />
-                </div>
-              ))}
-            </div>
-            <div className="marquee-content" aria-hidden="true">
-              {[11, 15, 19, 13, 17, 12, 20, 14, 18, 16].map((num, index) => (
-                <div key={`img2-dup-${index}`} className="marquee-item">
-                  <img
-                    src={`/assets/images/Marquee/${num}.jpg`}
-                    alt={`Proyecto ${num}`}
-                    className="h-full w-full object-cover rounded-lg"
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Aquí irá la sección Especializaciones */}
 
       {/* Sección Nuestros Servicios */}
       <section className="py-20 px-6 bg-white">

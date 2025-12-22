@@ -3,7 +3,7 @@ import { Routes, Route, Navigate, useParams } from 'react-router-dom'
 import { Inicio, QuienesSomos, MapaSitio, TerminosCondiciones, Privacidad } from './features/institucional'
 import { Proyecto, ProyectoCategoria, ProyectoDetalle } from './features/proyectos'
 import { Contacto } from './features/contacto'
-import { TopBar, Header, CallToAction, Footer } from './features/layout'
+import { CallToAction, Footer } from './features/layout'
 import { WhatsAppFloat } from './components/WhatsAppFloat'
 import './App.css'
 import { useEffect } from 'react'
@@ -39,8 +39,6 @@ function App() {
   
   return (
     <>
-      <TopBar />
-      <Header />
       <Routes>
         {/* Redirect root to default language */}
         <Route path="/" element={<Navigate to={`/${i18n.language || 'es'}`} replace />} />
