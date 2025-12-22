@@ -1,5 +1,10 @@
 import { useTranslation } from 'react-i18next';
 import Hero from '../../../components/Hero';
+import Especializaciones from '../../../components/Especializaciones';
+// import CTA from '../../../components/CTA';
+// import Calculadora from '../../../components/Calculadora';
+import Formulario from '../../../components/Formulario';
+import Footer from '../../../components/Footer';
 
 // Eliminar el slider/marquee y preparar para Especializaciones
 import { useState, useEffect } from 'react';
@@ -51,8 +56,22 @@ export default function Inicio() {
 
   return (
     <div className="inicio-page">
-      {/* Hero personalizado Terrahaus */}
-      <Hero />
+  {/* Hero personalizado Terrahaus */}
+  <Hero />
+
+  {/* Especializaciones */}
+  <Especializaciones />
+
+
+
+
+
+
+  {/* Formulario de contacto */}
+  <Formulario />
+
+  {/* Footer */}
+  <Footer />
 
 
       {/* Aquí irá la sección Especializaciones */}
