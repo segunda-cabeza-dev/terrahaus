@@ -1,0 +1,9 @@
+.especializacion-title-mobile {
+  line-height: 1.05;
+}
+
+@media (min-width: 768px) {
+  .especializacion-title-mobile {
+    line-height: 1.15;
+  }
+}

@@ -1,7 +1,7 @@
 
 export function WhatsAppFloat() {
-  // Número hardcodeado (ejemplo: Argentina +54 9 11 1234-5678)
-  const whatsapp = "+54 9 11 1234-5678";
+  // Número de WhatsApp igual al del footer
+  const whatsapp = "+34 642413996";
   const phone = whatsapp.replace(/[^\d]/g, '');
   const link = `https://wa.me/${phone}`;
 

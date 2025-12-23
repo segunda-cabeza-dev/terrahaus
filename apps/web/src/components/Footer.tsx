@@ -3,20 +3,19 @@ import React from "react";
 const Footer: React.FC = () => {
   return (
     <footer className="w-full bg-black text-white pt-14 pb-6 px-0">
-  <div className="max-w-7xl mx-auto px-6 md:px-16 grid grid-cols-1 md:grid-cols-3 gap-10 items-center justify-center">
+  <div className="max-w-7xl mx-auto px-4 md:px-16 grid grid-cols-1 md:grid-cols-3 gap-10 items-start justify-center text-center md:text-left">
         {/* Columna 1: Logo y descripción */}
-        <div className="flex flex-col items-center text-left w-full">
-          <div className="flex flex-col items-start">
-            <img src="/assets/images/Logo%20terrahous%20Blanco.png" alt="Terrahaus logo" className="h-16 w-auto mb-2 ml-[-12px]" style={{maxWidth: '300px'}} />
-            <p className="text-gray-300 text-base" style={{fontFamily: 'Inter Tight, sans-serif', fontWeight: 300, maxWidth: '320px', marginTop: 0}}>
+        <div className="flex flex-col items-center md:items-start w-full mb-8 md:mb-0">
+          <div className="flex flex-col items-center md:items-start w-full">
+            <img src="/assets/images/Logo%20terrahous%20Blanco.png" alt="Terrahaus logo" className="h-16 w-auto mb-2 mx-auto md:ml-[-12px]" style={{maxWidth: '300px'}} />
+            <p className="text-gray-300 text-base mt-2 md:mt-0 mx-auto md:mx-0" style={{fontFamily: 'Inter Tight, sans-serif', fontWeight: 300, maxWidth: '320px'}}>
               Llevamos adelante tu proyecto de principio a fin con arquitectos especialistas en interiorismo.
             </p>
           </div>
-          {/* Descripción eliminada según pedido */}
         </div>
         {/* Columna 2: Contacto */}
-        <div className="flex flex-col items-center text-left w-full">
-          <div className="text-lg font-bold mb-4 self-start" style={{fontFamily: 'Inter Tight, sans-serif'}}>Ponte en contacto</div>
+        <div className="flex flex-col items-center md:items-start w-full mb-8 md:mb-0">
+          <div className="text-lg font-bold mb-4 self-center md:self-start" style={{fontFamily: 'Inter Tight, sans-serif'}}>Ponte en contacto</div>
           <ul className="text-gray-300 space-y-2 text-base" style={{fontFamily: 'Inter Tight, sans-serif', fontWeight: 300}}>
             <li className="flex items-center gap-3">
               <span className="inline-block text-[#b35427]">
@@ -44,8 +43,8 @@ const Footer: React.FC = () => {
           </ul>
         </div>
         {/* Columna 3: Servicios */}
-        <div className="flex flex-col items-center text-left w-full justify-start">
-          <div className="text-lg font-bold mb-4 self-start" style={{fontFamily: 'Inter Tight, sans-serif', textAlign: 'left', width: '100%', marginTop: 0, paddingTop: 0}}>Proyectos</div>
+        <div className="flex flex-col items-center md:items-start w-full mb-4 md:mb-0 justify-start">
+          <div className="text-lg font-bold mb-4 self-center md:self-start" style={{fontFamily: 'Inter Tight, sans-serif', textAlign: 'left', width: '100%', marginTop: 0, paddingTop: 0}}>Proyectos</div>
           <ul className="text-gray-300 space-y-2 text-base" style={{fontFamily: 'Inter Tight, sans-serif', fontWeight: 300}}>
             <li><span style={{color:'#b35427', fontWeight:700, fontSize:'18px', marginRight:'8px'}}>&#10095;</span><a href="/glamping" className="hover:text-[#b35427] transition">Glamping</a></li>
             <li><span style={{color:'#b35427', fontWeight:700, fontSize:'18px', marginRight:'8px'}}>&#10095;</span><a href="/AlpinaBlanca" className="hover:text-[#b35427] transition">Alpina Blanca</a></li>
@@ -54,7 +53,7 @@ const Footer: React.FC = () => {
           </ul>
         </div>
       </div>
-  <div className="border-t border-gray-700 mt-10 pt-4 text-center text-gray-400 text-sm flex flex-col md:flex-row items-center justify-between max-w-7xl mx-auto px-6 md:px-16" style={{fontFamily: 'Inter Tight, sans-serif', fontWeight: 300}}>
+  <div className="border-t border-gray-700 mt-10 pt-4 text-center text-gray-400 text-sm flex flex-col md:flex-row items-center justify-between max-w-7xl mx-auto px-4 md:px-16" style={{fontFamily: 'Inter Tight, sans-serif', fontWeight: 300}}>
         <span>Creado por <span className="font-bold">REFORMARKETING</span> <span className="text-lg">©</span> Copyright 2024.</span>
       </div>
     </footer>

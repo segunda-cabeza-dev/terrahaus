@@ -1,9 +1,16 @@
 import { Routes, Route, Navigate, useParams } from 'react-router-dom'
 // import { ComponentsShowcase } from './features/showcase'
-import { Inicio, QuienesSomos, MapaSitio, TerminosCondiciones, Privacidad } from './features/institucional'
+// import { Inicio, QuienesSomos, MapaSitio, TerminosCondiciones, Privacidad } from './features/institucional'
 import { Proyecto, ProyectoCategoria, ProyectoDetalle } from './features/proyectos'
+import Home from './pages/Home'
+import AlpinaBlanca from './pages/AlpinaBlanca'
+import CasaCuadrante from './pages/CasaCuadrante'
+import CasaHorizonte from './pages/CasaHorizonte'
+import Glamping from './pages/Glamping'
+import PequenaAndina from './pages/PequenaAndina'
+import Proyectos from './pages/Proyectos'
 import { Contacto } from './features/contacto'
-import { CallToAction, Footer } from './features/layout'
+// import { CallToAction } from './features/layout'
 import { WhatsAppFloat } from './components/WhatsAppFloat'
 import './App.css'
 import { useEffect } from 'react'
@@ -41,53 +48,21 @@ function App() {
     <>
       <Routes>
         {/* Redirect root to default language */}
-        <Route path="/" element={<Navigate to={`/${i18n.language || 'es'}`} replace />} />
-        
-        {/* Spanish routes */}
-        <Route path="/es" element={<><LanguageSync /><Inicio /></>} />
-        <Route path="/es/proyectos" element={<><LanguageSync /><Proyecto /></>} />
-        <Route path="/es/proyectos/:categoria" element={<><LanguageSync /><ProyectoCategoria /></>} />
-        <Route path="/es/proyectos/:categoria/:id" element={<><LanguageSync /><ProyectoDetalle /></>} />
-        <Route path="/es/quienes-somos" element={<><LanguageSync /><QuienesSomos /></>} />
-        <Route path="/es/contacto" element={<><LanguageSync /><Contacto /></>} />
-        <Route path="/es/mapa-sitio" element={<><LanguageSync /><MapaSitio /></>} />
-        <Route path="/es/terminos-condiciones" element={<><LanguageSync /><TerminosCondiciones /></>} />
-        <Route path="/es/privacidad" element={<><LanguageSync /><Privacidad /></>} />
-
-        {/* English routes */}
-        <Route path="/en" element={<><LanguageSync /><Inicio /></>} />
-        <Route path="/en/projects" element={<><LanguageSync /><Proyecto /></>} />
-        <Route path="/en/projects/:categoria" element={<><LanguageSync /><ProyectoCategoria /></>} />
-        <Route path="/en/projects/:categoria/:id" element={<><LanguageSync /><ProyectoDetalle /></>} />
-        <Route path="/en/about-us" element={<><LanguageSync /><QuienesSomos /></>} />
-        <Route path="/en/contact" element={<><LanguageSync /><Contacto /></>} />
-        <Route path="/en/sitemap" element={<><LanguageSync /><MapaSitio /></>} />
-        <Route path="/en/terms-conditions" element={<><LanguageSync /><TerminosCondiciones /></>} />
-        <Route path="/en/privacy" element={<><LanguageSync /><Privacidad /></>} />
-
-        {/* Italian routes */}
-        <Route path="/it" element={<><LanguageSync /><Inicio /></>} />
-        <Route path="/it/progetti" element={<><LanguageSync /><Proyecto /></>} />
-        <Route path="/it/progetti/:categoria" element={<><LanguageSync /><ProyectoCategoria /></>} />
-        <Route path="/it/progetti/:categoria/:id" element={<><LanguageSync /><ProyectoDetalle /></>} />
-        <Route path="/it/chi-siamo" element={<><LanguageSync /><QuienesSomos /></>} />
-        <Route path="/it/contatto" element={<><LanguageSync /><Contacto /></>} />
-        <Route path="/it/mappa-sito" element={<><LanguageSync /><MapaSitio /></>} />
-        <Route path="/it/termini-condizioni" element={<><LanguageSync /><TerminosCondiciones /></>} />
-        <Route path="/it/privacy" element={<><LanguageSync /><Privacidad /></>} />
-
-        {/* Legacy routes redirect to Spanish */}
-        <Route path="/proyectos" element={<Navigate to="/es/proyectos" replace />} />
-        <Route path="/proyectos/:categoria" element={<CategoryRedirect />} />
-        <Route path="/proyectos/:categoria/:id" element={<ProjectDetailRedirect />} />
-        <Route path="/quienes-somos" element={<Navigate to="/es/quienes-somos" replace />} />
-        <Route path="/contacto" element={<Navigate to="/es/contacto" replace />} />
-        <Route path="/mapa-sitio" element={<Navigate to="/es/mapa-sitio" replace />} />
-        <Route path="/terminos-condiciones" element={<Navigate to="/es/terminos-condiciones" replace />} />
-        <Route path="/privacidad" element={<Navigate to="/es/privacidad" replace />} />
+        <Route path="/" element={<Navigate to="/es/proyectos" replace />} />
+        {/* Solo rutas de proyectos y contacto si existen */}
+  <Route path="/es" element={<Home />} />
+  <Route path="/es/proyectos" element={<Proyecto />} />
+  <Route path="/es/proyectos/:categoria" element={<ProyectoCategoria />} />
+  <Route path="/es/proyectos/:categoria/:id" element={<ProyectoDetalle />} />
+  <Route path="/es/contacto" element={<Contacto />} />
+  <Route path="/es/proyectos/alpinablanca" element={<AlpinaBlanca />} />
+  <Route path="/es/casacuadrante" element={<CasaCuadrante />} />
+  <Route path="/es/casahorizonte" element={<CasaHorizonte />} />
+  <Route path="/es/glamping" element={<Glamping />} />
+  <Route path="/es/pequenaandina" element={<PequenaAndina />} />
+  <Route path="/es/proyectos-todos" element={<Proyectos />} />
+        {/* Puedes agregar aquí más rutas válidas según tus componentes existentes */}
       </Routes>
-      <CallToAction />
-      <Footer />
       <WhatsAppFloat />
     </>
   )
