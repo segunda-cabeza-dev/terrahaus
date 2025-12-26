@@ -57,8 +57,8 @@ export default function Login() {
         <div className="text-center mb-8">
           <div className="flex justify-center mb-6">
             <img 
-              src="/admin/assets/icons/beltrame-logo.png" 
-              alt="Beltrame Logo" 
+              src="/terrahaus-logo.png" 
+              alt="Terrahaus Logo" 
               className="h-16 w-auto object-contain"
             />
           </div>
@@ -181,7 +181,7 @@ export default function Login() {
         {/* Footer */}
         <div className="mt-6 text-center">
           <p className="text-xs text-gray-400">
-            © {new Date().getFullYear()} Beltrame. Todos los derechos reservados.
+            © {new Date().getFullYear()} Terrahaus. Todos los derechos reservados.
           </p>
         </div>
       </div>

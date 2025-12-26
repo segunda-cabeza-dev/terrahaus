@@ -3,6 +3,7 @@ import { Routes, Route, Navigate, useParams } from 'react-router-dom'
 // import { Inicio, QuienesSomos, MapaSitio, TerminosCondiciones, Privacidad } from './features/institucional'
 import { Proyecto, ProyectoCategoria, ProyectoDetalle } from './features/proyectos'
 import Home from './pages/Home'
+import Landingproyecto from './Landingproyecto'
 import AlpinaBlanca from './pages/AlpinaBlanca'
 import CasaCuadrante from './pages/CasaCuadrante'
 import CasaHorizonte from './pages/CasaHorizonte'
@@ -61,6 +62,7 @@ function App() {
   <Route path="/es/glamping" element={<Glamping />} />
   <Route path="/es/pequenaandina" element={<PequenaAndina />} />
   <Route path="/es/proyectos-todos" element={<Proyectos />} />
+  <Route path="/es/landingproyectos" element={<Landingproyecto />} />
         {/* Puedes agregar aquí más rutas válidas según tus componentes existentes */}
       </Routes>
       <WhatsAppFloat />

@@ -68,7 +68,7 @@ export function ProyectosLista() {
         actions={
           <button
             onClick={() => window.location.href = '/admin/proyectos/nuevo'}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-[#b35427] text-white rounded-lg hover:bg-[#a3471d] transition-colors"
           >
             <Plus size={20} />
             Nuevo Proyecto
@@ -126,7 +126,7 @@ export function ProyectosLista() {
           <p className="text-gray-500 mb-4">No hay proyectos todavía</p>
           <button
             onClick={() => window.location.href = '/admin/proyectos/nuevo'}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-[#b35427] text-white rounded-lg hover:bg-[#a3471d]"
           >
             <Plus size={20} />
             Crear tu primer proyecto
@@ -185,26 +185,34 @@ export function ProyectosLista() {
                 </div>
 
                 {/* Acciones */}
-                <div className="flex items-center gap-2">
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => window.open(`/proyectos/${proyecto.id}`, '_blank')}
+                      className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm border border-gray-300 rounded hover:bg-gray-50"
+                    >
+                      <Eye size={16} />
+                      Ver
+                    </button>
+                    <button
+                      onClick={() => window.location.href = `/admin/proyectos/editar/${proyecto.id}`}
+                      className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm bg-[#b35427] text-white rounded hover:bg-[#a3471d]"
+                    >
+                      <Edit size={16} />
+                      Editar
+                    </button>
+                    <button
+                      onClick={() => eliminarProyecto(proyecto.id)}
+                      className="px-3 py-2 text-sm text-red-600 border border-red-300 rounded hover:bg-red-50"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
                   <button
-                    onClick={() => window.open(`/proyectos/${proyecto.id}`, '_blank')}
-                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm border border-gray-300 rounded hover:bg-gray-50"
+                    onClick={() => window.open(`/es/proyectos/${proyecto.id}`, '_blank')}
+                    className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm border border-[#b35427] text-[#b35427] rounded hover:bg-[#f7ede7] mt-1"
                   >
-                    <Eye size={16} />
-                    Ver
-                  </button>
-                  <button
-                    onClick={() => window.location.href = `/admin/proyectos/editar/${proyecto.id}`}
-                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
-                  >
-                    <Edit size={16} />
-                    Editar
-                  </button>
-                  <button
-                    onClick={() => eliminarProyecto(proyecto.id)}
-                    className="px-3 py-2 text-sm text-red-600 border border-red-300 rounded hover:bg-red-50"
-                  >
-                    <Trash2 size={16} />
+                    🌐 Vista web
                   </button>
                 </div>
               </div>

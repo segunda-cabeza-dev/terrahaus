@@ -7,7 +7,7 @@ import { LogOut, Image as ImageIcon, Users, Mail, Package, Menu, X, ExternalLink
 import { useToast } from '@beltrame/shared'
 
 // Logo URL desde variable de entorno
-const LOGO_URL = import.meta.env.VITE_LOGO_URL || '/beltrame-logo.png'
+const LOGO_URL = import.meta.env.VITE_LOGO_URL || '/terrahaus-logo.png'
 
 export default function AdminLayout() {
   const [profile, setProfile] = useState<Profile | null>(null)
@@ -118,8 +118,8 @@ export default function AdminLayout() {
   ]
 
   const filteredMenuItems = menuItems.filter(item => {
-    // Ocultar Usuarios si el email es info@beltramehierro.com
-    if (item.name === 'Usuarios' && userEmail === 'info@beltramehierro.com') {
+    // Ocultar Usuarios si el email es info@terrahaus.com
+    if (item.name === 'Usuarios' && userEmail === 'info@terrahaus.com') {
       return false
     }
     return profile && item.role.includes(profile.role)
@@ -134,7 +134,7 @@ export default function AdminLayout() {
       {/* Mobile Header con hamburguesa */}
       <header className="lg:hidden fixed top-0 left-0 right-0 bg-white shadow-md z-40 h-16 flex items-center justify-between px-4">
         <Link to="/admin/proyectos">
-          <img src={LOGO_URL} alt="Logo Beltrame" className="h-10 w-auto object-contain cursor-pointer" />
+          <img src={LOGO_URL} alt="Logo Terrahaus" className="h-10 w-auto object-contain cursor-pointer" />
         </Link>
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -153,7 +153,7 @@ export default function AdminLayout() {
         <div className="px-6 lg:px-12 py-4 flex items-center justify-between">
           {/* Logo */}
           <Link to="/admin/proyectos">
-            <img src={LOGO_URL} alt="Logo Beltrame" className="h-10 w-auto object-contain cursor-pointer" />
+            <img src={LOGO_URL} alt="Logo Terrahaus" className="h-10 w-auto object-contain cursor-pointer" />
           </Link>
           
           {/* Desktop Navigation */}
