@@ -29,7 +29,7 @@ const Header: React.FC = () => {
       <div className="max-w-5xl mx-auto px-8 relative" ref={containerRef}>
         <div className="flex items-center justify-between w-full">
           {/* Logo */}
-          <a ref={logoRef} href="/" className="flex items-center" style={{minWidth: 180}}>
+          <a ref={logoRef} href="/es" className="flex items-center" style={{minWidth: 180}}>
             <img
               src="/assets/images/Logo terrahous Blanco.png"
               alt="Terrahaus Logo"

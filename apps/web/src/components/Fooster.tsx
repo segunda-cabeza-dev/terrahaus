@@ -19,7 +19,8 @@ export const FoosterAlt: React.FC = () => (
           <ul className="space-y-1 text-left" style={{fontFamily: 'Barlow, sans-serif', fontWeight: 300, fontSize: '15px', color: '#e5e7eb'}}>
             <li><span className="text-[#b35427] font-bold mr-2">&gt;</span><a href="/es/glamping" className="hover:text-[#b35427] transition">Glamping</a></li>
             <li><span className="text-[#b35427] font-bold mr-2">&gt;</span><a href="/es/proyectos/alpinablanca" className="hover:text-[#b35427] transition">Alpina Blanca</a></li>
-            <li><span className="text-[#b35427] font-bold mr-2">&gt;</span><a href="/es/casacuadrante" className="hover:text-[#b35427] transition">Casa Cuadrante</a></li>
+             <li><span className="text-[#b35427] font-bold mr-2">&gt;</span><a href="/es/proyectos/casacuadrante" className="hover:text-[#b35427] transition">Casa Cuadrante</a></li>
+             <li><span className="text-[#b35427] font-bold mr-2">&gt;</span><a href="/es/proyectos/casahorizonte" className="hover:text-[#b35427] transition">Casa Horizonte</a></li>
             <li><span className="text-[#b35427] font-bold mr-2">&gt;</span><a href="/es/pequenaandina" className="hover:text-[#b35427] transition">Pequeña Andina</a></li>
           </ul>
         </div>

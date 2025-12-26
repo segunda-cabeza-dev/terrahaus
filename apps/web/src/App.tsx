@@ -42,6 +42,7 @@ function ProjectDetailRedirect() {
 }
 
 function App() {
+  <Route path="/es/proyectos/casahorizonte" element={<CasaHorizonte />} />
   const { i18n } = useTranslation();
   
   return (
@@ -51,13 +52,12 @@ function App() {
         <Route path="/" element={<Navigate to="/es/proyectos" replace />} />
         {/* Solo rutas de proyectos y contacto si existen */}
   <Route path="/es" element={<Home />} />
-  <Route path="/es/proyectos" element={<Proyecto />} />
   <Route path="/es/proyectos/:categoria" element={<ProyectoCategoria />} />
   <Route path="/es/proyectos/:categoria/:id" element={<ProyectoDetalle />} />
   <Route path="/es/contacto" element={<Contacto />} />
   <Route path="/es/proyectos/alpinablanca" element={<AlpinaBlanca />} />
-  <Route path="/es/casacuadrante" element={<CasaCuadrante />} />
-  <Route path="/es/casahorizonte" element={<CasaHorizonte />} />
+  <Route path="/es/proyectos/casacuadrante" element={<CasaCuadrante />} />
+  <Route path="/es/proyectos/casahorizonte" element={<CasaHorizonte />} />
   <Route path="/es/glamping" element={<Glamping />} />
   <Route path="/es/pequenaandina" element={<PequenaAndina />} />
   <Route path="/es/proyectos-todos" element={<Proyectos />} />
