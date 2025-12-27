@@ -19,8 +19,8 @@ const HeroGlamping: React.FC = () => (
   <div className="relative z-20 flex flex-col items-center justify-center text-white px-6 md:px-20 py-24 pt-32 gap-6 max-w-3xl mx-auto w-full text-center min-h-[70vh]">
       {/* Badge y logo */}
       <div className="flex items-center justify-center mb-1">
-        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/80 text-[#1db489] font-semibold text-xs uppercase tracking-wide shadow-sm border border-[#1db489]/20" style={{letterSpacing: '0.08em'}}>
-          En ejecución
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white text-[#b35427] font-semibold text-xs uppercase tracking-wide shadow-sm border border-[#b35427]/20 leading-tight" style={{letterSpacing: '0.08em', lineHeight: '1.1'}}>
+          Proyecto en fase inicial
         </span>
       </div>
       {/* Título */}
@@ -42,7 +42,13 @@ const HeroGlamping: React.FC = () => (
       </h1>
       {/* Descripción */}
       <div className="text-lg md:text-xl font-medium mb-4 -mt-2" style={{fontFamily: 'Barlow, sans-serif', color: '#e6e6e6'}}>
-        Complejo turístico ecológico de gran escala en primera línea de costa. Integra 55 alojamientos, servicios centralizados y áreas de recreación, con un diseño de bajo impacto ambiental.
+        Glamping 4★ Barbate es un proyecto turístico ecológico de gran escala que integra<br />
+        alojamiento, servicios, ocio y paisaje en un entorno natural cuidadosamente diseñado.<br /><br />
+        <ul className="list-none pl-0 mt-2 text-base md:text-lg" style={{color:'#e6e6e6'}}>
+          <li className="flex items-center gap-2 mb-1"><span className="text-[#1db489] font-bold text-xl">›</span> Arquitectura integrada al entorno</li>
+          <li className="flex items-center gap-2 mb-1"><span className="text-[#1db489] font-bold text-xl">›</span> Servicios y espacios comunitarios centralizados</li>
+          <li className="flex items-center gap-2 mb-1"><span className="text-[#1db489] font-bold text-xl">›</span> Experiencia inmersiva en contacto con la naturaleza</li>
+        </ul>
       </div>
       {/* Cards */}
   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-2 w-full max-w-2xl mx-auto mb-2">
@@ -110,11 +116,14 @@ function Glamping() {
         {/* Texto derecha */}
         <div className="w-full md:w-1/2 flex flex-col gap-6">
           <span className="text-[#b35427] font-bold text-sm uppercase" style={{letterSpacing: '0.05em'}}>01. El Proyecto</span>
-          <h2 className="text-3xl md:text-4xl font-bold text-[#10141b]" style={{fontFamily: 'Bebas Neue, sans-serif', fontSize: '42px'}}>Un ecosistema turístico completo</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-[#10141b]" style={{fontFamily: 'Bebas Neue, sans-serif', fontSize: '42px'}}>Un ecosistema turístico integrado</h2>
           <div className="text-[#232b36] space-y-4" style={{fontFamily: 'Barlow, sans-serif', fontSize: '17px'}}>
-            <p style={{fontSize: '17px'}}>El Glamping 4★ Barbate es un proyecto turístico de gran envergadura que nace con el objetivo de ofrecer una nueva forma de alojamiento en entornos naturales.</p>
-            <p style={{fontSize: '17px'}}>El proyecto combina arquitectura, paisaje y sostenibilidad, apostando por un modelo de desarrollo respetuoso con el entorno, de bajo impacto sobre el terreno y con una clara vocación regenerativa.</p>
-            <p style={{fontSize: '17px'}}>No se trata únicamente de alojamiento, sino de crear un ecosistema turístico completo, donde el visitante pueda disfrutar de confort, naturaleza y servicios de calidad en un entorno cuidado e integrado.</p>
+            <p style={{fontSize: '17px'}}>Glamping 4★ Barbate es un proyecto turístico ecológico de gran escala que integra alojamiento, servicios, ocio y paisaje en un entorno natural cuidadosamente diseñado.</p>
+            <ul className="list-none pl-0 mt-2 text-base md:text-lg" style={{color:'#232b36'}}>
+              <li className="flex items-center gap-2 mb-1"><span className="text-[#1db489] font-bold text-xl">›</span> Arquitectura integrada al entorno</li>
+              <li className="flex items-center gap-2 mb-1"><span className="text-[#1db489] font-bold text-xl">›</span> Servicios y espacios comunitarios centralizados</li>
+              <li className="flex items-center gap-2 mb-1"><span className="text-[#1db489] font-bold text-xl">›</span> Experiencia inmersiva en contacto con la naturaleza</li>
+            </ul>
           </div>
         </div>
       </div>
@@ -127,15 +136,20 @@ function Glamping() {
         {/* Texto izquierda */}
         <div className="w-full md:w-1/2 flex flex-col gap-6">
           <span className="text-[#b35427] font-bold text-sm uppercase mb-2" style={{letterSpacing: '0.05em'}}>02. Concepto y Enfoque</span>
-          <h2 className="text-2xl md:text-3xl font-bold text-[#10141b]" style={{fontFamily: 'Bebas Neue, sans-serif', fontSize: '42px'}}>Adaptación estética y técnica al entorno</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-[#10141b]" style={{fontFamily: 'Bebas Neue, sans-serif', fontSize: '42px'}}>Diseño adaptado al entorno natural</h2>
           <div className="text-lg text-[#232b36] space-y-4" style={{fontFamily: 'Barlow, sans-serif'}}>
-            <p>El diseño del Glamping 4★ Barbate se inspira en la estética y el espíritu de los glampings tailandeses, adaptados a los sistemas constructivos y normativos europeos.</p>
-            <ul className="space-y-3 mt-4">
-              <li><span className="font-bold text-[#b35427]">Intervención mínima:</span> Adaptándose a la topografía natural, utilizando cimentación no invasiva.</li>
-              <li><span className="font-bold text-[#b35427]">Integración paisajística:</span> Respetando la identidad del lugar y utilizando vegetación autóctona.</li>
-              <li><span className="font-bold text-[#b35427]">Experiencia inmersiva:</span> Priorizando el contacto directo y visual con la naturaleza.</li>
-            </ul>
-            <p>El resultado es un complejo que prioriza el equilibrio entre desarrollo, entorno y experiencia del usuario.</p>
+            <div className="mb-2">
+              <span className="font-bold text-[#b35427]">Intervención mínima</span>
+              <p className="mt-1">Adaptación a la topografía natural y uso de soluciones no invasivas.</p>
+            </div>
+            <div className="mb-2">
+              <span className="font-bold text-[#b35427]">Integración paisajística</span>
+              <p className="mt-1">Respeto por la identidad del lugar y empleo de vegetación autóctona.</p>
+            </div>
+            <div className="mb-2">
+              <span className="font-bold text-[#b35427]">Experiencia inmersiva</span>
+              <p className="mt-1">Relación directa y visual del usuario con el entorno natural.</p>
+            </div>
           </div>
         </div>
         {/* Imagen derecha */}
@@ -165,32 +179,24 @@ function Glamping() {
         <div className="flex flex-col items-center justify-center bg-[#f6f7f9] rounded-2xl py-10 px-4 shadow-sm border border-[#e6e8ec] transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-md">
           <svg width="48" height="48" fill="none" viewBox="0 0 24 24" className="mb-3"><path d="M3 9.5 12 4l9 5.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-10.5Z" stroke="#b35427" strokeWidth="1.5"/><path d="M9 21V12h6v9" stroke="#b35427" strokeWidth="1.5"/></svg>
           <div className="text-xl font-bold text-[#232b36]">Alojamiento</div>
+          <p className="text-sm text-[#6b7280] mt-2 text-center" style={{fontFamily:'Barlow, sans-serif'}}>55 bungalós y cabañas integradas en el paisaje</p>
         </div>
         {/* Tarjeta 2: Comunitarios (Edificio) */}
         <div className="flex flex-col items-center justify-center bg-[#f6f7f9] rounded-2xl py-10 px-4 shadow-sm border border-[#e6e8ec] transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-md">
-          <svg width="48" height="48" fill="none" viewBox="0 0 48 48" className="mb-3">
-            <rect x="8" y="20" width="32" height="20" rx="0" stroke="#b35427" strokeWidth="2"/>
-            <rect x="16" y="12" width="16" height="28" rx="0" stroke="#b35427" strokeWidth="2"/>
-            <rect x="12" y="40" width="24" height="4" rx="0" stroke="#b35427" strokeWidth="2"/>
-            <rect x="20" y="20" width="4" height="4" stroke="#b35427" strokeWidth="2"/>
-            <rect x="24" y="20" width="4" height="4" stroke="#b35427" strokeWidth="2"/>
-            <rect x="28" y="20" width="4" height="4" stroke="#b35427" strokeWidth="2"/>
-            <rect x="20" y="24" width="4" height="4" stroke="#b35427" strokeWidth="2"/>
-            <rect x="24" y="24" width="4" height="4" stroke="#b35427" strokeWidth="2"/>
-            <rect x="28" y="24" width="4" height="4" stroke="#b35427" strokeWidth="2"/>
-            <rect x="20" y="28" width="4" height="4" stroke="#b35427" strokeWidth="2"/>
-            <rect x="24" y="28" width="4" height="4" stroke="#b35427" strokeWidth="2"/>
-            <rect x="28" y="28" width="4" height="4" stroke="#b35427" strokeWidth="2"/>
-            <rect x="20" y="32" width="4" height="4" stroke="#b35427" strokeWidth="2"/>
-            <rect x="24" y="32" width="4" height="4" stroke="#b35427" strokeWidth="2"/>
-            <rect x="28" y="32" width="4" height="4" stroke="#b35427" strokeWidth="2"/>
+          <svg width="48" height="48" fill="none" viewBox="0 0 24 24" className="mb-3">
+            <path d="M3 21V10l9-6 9 6v11" stroke="#b35427" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M9 21v-6h6v6" stroke="#b35427" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <rect x="10" y="10" width="4" height="3" stroke="#b35427" strokeWidth="1.2"/>
+            <path d="M1 21h22" stroke="#b35427" strokeWidth="1.5" strokeLinecap="round"/>
           </svg>
           <div className="text-xl font-bold text-[#232b36]">Comunitarios</div>
+          <p className="text-sm text-[#6b7280] mt-2 text-center" style={{fontFamily:'Barlow, sans-serif'}}>Recepción, restaurante, bar, club social y supermercado</p>
         </div>
         {/* Tarjeta 3: Ocio / Recreación */}
         <div className="flex flex-col items-center justify-center bg-[#f6f7f9] rounded-2xl py-10 px-4 shadow-sm border border-[#e6e8ec] transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-md">
           <svg width="48" height="48" fill="none" viewBox="0 0 24 24" className="mb-3"><path d="M3 17c1.5-1 4.5-3 9-3s7.5 2 9 3" stroke="#b35427" strokeWidth="1.5"/><path d="M3 13c1.5-1 4.5-3 9-3s7.5 2 9 3" stroke="#b35427" strokeWidth="1.5"/><path d="M3 9c1.5-1 4.5-3 9-3s7.5 2 9 3" stroke="#b35427" strokeWidth="1.5"/></svg>
           <div className="text-xl font-bold text-[#232b36]">Ocio / Recreación</div>
+          <p className="text-sm text-[#6b7280] mt-2 text-center" style={{fontFamily:'Barlow, sans-serif'}}>Piscinas, solárium, circuito deportivo y parque infantil</p>
         </div>
         {/* Tarjeta 4: Movilidad (Auto) */}
         <div className="flex flex-col items-center justify-center bg-[#f6f7f9] rounded-2xl py-10 px-4 shadow-sm border border-[#e6e8ec] transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-md">
@@ -200,6 +206,7 @@ function Glamping() {
             <circle cx="17.5" cy="16.5" r="1.5" stroke="#b35427" strokeWidth="1.5"/>
           </svg>
           <div className="text-xl font-bold text-[#232b36]">Movilidad</div>
+          <p className="text-sm text-[#6b7280] mt-2 text-center" style={{fontFamily:'Barlow, sans-serif'}}>Circulación clara y prioridad peatonal</p>
         </div>
         {/* Tarjeta 5: Reforestación (Hoja) */}
         <div className="flex flex-col items-center justify-center bg-[#f6f7f9] rounded-2xl py-10 px-4 shadow-sm border border-[#e6e8ec] transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-md">
@@ -208,30 +215,30 @@ function Glamping() {
             <path d="M8 17C9.5 15 13 13 16 14" stroke="#b35427" strokeWidth="1.5" strokeLinecap="round"/>
           </svg>
           <div className="text-xl font-bold text-[#232b36]">Reforestación</div>
+          <p className="text-sm text-[#6b7280] mt-2 text-center" style={{fontFamily:'Barlow, sans-serif'}}>Zonas verdes continuas y ajardinamiento integrado</p>
         </div>
         {/* Tarjeta 6: Autocaravanas (Camión) */}
         <div className="flex flex-col items-center justify-center bg-[#f6f7f9] rounded-2xl py-10 px-4 shadow-sm border border-[#e6e8ec] transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-md">
-          <svg width="48" height="48" fill="none" viewBox="0 0 48 48" className="mb-3">
-            <rect x="8" y="20" width="32" height="12" rx="2" stroke="#b35427" strokeWidth="2"/>
-            <rect x="12" y="24" width="8" height="6" stroke="#b35427" strokeWidth="2"/>
-            <rect x="20" y="24" width="8" height="6" stroke="#b35427" strokeWidth="2"/>
-            <rect x="28" y="24" width="8" height="6" stroke="#b35427" strokeWidth="2"/>
-            <rect x="36" y="24" width="4" height="6" stroke="#b35427" strokeWidth="2"/>
-            <circle cx="16" cy="36" r="3" stroke="#b35427" strokeWidth="2"/>
-            <circle cx="32" cy="36" r="3" stroke="#b35427" strokeWidth="2"/>
-            <path d="M8 32h32" stroke="#b35427" strokeWidth="2"/>
-            <path d="M12 20v-2a2 2 0 0 1 2-2h20a2 2 0 0 1 2 2v2" stroke="#b35427" strokeWidth="2"/>
+          <svg width="48" height="48" fill="none" viewBox="0 0 24 24" className="mb-3">
+            <rect x="2" y="8" width="16" height="9" rx="2" stroke="#b35427" strokeWidth="1.5"/>
+            <path d="M18 11h2a2 2 0 0 1 2 2v4h-4" stroke="#b35427" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <circle cx="6" cy="17" r="2" stroke="#b35427" strokeWidth="1.5"/>
+            <circle cx="16" cy="17" r="2" stroke="#b35427" strokeWidth="1.5"/>
+            <path d="M8 17h6" stroke="#b35427" strokeWidth="1.5"/>
+            <rect x="4" y="10" width="4" height="3" rx="0.5" stroke="#b35427" strokeWidth="1.2"/>
+            <rect x="10" y="10" width="4" height="3" rx="0.5" stroke="#b35427" strokeWidth="1.2"/>
           </svg>
           <div className="text-xl font-bold text-[#232b36]">Autocaravanas</div>
+          <p className="text-sm text-[#6b7280] mt-2 text-center" style={{fontFamily:'Barlow, sans-serif'}}>Área específica de pernocta y servicios</p>
         </div>
       </div>
     </section>
 
     {/* Sección 04: Área de Alojamientos */}
   <section className="w-full py-20 px-6 md:px-16 xl:px-32 bg-[#f6f7f9] flex flex-col items-center">
-      <div className="max-w-5xl w-full mx-auto flex flex-col md:flex-row items-center gap-12">
+      <div className="max-w-6xl w-full mx-auto flex flex-col md:flex-row items-center gap-12">
         {/* Texto izquierda */}
-        <div className="w-full md:w-3/5 flex flex-col gap-6">
+        <div className="w-full md:w-1/2 flex flex-col gap-6">
           <span className="text-[#b35427] font-bold text-sm uppercase" style={{letterSpacing: '0.05em'}}>04. Área de Alojamientos</span>
           <h2 className="text-3xl md:text-4xl font-bold text-[#10141b] leading-tight" style={{fontFamily: 'Bebas Neue, sans-serif', fontSize: '42px'}}>Bungalós y cabañas prefabricadas</h2>
           <p className="text-lg text-[#232b36]" style={{fontFamily: 'Barlow, sans-serif'}}>
@@ -262,15 +269,16 @@ function Glamping() {
             </div>
           </div>
         {/* Lista de ventajas */}
-        <ul className="list-disc pl-6 text-[#232b36] space-y-1" style={{fontSize: '17px'}}>
-          <li className="flex items-start gap-2"><svg width="22" height="22" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#f3edea"/><path d="M8 12.5l2.5 2.5L16 9" stroke="#b35427" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg><span className="text-[#232b36] text-base" style={{fontSize: '17px'}}>Prioriza la privacidad del huésped y el confort interior.</span></li>
-          <li className="flex items-start gap-2"><svg width="22" height="22" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#f3edea"/><path d="M8 12.5l2.5 2.5L16 9" stroke="#b35427" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg><span className="text-[#232b36] text-base" style={{fontSize: '17px'}}>Fomenta la relación directa con el exterior y el paisaje.</span></li>
-          <li className="flex items-start gap-2"><svg width="22" height="22" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#f3edea"/><path d="M8 12.5l2.5 2.5L16 9" stroke="#b35427" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg><span className="text-[#232b36] text-base" style={{fontSize: '17px'}}>Disposición que minimiza el impacto visual y físico sobre el terreno.</span></li>
+        <ul className="list-none pl-0 text-[#232b36] space-y-1" style={{fontSize: '17px'}}>
+          <li className="flex items-center gap-2 mb-1"><span className="text-[#1db489] font-bold text-xl">›</span><span className="text-[#232b36] text-base" style={{fontSize: '17px'}}>Unidades independientes integradas en el entorno</span></li>
+          <li className="flex items-center gap-2 mb-1"><span className="text-[#1db489] font-bold text-xl">›</span><span className="text-[#232b36] text-base" style={{fontSize: '17px'}}>Prioridad en privacidad y confort interior</span></li>
+          <li className="flex items-center gap-2 mb-1"><span className="text-[#1db489] font-bold text-xl">›</span><span className="text-[#232b36] text-base" style={{fontSize: '17px'}}>Relación directa con el exterior y el paisaje</span></li>
+          <li className="flex items-center gap-2 mb-1"><span className="text-[#1db489] font-bold text-xl">›</span><span className="text-[#232b36] text-base" style={{fontSize: '17px'}}>Implantación que minimiza impacto visual y físico</span></li>
         </ul>
       </div>
       {/* Imagen derecha */}
-      <div className="w-full md:w-2/5 flex justify-center mt-10 md:mt-0">
-        <div className="w-full max-w-lg aspect-[4/3] bg-slate-100 rounded-2xl border border-slate-100 shadow">
+      <div className="w-full md:w-1/2 flex justify-center">
+        <div className="w-full max-w-md aspect-[4/3] bg-slate-100 rounded-2xl border border-slate-100 shadow">
           <img
             src="/assets/images/04-alojamientos.png"
             alt="Área de Alojamientos Glamping"
@@ -307,7 +315,7 @@ function Glamping() {
             EL CORAZÓN DEL COMPLEJO: RESTAURACIÓN Y RECREACIÓN
           </h2>
           <p className="text-lg text-[#232b36]" style={{fontFamily: 'Barlow, sans-serif'}}>
-            Los edificios comunitarios y las zonas de ocio se agrupan en un área centralizada, diseñados para ser el punto de encuentro y la columna vertebral de los servicios del glamping.
+            La zona central concentra los servicios y espacios de encuentro, actuando como núcleo social y funcional del glamping.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full mb-2">
             <div className="bg-white rounded-2xl p-5 shadow border border-[#e6e8ec] flex flex-col items-start">
@@ -377,17 +385,17 @@ function Glamping() {
         {/* Columna izquierda: texto */}
         <div className="w-full md:w-1/2 flex flex-col">
           <span className="text-[#b35427] font-bold tracking-widest text-sm uppercase block mb-2" style={{letterSpacing: '0.05em'}}>06. Urbanización y Accesos</span>
-          <h2 className="text-3xl md:text-4xl font-bold text-[#10141b] mb-4" style={{fontFamily: 'Bebas Neue, sans-serif', fontSize: '42px'}}>Movilidad interna: priorizando al peatón</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-[#10141b] mb-4" style={{fontFamily: 'Bebas Neue, sans-serif', fontSize: '42px'}}>Movilidad interna pensada para el peatón</h2>
           <p className="text-lg text-[#232b36] mb-4" style={{fontFamily: 'Barlow, sans-serif', fontSize: '17px'}}>
             La urbanización del complejo ha sido diseñada para garantizar un funcionamiento claro y ordenado, separando los flujos rodados de los recorridos peatonales.
           </p>
           <p className="text-[#232b36] mb-2" style={{fontSize: '17px'}}>El diseño de la movilidad interna se centra en:</p>
-          <ul className="list-disc pl-6 text-[#232b36] mb-4 space-y-1" style={{fontSize: '17px'}}>
-            <li>Priorizar el tránsito peatonal y el movimiento no motorizado.</li>
-            <li>Favorecer recorridos tranquilos y seguros dentro del complejo.</li>
-            <li>Integrar los accesos y aparcamientos sin alterar el paisaje natural.</li>
+          <ul className="list-none pl-0 text-[#232b36] mb-4 space-y-1" style={{fontSize: '17px'}}>
+            <li className="flex items-center gap-2 mb-1"><span className="text-[#1db489] font-bold text-xl">›</span> Separación de flujos rodados y peatonales</li>
+            <li className="flex items-center gap-2 mb-1"><span className="text-[#1db489] font-bold text-xl">›</span> Recorridos tranquilos y seguros</li>
+            <li className="flex items-center gap-2 mb-1"><span className="text-[#1db489] font-bold text-xl">›</span> Aparcamientos integrados al paisaje</li>
           </ul>
-          <p className="text-[#232b36]" style={{fontSize: '17px'}}>El objetivo es facilitar la movilidad interna de manera eficiente sin perder la sensación de inmersión en un entorno natural y cuidado.</p>
+          <p className="text-[#232b36]" style={{fontSize: '17px'}}>Una movilidad eficiente sin perder la sensación de inmersión natural.</p>
         </div>
         {/* Columna derecha: imagen */}
         <div className="w-full md:w-1/2 flex justify-center items-start mt-10 md:mt-0">
@@ -410,7 +418,7 @@ function Glamping() {
         {/* Columna derecha: texto */}
         <div className="w-full md:w-1/2 flex flex-col">
           <span className="text-[#b35427] font-bold tracking-widest text-sm uppercase block mb-2" style={{letterSpacing: '0.05em'}}>07. Paisajismo y Reforestación</span>
-          <h2 className="text-3xl md:text-4xl font-bold text-[#10141b] mb-4" style={{fontFamily: 'Bebas Neue, sans-serif', fontSize: '42px'}}>Regeneración ambiental y entorno continuo</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-[#10141b] mb-4" style={{fontFamily: 'Bebas Neue, sans-serif', fontSize: '42px'}}>Un entorno continuo integrado al paisaje de Barbate</h2>
           <p className="text-lg text-[#232b36] mb-4" style={{fontFamily: 'Barlow, sans-serif', fontSize: '17px'}}>
             El proyecto incorpora una extensa superficie destinada a ajardinamiento y reforestación, entendida como una herramienta clave para la integración paisajística y la regeneración ambiental.
           </p>
@@ -427,7 +435,7 @@ function Glamping() {
           <span className="text-[#b35427] font-bold tracking-widest text-sm uppercase block mb-2" style={{letterSpacing: '0.05em'}}>08. Áreas Específicas</span>
           <h2 className="text-3xl md:text-4xl font-bold text-[#10141b] mb-4" style={{fontFamily: 'Bebas Neue, sans-serif', fontSize: '42px'}}>Servicio y pernocta de Autocaravanas</h2>
           <p className="text-lg text-[#232b36] mb-4" style={{fontFamily: 'Barlow, sans-serif', fontSize: '17px'}}>
-            El proyecto contempla áreas específicas para la pernocta y servicio de autocaravanas, integradas de manera ordenada dentro del conjunto sin interferir en la experiencia general del complejo de glamping.
+            El complejo incorpora un área específica para autocaravanas, integrada sin interferir en la experiencia general del glamping.
           </p>
           <div className="mb-2 font-bold text-[#232b36]" style={{fontSize: '17px'}}>Servicios Incluidos:</div>
           <ul className="list-disc pl-6 text-[#232b36] space-y-1" style={{fontSize: '17px'}}>
@@ -446,7 +454,7 @@ function Glamping() {
     </section>
     {/* Sección 10: Formulario de contacto */}
     <>
-      <section id="contacto" className="w-full pt-10 pb-2 px-0 flex flex-col items-center">
+  <section id="contacto" className="w-full pt-10 pb-0 px-0 flex flex-col items-center">
         <Formulario />
       </section>
       <FoosterAlt />

@@ -85,7 +85,7 @@ const Hero: React.FC = () => {
           </div>
         </div>
         <a
-          href="#cost-calculator"
+          href="#contacto"
           className="bg-[#b35427] hover:bg-[#a3471d] text-white py-3 px-10 rounded transition mb-4 shadow-lg text-[23px] uppercase"
           style={{fontFamily: 'Bebas Neue, sans-serif', fontWeight: 400, fontSize: '23px'}}>
           PONTE EN CONTACTO AHORA
