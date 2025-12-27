@@ -446,7 +446,7 @@ function Glamping() {
     </section>
     {/* Sección 10: Formulario de contacto */}
     <>
-      <section className="w-full pt-10 pb-2 px-0 flex flex-col items-center">
+      <section id="contacto" className="w-full pt-10 pb-2 px-0 flex flex-col items-center">
         <Formulario />
       </section>
       <FoosterAlt />

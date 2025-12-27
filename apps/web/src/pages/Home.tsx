@@ -8,7 +8,9 @@ const Home: React.FC = () => (
   <>
     <Hero />
     <Especializaciones />
-    <Formulario />
+    <section id="contacto">
+      <Formulario />
+    </section>
   <FoosterAlt />
   </>
 );

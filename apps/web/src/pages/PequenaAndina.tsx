@@ -130,7 +130,9 @@ const PequenaAndina: React.FC = () => (
 					))}
 				</div>
 			</section>
-			   <Formulario />
+						 <section id="contacto">
+							 <Formulario />
+						 </section>
 			   <FoosterAlt />
 	</>
 );
