@@ -3,6 +3,7 @@ import React, { useRef, useLayoutEffect, useState } from "react";
 
 const Header: React.FC = () => {
   const [showProjects, setShowProjects] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const logoRef = useRef<HTMLAnchorElement>(null);
   const btnRef = useRef<HTMLAnchorElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -63,7 +64,7 @@ const Header: React.FC = () => {
                     <li><a href="/es/proyectos/casahorizonte" className="block px-4 py-2 hover:bg-[#f6f7f9]">Casa Horizonte</a></li>
                     <li><a href="/es/proyectos/casacuadrante" className="block px-4 py-2 hover:bg-[#f6f7f9]">Casa Cuadrante</a></li>
                     <li><a href="/es/proyectos/alpinablanca" className="block px-4 py-2 hover:bg-[#f6f7f9]">Alpina Blanca</a></li>
-                    <li><a href="/es/glamping" className="block px-4 py-2 hover:bg-[#f6f7f9]">Glamping</a></li>
+                    <li><a href="/es/glamping" className="block px-4 py-2 hover:bg-[#f6f7f9]">Glamping <span className="text-[#b35427]">★</span></a></li>
                   </ul>
                 )}
               </li>
@@ -72,16 +73,48 @@ const Header: React.FC = () => {
           {/* Botón derecho: solo visible en desktop */}
           <a ref={btnRef} href="#contacto" className="bg-[#b35427] hover:bg-[#a3471d] text-white font-bold py-2 px-6 rounded transition text-[20px] uppercase shadow-lg min-w-[150px] text-center hidden md:inline-block" style={{fontFamily: 'Bebas Neue, sans-serif'}}>Contáctanos</a>
           {/* Hamburguesa: solo visible en móvil */}
-          <button className="md:hidden flex items-center justify-center ml-4" aria-label="Abrir menú">
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="3" y1="12" x2="21" y2="12" />
-              <line x1="3" y1="6" x2="21" y2="6" />
-              <line x1="3" y1="18" x2="21" y2="18" />
-            </svg>
+          <button 
+            className="md:hidden flex items-center justify-center ml-4 z-50 relative" 
+            aria-label="Abrir menú"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
+            {isMobileMenuOpen ? (
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            ) : (
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="3" y1="18" x2="21" y2="18" />
+              </svg>
+            )}
           </button>
         </div>
         {/* Línea inferior perfectamente alineada */}
         <div style={lineStyle}></div>
+      </div>
+
+      {/* Mobile Menu Overlay */}
+      <div className={`fixed inset-0 bg-[#10141b] z-40 transition-transform duration-300 ease-in-out md:hidden flex flex-col pt-32 px-8 ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+        <nav className="flex flex-col gap-8">
+            <a href="#contacto" onClick={() => setIsMobileMenuOpen(false)} className="text-white text-3xl font-bold uppercase tracking-wide" style={{fontFamily: 'Bebas Neue, sans-serif'}}>Calculadora de corte</a>
+            <a href="#metodologia" onClick={() => setIsMobileMenuOpen(false)} className="text-white text-3xl font-bold uppercase tracking-wide" style={{fontFamily: 'Bebas Neue, sans-serif'}}>Metodología</a>
+            
+            <div className="flex flex-col gap-4">
+                <span className="text-white text-3xl font-bold uppercase tracking-wide" style={{fontFamily: 'Bebas Neue, sans-serif'}}>Proyectos</span>
+                <div className="pl-4 flex flex-col gap-4 border-l-2 border-[#b35427]/50 ml-1">
+                    <a href="/es/pequenaandina" className="text-gray-300 text-xl hover:text-white transition-colors">Pequeña Andina</a>
+                    <a href="/es/proyectos/casahorizonte" className="text-gray-300 text-xl hover:text-white transition-colors">Casa Horizonte</a>
+                    <a href="/es/proyectos/casacuadrante" className="text-gray-300 text-xl hover:text-white transition-colors">Casa Cuadrante</a>
+                    <a href="/es/proyectos/alpinablanca" className="text-gray-300 text-xl hover:text-white transition-colors">Alpina Blanca</a>
+                    <a href="/es/glamping" className="text-gray-300 text-xl hover:text-white transition-colors">Glamping <span className="text-[#b35427]">★</span></a>
+                </div>
+            </div>
+
+            <a href="#contacto" onClick={() => setIsMobileMenuOpen(false)} className="bg-[#b35427] text-white text-center py-4 rounded text-2xl font-bold uppercase mt-4 shadow-lg" style={{fontFamily: 'Bebas Neue, sans-serif'}}>Contáctanos</a>
+        </nav>
       </div>
     </header>
   );
