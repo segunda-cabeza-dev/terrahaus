@@ -2,6 +2,7 @@
 import React from "react";
 import Header from "../components/Header";
 import { FoosterAlt } from "../components/Fooster";
+import Formulario from "../components/Formulario";
 
 const HeroCasaCuadrante: React.FC = () => (
 	<section className="relative min-h-[80vh] flex flex-col font-sans">
@@ -130,6 +131,7 @@ const CasaCuadrante: React.FC = () => (
 				))}
 			</div>
 		</section>
+		<Formulario />
 		<FoosterAlt />
 	</>
 );

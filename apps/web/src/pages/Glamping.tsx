@@ -5,7 +5,7 @@ import { FoosterAlt } from "../components/Fooster";
 import Formulario from "../components/Formulario";
 
 const HeroGlamping: React.FC = () => (
-  <section className="relative min-h-[90vh] flex flex-col font-sans bg-[#10141b] overflow-hidden py-[80px] md:py-[110px]">
+  <section className="relative min-h-screen flex flex-col justify-center font-sans bg-[#10141b] overflow-hidden py-10">
     {/* Fondo */}
     <div className="absolute inset-0 w-full h-full z-0">
       <img
@@ -16,31 +16,42 @@ const HeroGlamping: React.FC = () => (
       <div className="absolute inset-0 bg-gradient-to-b from-[#10141b]/95 via-[#10141b]/80 to-[#1e2d2f]/90" />
     </div>
     <Header />
-  <div className="relative z-20 flex flex-col items-center justify-center text-white px-6 md:px-20 py-12 gap-6 max-w-3xl mx-auto w-full text-center">
+  <div className="relative z-20 flex flex-col items-center justify-center text-white px-6 md:px-20 py-24 pt-32 gap-6 max-w-3xl mx-auto w-full text-center min-h-[70vh]">
       {/* Badge y logo */}
       <div className="flex items-center justify-center mb-1">
-        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/70 text-[#b35427] font-semibold text-xs uppercase tracking-wide shadow-sm border border-[#b35427]/20" style={{marginBottom: '-0.5rem', letterSpacing: '0.08em'}}>
-          <svg width="14" height="14" fill="none" viewBox="0 0 20 20"><path d="M10 2a1 1 0 0 1 .894.553l1.382 2.803 3.09.45a1 1 0 0 1 .554 1.707l-2.236 2.18.528 3.08a1 1 0 0 1-1.451 1.054L10 12.347l-2.771 1.46A1 1 0 0 1 5.778 12.76l.528-3.08-2.236-2.18a1 1 0 0 1 .554-1.707l3.09-.45L9.106 2.553A1 1 0 0 1 10 2Z" fill="#b35427"/></svg>
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/80 text-[#1db489] font-semibold text-xs uppercase tracking-wide shadow-sm border border-[#1db489]/20" style={{letterSpacing: '0.08em'}}>
           En ejecución
         </span>
       </div>
       {/* Título */}
       <h1 className="text-[3.5rem] md:text-[4.5rem] leading-tight font-bold tracking-tight mb-1 flex flex-wrap items-center justify-center gap-2" style={{fontFamily: 'Bebas Neue, sans-serif', color: '#fff'}}>
-        GLAMPING 4<span className="inline-block align-super text-[2.7rem] md:text-[3.5rem] text-[#b35427]">★</span> <span style={{color: '#fff'}}>&nbsp;BARBATE</span>
+        <span className="hidden md:flex items-center justify-center w-full text-center gap-2 leading-[1.05]">
+          GLAMPING
+          <span className="ml-2">4</span>
+          <span className="inline-block align-super text-[2.2rem] text-[#b35427]">★</span>
+          BARBATE
+        </span>
+        <span className="flex md:hidden flex-col items-center w-full text-center leading-[1.05]">
+          <span>GLAMPING</span>
+          <span className="flex items-center justify-center gap-1 mt-[-0.7rem]">
+            <span className="text-[3.5rem]">4</span>
+            <span className="inline-block align-super text-[1.4rem] text-[#b35427]">★</span>
+            <span className="text-[3.5rem]">BARBATE</span>
+          </span>
+        </span>
       </h1>
       {/* Descripción */}
       <div className="text-lg md:text-xl font-medium mb-4 -mt-2" style={{fontFamily: 'Barlow, sans-serif', color: '#e6e6e6'}}>
-        Gestión y ejecución de complejo turístico ecológico a gran escala.
+        Complejo turístico ecológico de gran escala en primera línea de costa. Integra 55 alojamientos, servicios centralizados y áreas de recreación, con un diseño de bajo impacto ambiental.
       </div>
       {/* Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-2xl mx-auto mb-2">
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-2 w-full max-w-2xl mx-auto mb-2">
         {/* Ubicación */}
         <div className="flex flex-row items-center justify-start bg-white/90 rounded-xl py-3 px-4 shadow border border-[#b35427]/10 min-h-[60px] gap-3 transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg">
           <span className="text-[#b35427] flex items-center justify-center">
             <svg width="28" height="28" fill="none" viewBox="0 0 24 24"><path d="M12 2C7.03 2 3 6.03 3 11c0 5.25 7.05 10.74 7.36 10.97a1 1 0 0 0 1.28 0C13.95 21.74 21 16.25 21 11c0-4.97-4.03-9-9-9Zm0 17.88C9.14 17.07 5 13.61 5 11c0-3.87 3.13-7 7-7s7 3.13 7 7c0 2.61-4.14 6.07-7 8.88ZM12 6a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm0 8a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z" fill="#b35427"/></svg>
           </span>
           <div className="flex flex-col items-start justify-center">
-            <div className="text-xs text-[#b35427] font-semibold uppercase leading-tight">Ubicación</div>
             <div className="text-base text-[#232b36]">Barbate, Cádiz</div>
           </div>
         </div>
@@ -50,7 +61,6 @@ const HeroGlamping: React.FC = () => (
             <svg width="28" height="28" fill="none" viewBox="0 0 24 24"><path d="M4 17v2h16v-2H4Zm0-5v2h16v-2H4Zm0-5v2h16V7H4Z" fill="#b35427"/></svg>
           </span>
           <div className="flex flex-col items-start justify-center">
-            <div className="text-xs text-[#b35427] font-semibold uppercase leading-tight">Escala</div>
             <div className="text-base text-[#232b36]">55 Aloj. / 1.500m²</div>
           </div>
         </div>
@@ -60,7 +70,6 @@ const HeroGlamping: React.FC = () => (
             <svg width="28" height="28" fill="none" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm1 17.93V20h-2v-.07A8.001 8.001 0 0 1 4.07 13H6v-2H4.07A8.001 8.001 0 0 1 11 4.07V4h2v.07A8.001 8.001 0 0 1 19.93 11H18v2h1.93A8.001 8.001 0 0 1 13 19.93ZM12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8Z" fill="#b35427"/></svg>
           </span>
           <div className="flex flex-col items-start justify-center">
-            <div className="text-xs text-[#b35427] font-semibold uppercase leading-tight">Tipo</div>
             <div className="text-base text-[#232b36]">Eco-Sostenible</div>
           </div>
         </div>
@@ -70,7 +79,6 @@ const HeroGlamping: React.FC = () => (
             <svg width="28" height="28" fill="none" viewBox="0 0 24 24"><path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2Zm0 16H5V5h14v14ZM7 7h10v2H7V7Zm0 4h7v2H7v-2Zm0 4h10v2H7v-2Z" fill="#b35427"/></svg>
           </span>
           <div className="flex flex-col items-start justify-center">
-            <div className="text-xs text-[#b35427] font-semibold uppercase leading-tight">Estado</div>
             <div className="text-base text-[#232b36]">Fase de Inicio</div>
           </div>
         </div>
@@ -230,20 +238,26 @@ function Glamping() {
             <span style={{fontSize: '17px'}}>El proyecto contempla la ejecución de 55 alojamientos prefabricados tipo bungaló-cabaña, concebidos como unidades independientes e integradas en el entorno natural.</span>
           </p>
           {/* Tarjeta de Datos Técnicos (Fuente: Planos) */}
-          <div className="bg-white rounded-2xl p-5 mb-4 shadow border border-[#e6e8ec] flex flex-col gap-2 max-w-md">
-            <div className="font-bold text-lg text-[#232b36] mb-1">Datos Técnicos <span className="font-normal text-xs text-[#7a7a7a]">(Fuente: Planos)</span></div>
-            <div className="flex flex-wrap gap-6 mb-2">
-              <div className="flex flex-col items-start">
-                <span className="text-2xl md:text-3xl font-bold text-[#b35427]">55</span>
-                <span className="uppercase text-xs text-[#7a7a7a] font-semibold tracking-wider">Unidades Totales</span>
+          <div className="p-0 mb-4 max-w-xl w-full flex flex-col gap-2 items-start">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="font-extrabold text-xl text-[#232b36]">Datos Técnicos</span>
+              <span className="text-[#7a7a7a] text-sm font-medium">(Fuente: Planos)</span>
+            </div>
+            <div className="flex flex-col md:flex-row gap-3 w-full">
+              {/* Tarjeta 1 */}
+              <div className="bg-white rounded-xl shadow-sm px-4 py-3 flex flex-col items-start w-full md:w-1/3">
+                <span className="text-xl font-extrabold text-[#b35427] leading-tight mb-1">55</span>
+                <span className="uppercase text-[10px] md:text-[11px] lg:text-[10px] text-[#7a7a7a] font-semibold tracking-wider whitespace-nowrap">Unidades Totales</span>
               </div>
-              <div className="flex flex-col items-start">
-                <span className="text-2xl md:text-3xl font-bold text-[#b35427]">1.500,70m²</span>
-                <span className="uppercase text-xs text-[#7a7a7a] font-semibold tracking-wider">Superficie Construida</span>
+              {/* Tarjeta 2 */}
+              <div className="bg-white rounded-xl shadow-sm px-4 py-3 flex flex-col items-start w-full md:w-1/3">
+                <span className="text-xl font-extrabold text-[#b35427] leading-tight mb-1">1.500,70<span className="align-top text-base">m²</span></span>
+                <span className="uppercase text-[10px] md:text-[11px] lg:text-[10px] text-[#7a7a7a] font-semibold tracking-wider whitespace-nowrap">Superficie Construida</span>
               </div>
-              <div className="flex flex-col items-start">
-                <span className="text-2xl md:text-3xl font-bold text-[#b35427]">4 Tipos</span>
-                <span className="uppercase text-xs text-[#7a7a7a] font-semibold tracking-wider">A, A AD, B, B AD</span>
+              {/* Tarjeta 3 */}
+              <div className="bg-white rounded-xl shadow-sm px-4 py-3 flex flex-col items-start w-full md:w-1/3">
+                <span className="text-xl font-extrabold text-[#b35427] leading-tight mb-1">4 Tipos</span>
+                <span className="text-[10px] md:text-[11px] lg:text-[10px] text-[#7a7a7a] font-medium whitespace-nowrap">A, A AD, B, B AD</span>
               </div>
             </div>
           </div>
@@ -300,8 +314,10 @@ function Glamping() {
               <span className="text-2xl md:text-3xl font-extrabold text-[#b35427] mb-1" style={{fontFamily: 'Bebas Neue, sans-serif'}}>
                 477,00m<sup>2</sup>
               </span>
-              <span className="font-bold text-[#232b36] uppercase text-xs mb-1 tracking-widest">Superficie total edificios</span>
-              <span className="text-xs text-[#232b36]">Recepción, Restaurante, Bar, Supermercado, Almacén, Aseos, Club Social.</span>
+              <span className="font-bold text-[#232b36] uppercase text-xs mb-1 tracking-widest leading-tight whitespace-nowrap">Superficie total edificios</span>
+              <span className="text-xs text-[#232b36]">
+                Recepción, Restaurante, Supermercado<span className="hidden md:inline"><br /></span> Aseos, Club Social.
+              </span>
             </div>
             <div className="bg-white rounded-2xl p-5 shadow border border-[#e6e8ec] flex flex-col items-start">
               <span className="text-2xl md:text-3xl font-extrabold text-[#b35427] mb-1" style={{fontFamily: 'Bebas Neue, sans-serif'}}>
@@ -312,48 +328,43 @@ function Glamping() {
             </div>
           </div>
           <span className="font-bold text-[#232b36] text-lg mt-2 mb-1 block">Instalaciones de Ocio</span>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {/* Tarjeta 1 */}
-            <div className="flex items-center gap-3 bg-white rounded-xl shadow border border-[#e6e8ec] px-5 py-3">
+          <ul className="space-y-4 mt-0">
+            <li className="flex items-center gap-3">
               <span className="text-[#1db489]">
                 {/* Icono piscina */}
                 <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path d="M3 17c1.5-1 4.5-3 9-3s7.5 2 9 3" stroke="#1db489" strokeWidth="2"/><path d="M3 13c1.5-1 4.5-3 9-3s7.5 2 9 3" stroke="#1db489" strokeWidth="2"/><path d="M3 9c1.5-1 4.5-3 9-3s7.5 2 9 3" stroke="#1db489" strokeWidth="2"/></svg>
               </span>
               <span className="font-medium text-base text-[#232b36]">Piscina de adultos y solárium</span>
-            </div>
-            {/* Tarjeta 2 */}
-            <div className="flex items-center gap-3 bg-white rounded-xl shadow border border-[#e6e8ec] px-5 py-3">
+            </li>
+            <li className="flex items-center gap-3">
               <span className="text-[#1db489]">
                 {/* Icono piscina */}
                 <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path d="M3 17c1.5-1 4.5-3 9-3s7.5 2 9 3" stroke="#1db489" strokeWidth="2"/><path d="M3 13c1.5-1 4.5-3 9-3s7.5 2 9 3" stroke="#1db489" strokeWidth="2"/><path d="M3 9c1.5-1 4.5-3 9-3s7.5 2 9 3" stroke="#1db489" strokeWidth="2"/></svg>
               </span>
               <span className="font-medium text-base text-[#232b36]">Piscina infantil</span>
-            </div>
-            {/* Tarjeta 3 */}
-            <div className="flex items-center gap-3 bg-white rounded-xl shadow border border-[#e6e8ec] px-5 py-3">
+            </li>
+            <li className="flex items-center gap-3">
               <span className="text-[#1db489]">
                 {/* Icono pista deportiva */}
                 <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><g><circle cx="12" cy="12" r="10" stroke="#1db489" strokeWidth="2"/><path d="M7 12h10M12 7v10" stroke="#1db489" strokeWidth="2"/></g></svg>
               </span>
               <span className="font-medium text-base text-[#232b36]">Pista deportiva y circuito</span>
-            </div>
-            {/* Tarjeta 4 */}
-            <div className="flex items-center gap-3 bg-white rounded-xl shadow border border-[#e6e8ec] px-5 py-3">
+            </li>
+            <li className="flex items-center gap-3">
               <span className="text-[#1db489]">
                 {/* Icono parque infantil */}
                 <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path d="M12 2v20" stroke="#1db489" strokeWidth="2"/><circle cx="12" cy="17" r="5" stroke="#1db489" strokeWidth="2"/></svg>
               </span>
               <span className="font-medium text-base text-[#232b36]">Parque infantil</span>
-            </div>
-            {/* Tarjeta 5 - ocupa dos columnas */}
-            <div className="flex items-center gap-3 bg-white rounded-xl shadow border border-[#e6e8ec] px-5 py-3 col-span-1 sm:col-span-2">
+            </li>
+            <li className="flex items-center gap-3">
               <span className="text-[#1db489]">
                 {/* Icono zonas ajardinadas */}
                 <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path d="M5 20c0-7 14-14 14-5 1 3-2 8-10 8-3 0-6-1-6-2z" stroke="#1db489" strokeWidth="2"/><path d="M9 19c1.5-2 5-4 8-3" stroke="#1db489" strokeWidth="2"/></svg>
               </span>
               <span className="font-medium text-base text-[#232b36]">Zonas ajardinadas y descanso</span>
-            </div>
-          </div>
+            </li>
+          </ul>
         </div>
       </div>
     </section>
@@ -361,7 +372,7 @@ function Glamping() {
     {/* Sección 06: Espacios Exteriores y Zonas de Ocio */}
 
     {/* Sección 06: Movilidad interna */}
-    <section className="w-full py-20 px-4 bg-white flex flex-col items-center">
+  <section className="w-full py-20 px-6 md:px-16 xl:px-32 bg-white flex flex-col items-center">
       <div className="max-w-6xl w-full mx-auto flex flex-col md:flex-row gap-12 items-start">
         {/* Columna izquierda: texto */}
         <div className="w-full md:w-1/2 flex flex-col">
@@ -388,7 +399,7 @@ function Glamping() {
     </section>
 
     {/* Sección 08: Paisajismo y Reforestación */}
-    <section className="w-full py-20 px-4 bg-[#f6f7f9] flex flex-col items-center">
+  <section className="w-full py-20 px-6 md:px-16 xl:px-32 bg-[#f6f7f9] flex flex-col items-center">
       <div className="max-w-6xl w-full mx-auto flex flex-col md:flex-row gap-12 items-start">
         {/* Columna izquierda: imagen */}
         <div className="w-full md:w-1/2 flex justify-center items-start mb-10 md:mb-0">
@@ -409,7 +420,7 @@ function Glamping() {
       </div>
     </section>
     {/* Sección 09: Servicio y pernocta de Autocaravanas */}
-    <section className="w-full py-20 px-4 bg-white flex flex-col items-center">
+  <section className="w-full py-20 px-6 md:px-16 xl:px-32 bg-white flex flex-col items-center">
       <div className="max-w-6xl w-full mx-auto flex flex-col md:flex-row gap-12 items-start">
         {/* Columna izquierda: texto */}
         <div className="w-full md:w-1/2 flex flex-col">

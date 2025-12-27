@@ -2,6 +2,7 @@
 import React from "react";
 import Header from "../components/Header";
 import { FoosterAlt } from "../components/Fooster";
+import Formulario from "../components/Formulario";
 
 // Hero reutilizable para esta página
 
@@ -132,6 +133,7 @@ const AlpinaBlanca: React.FC = () => (
 				))}
 			</div>
 		</section>
+		<Formulario />
 		<FoosterAlt />
 	</>
 );

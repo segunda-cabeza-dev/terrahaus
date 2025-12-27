@@ -2,7 +2,7 @@ import React from "react";
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 
-const Formulario: React.FC = () => {
+const Formulario: React.FC<{ image?: string }> = ({ image }) => {
   return (
     <section className="w-full bg-[#ededed] py-0 px-0">
       <div className="w-full flex flex-col md:flex-row rounded-none overflow-hidden shadow-lg">
@@ -40,5 +40,6 @@ const Formulario: React.FC = () => {
     </section>
   );
 };
+
 
 export default Formulario;

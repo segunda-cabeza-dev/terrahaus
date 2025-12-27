@@ -2,6 +2,7 @@ import React, { useRef, useLayoutEffect, useState } from "react";
 
 
 const Header: React.FC = () => {
+  const [showProjects, setShowProjects] = useState(false);
   const logoRef = useRef<HTMLAnchorElement>(null);
   const btnRef = useRef<HTMLAnchorElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -40,13 +41,31 @@ const Header: React.FC = () => {
           <nav className="flex-1 flex justify-center hidden md:flex">
             <ul className="flex gap-14">
               <li>
-                <a href="#cost-calculator" className="text-white font-bold text-[20px] uppercase tracking-wide hover:opacity-80" style={{fontFamily: 'Bebas Neue, sans-serif'}}>Calculadora de coste</a>
+                <a href="#contacto" className="text-white font-bold text-[20px] uppercase tracking-wide hover:opacity-80" style={{fontFamily: 'Bebas Neue, sans-serif'}}>Calculadora de corte</a>
               </li>
               <li>
                 <a href="#metodologia" className="text-white font-bold text-[20px] uppercase tracking-wide hover:opacity-80" style={{fontFamily: 'Bebas Neue, sans-serif'}}>Metodología</a>
               </li>
-              <li>
-                <a href="#proyectos" className="text-white font-bold text-[20px] uppercase tracking-wide hover:opacity-80" style={{fontFamily: 'Bebas Neue, sans-serif'}}>Proyectos</a>
+              <li className="relative">
+                <button
+                  className="flex items-center text-white font-bold text-[20px] uppercase tracking-wide hover:opacity-80"
+                  style={{fontFamily: 'Bebas Neue, sans-serif'}}
+                  onClick={() => setShowProjects((v) => !v)}
+                >
+                  Proyectos
+                  <span className={`ml-2 transition-transform ${showProjects ? 'rotate-180' : ''}`}>
+                    <span className="text-base">▼</span>
+                  </span>
+                </button>
+                {showProjects && (
+                  <ul className="absolute left-0 mt-2 bg-white rounded shadow-lg text-[#232b36] min-w-[180px] z-50">
+                    <li><a href="/es/pequenaandina" className="block px-4 py-2 hover:bg-[#f6f7f9]">Pequeña Andina</a></li>
+                    <li><a href="/es/proyectos/casahorizonte" className="block px-4 py-2 hover:bg-[#f6f7f9]">Casa Horizonte</a></li>
+                    <li><a href="/es/proyectos/casacuadrante" className="block px-4 py-2 hover:bg-[#f6f7f9]">Casa Cuadrante</a></li>
+                    <li><a href="/es/proyectos/alpinablanca" className="block px-4 py-2 hover:bg-[#f6f7f9]">Alpina Blanca</a></li>
+                    <li><a href="/es/glamping" className="block px-4 py-2 hover:bg-[#f6f7f9]">Glamping</a></li>
+                  </ul>
+                )}
               </li>
             </ul>
           </nav>
