@@ -1,0 +1,63 @@
+services:
+  # ===================
+  # TRAEFIK - Reverse Proxy
+  # ===================
+  traefik:
+    image: traefik:v3.0
+    container_name: traefik
+    restart: unless-stopped
+    command:
+      - "--api.dashboard=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      # Descomentar para HTTPS con Let's Encrypt
+      # - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
+      # - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+      # - "--certificatesresolvers.letsencrypt.acme.email=tu@email.com"
+      # - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - traefik-certificates:/letsencrypt
+    networks:
+      - web
+    labels:
+      # Dashboard de Traefik (opcional)
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.localhost`)"
+      - "traefik.http.routers.traefik.service=api@internal"
+
+  # ===================
+  # TERRAHAUS - Web App
+  # ===================
+  terrahaus:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: terrahaus
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    networks:
+      - web
+    labels:
+      - "traefik.enable=true"
+      # HTTP
+      - "traefik.http.routers.terrahaus.rule=Host(`terrahaus.localhost`) || Host(`localhost`)"
+      - "traefik.http.routers.terrahaus.entrypoints=web"
+      - "traefik.http.services.terrahaus.loadbalancer.server.port=80"
+      # Descomentar para HTTPS
+      # - "traefik.http.routers.terrahaus-secure.rule=Host(`terrahaus.tudominio.com`)"
+      # - "traefik.http.routers.terrahaus-secure.entrypoints=websecure"
+      # - "traefik.http.routers.terrahaus-secure.tls.certresolver=letsencrypt"
+
+networks:
+  web:
+    driver: bridge
+
+volumes:
+  traefik-certificates:

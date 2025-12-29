@@ -1,0 +1,39 @@
+# Docker
+.docker/
+docker-compose.override.yml
+
+# Dependencies
+node_modules/
+.npm/
+
+# Build output
+dist/
+build/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Cache
+.cache/
+.turbo/
+.wrangler/
+
+# Multimedia (se sirven desde CDN)
+*.mp4
+*.mov
+*.avi
+*.mkv

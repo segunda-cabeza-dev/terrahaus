@@ -1,0 +1,59 @@
+# Docker Compose para PRODUCCIÓN con HTTPS
+# Uso: docker compose -f docker-compose.prod.yml up -d --build
+
+services:
+  # ===================
+  # TRAEFIK - Reverse Proxy con SSL
+  # ===================
+  traefik:
+    image: traefik:v3.0
+    container_name: traefik
+    restart: unless-stopped
+    command:
+      - "--api.dashboard=false"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      # Redirigir HTTP a HTTPS
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      # Let's Encrypt
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL}"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - traefik-certificates:/letsencrypt
+    networks:
+      - web
+
+  # ===================
+  # TERRAHAUS - Web App
+  # ===================
+  terrahaus:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: terrahaus
+    restart: unless-stopped
+    networks:
+      - web
+    labels:
+      - "traefik.enable=true"
+      # HTTPS
+      - "traefik.http.routers.terrahaus.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.terrahaus.entrypoints=websecure"
+      - "traefik.http.routers.terrahaus.tls.certresolver=letsencrypt"
+      - "traefik.http.services.terrahaus.loadbalancer.server.port=80"
+
+networks:
+  web:
+    driver: bridge
+
+volumes:
+  traefik-certificates:
