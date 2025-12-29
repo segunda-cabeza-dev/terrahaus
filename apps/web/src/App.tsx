@@ -15,6 +15,7 @@ import { Contacto } from './features/contacto'
 import { WhatsAppFloat } from './components/WhatsAppFloat'
 import './App.css'
 import { useEffect } from 'react'
+import ScrollToTop from './components/ScrollToTop'
 import { useTranslation } from 'react-i18next'
 
 // Componente para sincronizar el idioma con la URL
@@ -47,6 +48,7 @@ function App() {
   
   return (
     <>
+      <ScrollToTop />
       <Routes>
         {/* Redirect root to default language */}
         <Route path="/" element={<Navigate to="/es/proyectos" replace />} />
