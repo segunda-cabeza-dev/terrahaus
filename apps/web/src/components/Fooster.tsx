@@ -19,11 +19,10 @@ export const FoosterAlt: React.FC = () => (
   <div className="flex flex-col items-start md:ml-[-28px]">
         <div className="font-bold mb-2 text-left uppercase" style={{fontFamily: 'Barlow, sans-serif', fontSize: '16px', color: '#fff'}}>OBRA NUEVA Y REFORMAS DE:</div>
         <ul className="space-y-1 text-left" style={{fontFamily: 'Barlow, sans-serif', fontWeight: 300, fontSize: '15px', color: '#e5e7eb'}}>
-          <li><span className="text-[#b35427] font-bold mr-2">&gt;</span>Casas de hormigón</li>
-          <li><span className="text-[#b35427] font-bold mr-2">&gt;</span>Casas de madera</li>
-          <li style={{whiteSpace: 'nowrap'}}><span className="text-[#b35427] font-bold mr-2">&gt;</span>Cabañas y bungalows</li>
-          <li><span className="text-[#b35427] font-bold mr-2">&gt;</span>Glampings</li>
-          <li><span className="text-[#b35427] font-bold mr-2">&gt;</span>Oficinas y locales comerciales</li>
+          <li>Casas de hormigón</li>
+          <li>Casas de madera</li>
+          <li style={{whiteSpace: 'nowrap'}}>Cabañas y bungalows</li>
+          <li>Oficinas y locales comerciales</li>
         </ul>
       </div>
         {/* Sección 3: Proyectos */}

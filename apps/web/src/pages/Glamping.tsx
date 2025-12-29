@@ -1,4 +1,4 @@
-    // ...existing code...
+// ...existing code...
 import React from "react";
 import Header from "../components/Header";
 import { FoosterAlt } from "../components/Fooster";
@@ -18,7 +18,7 @@ const HeroGlamping: React.FC = () => (
     <Header />
   <div className="relative z-20 flex flex-col items-center justify-center text-white px-6 md:px-20 pb-12 pt-32 md:pt-48 gap-6 max-w-5xl mx-auto w-full text-center">
       {/* Título */}
-      <h1 className="text-[4.2rem] md:text-[75px] leading-tight font-bold tracking-tight mb-1 flex flex-wrap items-center justify-center gap-2" style={{fontFamily: 'Bebas Neue, sans-serif', color: '#fff'}}>
+  <h1 className="text-[4.2rem] md:text-[75px] leading-tight font-bold tracking-wider mb-1 flex flex-wrap items-center justify-center gap-2" style={{fontFamily: 'Bebas Neue, sans-serif', color: '#fff', letterSpacing: '0.04em'}}>
         <span className="hidden md:flex items-center justify-center w-full text-center gap-2 leading-[1.05]">
           GLAMPING
           <span className="ml-2">4</span>
@@ -39,8 +39,8 @@ const HeroGlamping: React.FC = () => (
         <span className="whitespace-normal md:whitespace-nowrap block max-w-xs mx-auto md:max-w-none leading-snug">Proyecto de glamping ecológico de gran escala en primera línea de playa, Cádiz</span>
       </div>
       {/* Tarjetas 2x2 - Diseño Premium */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-4xl mx-auto mt-2">
-        <div className="group flex items-center justify-start gap-4 bg-white/5 backdrop-blur-md rounded-2xl py-5 px-6 border border-white/10 hover:border-[#b35427]/50 hover:bg-white/10 transition-all duration-300 shadow-lg hover:shadow-[#b35427]/20">
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-fit mx-auto mt-2">
+  <div className="group flex items-center justify-start gap-4 bg-white/5 backdrop-blur-md rounded-2xl py-5 px-4 border border-white/10 hover:border-[#b35427]/50 hover:bg-white/10 transition-all duration-300 shadow-lg hover:shadow-[#b35427]/20 min-w-[320px]">
           <span className="text-3xl filter drop-shadow-lg group-hover:scale-110 transition-transform duration-300">🏡</span>
           <span className="text-lg font-medium text-white tracking-wide">Alojamiento integrado</span>
         </div>
@@ -240,7 +240,7 @@ function Glamping() {
         <ul className="list-none pl-0 text-[#232b36] space-y-1" style={{fontSize: '17px'}}>
           <li className="flex items-center gap-2 mb-1"><span className="text-[#1db489] font-bold text-xl">›</span><span className="text-[#232b36] text-base" style={{fontSize: '17px'}}>Unidades independientes integradas en el entorno</span></li>
           <li className="flex items-center gap-2 mb-1"><span className="text-[#1db489] font-bold text-xl">›</span><span className="text-[#232b36] text-base" style={{fontSize: '17px'}}>Prioridad en privacidad y confort interior</span></li>
-          <li className="flex items-center gap-2 mb-1"><span className="text-[#1db489] font-bold text-xl">›</span><span className="text-[#232b36] text-base" style={{fontSize: '17px'}}>Relación directa con el exterior y el paisaje</span></li>
+          <li className="flex items-center gap-2 mb-1"><span className="text-[#1db489] font-bold text-xl">›</span><span className="text-[#232b36] text-base" style={{fontSize: '17px'}}>Relación directa con el exterior and el paisaje</span></li>
           <li className="flex items-center gap-2 mb-1"><span className="text-[#1db489] font-bold text-xl">›</span><span className="text-[#232b36] text-base" style={{fontSize: '17px'}}>Implantación que minimiza impacto visual y físico</span></li>
         </ul>
       </div>
@@ -420,6 +420,19 @@ function Glamping() {
         </div>
       </div>
     </section>
+
+    {/* Firma del Promotor */}
+    <section className="w-full py-12 bg-white flex justify-center items-center px-6">
+        <div className="text-center select-none border border-[#b35427]/40 rounded-lg px-10 py-4 bg-white/50">
+            <span 
+              className="block text-slate-700 text-base md:text-lg font-medium tracking-wide" 
+              style={{ fontFamily: 'Barlow, sans-serif' }}
+            >
+              Promotor del proyecto: <strong className="font-bold text-slate-900">Promotora de Glamping 4★ Gran Lujo</strong>
+            </span>
+        </div>
+    </section>
+
     {/* Sección 10: Formulario de contacto */}
     <>
   <section id="contacto" className="w-full pt-10 pb-0 px-0 flex flex-col items-center">
