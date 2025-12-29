@@ -10,16 +10,13 @@
   "scripts": {
     "dev": "npm run dev:web",
     "dev:web": "npm run dev --workspace=@beltrame/web",
-    "dev:admin": "npm run dev --workspace=@beltrame/admin",
-    "build": "npm run build:web && npm run build:admin",
+    "build": "npm run build:web",
     "build:web": "npm run build --workspace=@beltrame/web",
-    "build:admin": "npm run build --workspace=@beltrame/admin",
     "lint": "eslint .",
     "preview": "vite preview",
     "convert-images": "node scripts/convert-to-webp.js"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.81.1",
     "browser-image-compression": "^2.0.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

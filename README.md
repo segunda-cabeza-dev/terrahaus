@@ -1,82 +1,161 @@
-# Beltrame Web
+# Terrahaus Web# Beltrame Web
 
-Aplicación web completa para empresa de herrería artesanal con panel de administración.
 
-## 🚀 Stack Tecnológico
 
-- **Frontend Framework**: React 19
-- **Build Tool**: Vite 7
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS
-- **UI Components**: shadcn/ui (Radix UI + Tailwind CSS)
-- **Backend**: Supabase (PostgreSQL + Auth + Storage)
-- **Icons**: Lucide React
+Sitio web para estudio de arquitectura especializado en proyectos sostenibles.Aplicación web completa para empresa de herrería artesanal con panel de administración.
+
+
+
+## 🚀 Stack Tecnológico## 🚀 Stack Tecnológico
+
+
+
+- **Frontend Framework**: React 19- **Frontend Framework**: React 19
+
+- **Build Tool**: Vite 7- **Build Tool**: Vite 7
+
+- **Language**: TypeScript- **Language**: TypeScript
+
+- **Styling**: Tailwind CSS- **Styling**: Tailwind CSS
+
+- **Icons**: Lucide React- **UI Components**: shadcn/ui (Radix UI + Tailwind CSS)
+
+- **Router**: React Router v7- **Backend**: Supabase (PostgreSQL + Auth + Storage)
+
+- **CDN**: Cloudflare R2 (imágenes y videos)- **Icons**: Lucide React
+
 - **Router**: React Router v7
-- **Monorepo**: npm workspaces
 
-## 📦 Instalación
+## 📦 Instalación- **Monorepo**: npm workspaces
 
-```bash
+
+
+```bash## 📦 Instalación
+
 # Instalar dependencias
+
+npm install```bash
+
+```# Instalar dependencias
+
 npm install
-```
 
-## ⚙️ Configuración del Backend
+## ⚙️ Configuración```
 
-### Paso 1: Crear proyecto en Supabase
 
-1. Ve a [https://supabase.com](https://supabase.com)
+
+Crear archivo `apps/web/.env.local`:## ⚙️ Configuración del Backend
+
+
+
+```env### Paso 1: Crear proyecto en Supabase
+
+VITE_ASSETS_URL=https://pub-e9476d34c83b42cebbbfe7469a26b77a.r2.dev
+
+```1. Ve a [https://supabase.com](https://supabase.com)
+
 2. Crea un nuevo proyecto
-3. Obtén tus credenciales (URL y anon key)
 
-### Paso 2: Configurar variables de entorno
+## 🏃 Desarrollo3. Obtén tus credenciales (URL y anon key)
 
-Actualiza los archivos `.env` en la raíz y en cada app:
 
-```env
-# .env (raíz)
-VITE_SUPABASE_URL=https://tu-proyecto.supabase.co
-VITE_SUPABASE_ANON_KEY=tu-anon-key-aqui
 
-# apps/web/.env
-VITE_SUPABASE_URL=https://tu-proyecto.supabase.co
-VITE_SUPABASE_ANON_KEY=tu-anon-key-aqui
+```bash### Paso 2: Configurar variables de entorno
 
-# apps/admin/.env
-VITE_SUPABASE_URL=https://tu-proyecto.supabase.co
-VITE_SUPABASE_ANON_KEY=tu-anon-key-aqui
-```
+# Iniciar servidor de desarrollo
 
-### Paso 3: Crear las tablas en Supabase
+npm run devActualiza los archivos `.env` en la raíz y en cada app:
 
-1. Ve a SQL Editor en tu proyecto de Supabase
-2. Ejecuta el script `docs/supabase-setup-complete.sql`
-3. (Opcional) Ejecuta `docs/supabase-seed-data.sql` para datos de ejemplo
-
-**📚 Guía detallada**: Ver `docs/SUPABASE_SETUP_GUIDE.md`
-
-## 🏃 Desarrollo
-
-```bash
-# Iniciar servidor de desarrollo (web pública)
-npm run dev
-# o específicamente:
-npm run dev:web
 # Disponible en http://localhost:5173
 
-# Iniciar panel de administración
-npm run dev:admin
-# Disponible en http://localhost:5174
-```
+``````env
 
-## 🏗️ Construcción
+# .env (raíz)
+
+## 🏗️ ConstrucciónVITE_SUPABASE_URL=https://tu-proyecto.supabase.co
+
+VITE_SUPABASE_ANON_KEY=tu-anon-key-aqui
 
 ```bash
-# Build de ambas aplicaciones
-npm run build
 
-# Build específico
-npm run build:web
+# Build de la aplicación# apps/web/.env
+
+npm run buildVITE_SUPABASE_URL=https://tu-proyecto.supabase.co
+
+```VITE_SUPABASE_ANON_KEY=tu-anon-key-aqui
+
+
+
+## 📁 Estructura del Proyecto# apps/admin/.env
+
+VITE_SUPABASE_URL=https://tu-proyecto.supabase.co
+
+```VITE_SUPABASE_ANON_KEY=tu-anon-key-aqui
+
+apps/```
+
+  web/                 # Sitio web público
+
+    src/### Paso 3: Crear las tablas en Supabase
+
+      components/      # Componentes reutilizables
+
+      pages/           # Páginas del sitio1. Ve a SQL Editor en tu proyecto de Supabase
+
+      lib/             # Utilidades (assets helper)2. Ejecuta el script `docs/supabase-setup-complete.sql`
+
+packages/3. (Opcional) Ejecuta `docs/supabase-seed-data.sql` para datos de ejemplo
+
+  shared/              # Código compartido
+
+scripts/**📚 Guía detallada**: Ver `docs/SUPABASE_SETUP_GUIDE.md`
+
+  convert-to-webp.js   # Script para convertir imágenes
+
+  optimize-videos.sh   # Script para optimizar videos## 🏃 Desarrollo
+
+```
+
+```bash
+
+## 🌐 Páginas# Iniciar servidor de desarrollo (web pública)
+
+npm run dev
+
+- `/es` - Home# o específicamente:
+
+- `/es/glamping` - Proyecto Glampingnpm run dev:web
+
+- `/es/proyectos/alpinablanca` - Alpina Blanca# Disponible en http://localhost:5173
+
+- `/es/proyectos/casacuadrante` - Casa Cuadrante
+
+- `/es/proyectos/casahorizonte` - Casa Horizonte# Iniciar panel de administración
+
+- `/es/pequenaandina` - Pequeña Andinanpm run dev:admin
+
+- `/es/proyectos-todos` - Todos los proyectos# Disponible en http://localhost:5174
+
+- `/es/gracias` - Página de agradecimiento```
+
+
+
+## 📷 Assets## 🏗️ Construcción
+
+
+
+Las imágenes y videos se sirven desde Cloudflare R2 CDN.```bash
+
+# Build de ambas aplicaciones
+
+Para subir nuevos assets:npm run build
+
+```bash
+
+npx wrangler r2 object put terrahaus/images/nombre.webp --file="ruta/local.webp"# Build específico
+
+```npm run build:web
+
 npm run build:admin
 ```
 
