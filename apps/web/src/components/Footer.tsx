@@ -1,3 +1,4 @@
+import { img } from "../lib/assets";
 import React from "react";
 
 const Footer: React.FC = () => {
@@ -7,7 +8,7 @@ const Footer: React.FC = () => {
         {/* Columna 1: Logo y descripción */}
         <div className="flex flex-col items-center md:items-start w-full mb-8 md:mb-0">
           <div className="flex flex-col items-center md:items-start w-full">
-            <img src="/assets/images/Logo%20terrahous%20Blanco.png" alt="Terrahaus logo" className="h-16 w-auto mb-2 mx-auto md:ml-[-12px]" style={{maxWidth: '300px'}} />
+            <img src={img("logo-terrahaus-blanco.webp")} alt="Terrahaus logo" className="h-16 w-auto mb-2 mx-auto md:ml-[-12px]" style={{maxWidth: '300px'}} />
             <p className="text-gray-300 text-base mt-2 md:mt-0 mx-auto md:mx-0" style={{fontFamily: 'Inter Tight, sans-serif', fontWeight: 300, maxWidth: '320px'}}>
               Llevamos adelante tu proyecto de principio a fin con arquitectos especialistas en interiorismo.
             </p>

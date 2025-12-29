@@ -1,73 +1,47 @@
-import { Routes, Route, Navigate, useParams } from 'react-router-dom'
-// import { ComponentsShowcase } from './features/showcase'
-// import { Inicio, QuienesSomos, MapaSitio, TerminosCondiciones, Privacidad } from './features/institucional'
-import { Proyecto, ProyectoCategoria, ProyectoDetalle } from './features/proyectos'
-import Home from './pages/Home'
-import AlpinaBlanca from './pages/AlpinaBlanca'
-import Gracias from './pages/Gracias'
-import CasaCuadrante from './pages/CasaCuadrante'
-import CasaHorizonte from './pages/CasaHorizonte'
-import Glamping from './pages/Glamping'
-import PequenaAndina from './pages/PequenaAndina'
-import Proyectos from './pages/Proyectos'
-import { Contacto } from './features/contacto'
-// import { CallToAction } from './features/layout'
-import { WhatsAppFloat } from './components/WhatsAppFloat'
-import './App.css'
-import { useEffect } from 'react'
+import { Routes, Route, Navigate } from 'react-router-dom'
+import { lazy, Suspense } from 'react'
 import ScrollToTop from './components/ScrollToTop'
-import { useTranslation } from 'react-i18next'
+import { WhatsAppFloat } from './components/WhatsAppFloat'
+import { PageLoader } from './components/LoadingSpinner'
+import './App.css'
 
-// Componente para sincronizar el idioma con la URL
-function LanguageSync() {
-  const { lang } = useParams<{ lang: string }>();
-  const { i18n } = useTranslation();
+// Lazy loading de páginas para mejor rendimiento
+const Home = lazy(() => import('./pages/Home'))
+const AlpinaBlanca = lazy(() => import('./pages/AlpinaBlanca'))
+const Gracias = lazy(() => import('./pages/Gracias'))
+const CasaCuadrante = lazy(() => import('./pages/CasaCuadrante'))
+const CasaHorizonte = lazy(() => import('./pages/CasaHorizonte'))
+const Glamping = lazy(() => import('./pages/Glamping'))
+const PequenaAndina = lazy(() => import('./pages/PequenaAndina'))
+const Proyectos = lazy(() => import('./pages/Proyectos'))
 
-  useEffect(() => {
-    if (lang && ['es', 'en', 'it'].includes(lang)) {
-      i18n.changeLanguage(lang);
-    }
-  }, [lang, i18n]);
-
-  return null;
-}
-
-// Componente para redirigir rutas legacy con parámetros
-function CategoryRedirect() {
-  const { categoria } = useParams<{ categoria: string }>();
-  return <Navigate to={`/es/proyectos/${categoria}`} replace />;
-}
-
-function ProjectDetailRedirect() {
-  const { categoria, id } = useParams<{ categoria: string; id: string }>();
-  return <Navigate to={`/es/proyectos/${categoria}/${id}`} replace />;
-}
+// Lazy loading de features
+const ProyectoCategoria = lazy(() => import('./features/proyectos/pages/ProyectoCategoria'))
+const ProyectoDetalle = lazy(() => import('./features/proyectos/pages/ProyectoDetalle'))
+const Contacto = lazy(() => import('./features/contacto/Contacto'))
 
 function App() {
-  const { i18n } = useTranslation();
-  
   return (
     <>
       <ScrollToTop />
-      <Routes>
-        {/* Redirect root to default language */}
-        <Route path="/" element={<Navigate to="/es/proyectos" replace />} />
-        {/* Solo rutas de proyectos y contacto si existen */}
-  <Route path="/es" element={<Home />} />
-  <Route path="/es/proyectos/:categoria" element={<ProyectoCategoria />} />
-  <Route path="/es/proyectos/:categoria/:id" element={<ProyectoDetalle />} />
-  <Route path="/es/contacto" element={<Contacto />} />
-  <Route path="/es/proyectos/alpinablanca" element={<AlpinaBlanca />} />
-  <Route path="/es/proyectos/casacuadrante" element={<CasaCuadrante />} />
-  <Route path="/es/proyectos/casahorizonte" element={<CasaHorizonte />} />
-  <Route path="/es/glamping" element={<Glamping />} />
-  <Route path="/es/pequenaandina" element={<PequenaAndina />} />
-  <Route path="/es/proyectos-todos" element={<Proyectos />} />
-  <Route path="/es/gracias" element={<Gracias />} />
-
-        {/* <Route path="/es/landingproyectos" element={<Landingproyecto />} /> */}
-        {/* Puedes agregar aquí más rutas válidas según tus componentes existentes */}
-      </Routes>
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
+          {/* Redirect root to default language */}
+          <Route path="/" element={<Navigate to="/es" replace />} />
+          {/* Solo rutas de proyectos y contacto si existen */}
+          <Route path="/es" element={<Home />} />
+          <Route path="/es/proyectos/:categoria" element={<ProyectoCategoria />} />
+          <Route path="/es/proyectos/:categoria/:id" element={<ProyectoDetalle />} />
+          <Route path="/es/contacto" element={<Contacto />} />
+          <Route path="/es/proyectos/alpinablanca" element={<AlpinaBlanca />} />
+          <Route path="/es/proyectos/casacuadrante" element={<CasaCuadrante />} />
+          <Route path="/es/proyectos/casahorizonte" element={<CasaHorizonte />} />
+          <Route path="/es/glamping" element={<Glamping />} />
+          <Route path="/es/pequenaandina" element={<PequenaAndina />} />
+          <Route path="/es/proyectos-todos" element={<Proyectos />} />
+          <Route path="/es/gracias" element={<Gracias />} />
+        </Routes>
+      </Suspense>
       <WhatsAppFloat />
     </>
   )

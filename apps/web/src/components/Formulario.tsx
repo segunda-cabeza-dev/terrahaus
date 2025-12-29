@@ -1,6 +1,7 @@
 import React from "react";
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
+import { img } from '../lib/assets';
 
 const Formulario: React.FC<{ image?: string }> = ({ image }) => {
   return (
@@ -9,10 +10,11 @@ const Formulario: React.FC<{ image?: string }> = ({ image }) => {
         {/* Imagen a la izquierda, pegada al borde */}
         <div className="md:w-1/2 w-full h-40 md:h-auto md:min-h-[500px]">
           <img 
-            src="/assets/images/Formulario-casa-madera.jpg" 
+            src={img("Formulario-casa-madera.webp")} 
             alt="Casa madera formulario" 
             className="object-cover w-full h-full" 
             style={{ minHeight: '100%', minWidth: '100%', display: 'block' }}
+            loading="lazy"
           />
         </div>
         {/* Formulario a la derecha, alineado a la izquierda */}

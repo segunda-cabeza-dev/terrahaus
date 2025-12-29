@@ -1,4 +1,4 @@
-
+import { img } from "../lib/assets";
 import React from "react";
 import Header from "../components/Header";
 import { FoosterAlt } from "../components/Fooster";
@@ -10,9 +10,10 @@ const HeroAlpina: React.FC = () => (
 	<section className="relative min-h-[80vh] flex flex-col font-sans">
 		<div className="absolute inset-0 w-full h-full z-0">
 			<img
-				src="/assets/images/hero-alpina-formulario.jpg"
+				src={img("hero-alpina-formulario.webp")}
 				alt="Alpina Blanca Hero"
 				className="w-full h-full object-cover"
+				loading="eager"
 			/>
 			<div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/65 to-black/70" />
 		</div>
@@ -125,10 +126,11 @@ const AlpinaBlanca: React.FC = () => (
 				{[1,2,3,4,5,6,7,8].map(num => (
 					<img 
 						key={num}
-						src={`/assets/images/alpina-blanca${num}.jpg`}
+						src={img(`alpina-blanca${num}.webp`)}
 						alt={`Alpina Blanca ${num}`}
 						className="w-full h-64 object-cover rounded shadow"
 						style={{fontFamily: 'Barlow, sans-serif'}}
+						loading="lazy"
 					/>
 				))}
 			</div>

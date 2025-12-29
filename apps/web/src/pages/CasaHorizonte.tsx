@@ -1,3 +1,4 @@
+import { img } from "../lib/assets";
 
 import React from "react";
 import Header from "../components/Header";
@@ -8,9 +9,10 @@ const HeroCasaHorizonte: React.FC = () => (
   <section className="relative min-h-[80vh] flex flex-col font-sans">
     <div className="absolute inset-0 w-full h-full z-0">
       <img
-        src="/assets/images/la-casa-horizonte- formulario.jpg"
+        src={img("la-casa-horizonte-formulario.webp")}
         alt="Casa Horizonte Hero"
         className="w-full h-full object-cover"
+        loading="eager"
       />
       <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/65 to-black/70" />
     </div>
@@ -124,10 +126,11 @@ const CasaHorizonte: React.FC = () => (
           {[1,2,3,4,5,6,7].map(num => (
             <img 
               key={num}
-              src={`/assets/images/la-casa-horizonte-${num}.jpg`}
+              src={img(`la-casa-horizonte-${num}.webp`)}
               alt={`Casa Horizonte ${num}`}
               className="w-full h-64 object-cover rounded shadow"
               style={{fontFamily: 'Barlow, sans-serif'}}
+              loading="lazy"
             />
           ))}
         </div>

@@ -1,3 +1,4 @@
+import { img } from "../lib/assets";
 import React from "react";
 import { FoosterAlt } from "../components/Fooster";
 import Header from "../components/Header";
@@ -9,9 +10,10 @@ const Gracias: React.FC = () => (
       {/* Fondo Hero */}
       <div className="absolute inset-0 w-full h-full z-0">
         <img
-          src="/assets/images/HeroFondo.jpg"
+          src={img("HeroFondo.webp")}
           alt="Gracias Hero"
           className="w-full h-full object-cover"
+          loading="eager"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/60 to-black/70" />
       </div>

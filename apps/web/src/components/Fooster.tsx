@@ -1,11 +1,14 @@
+import React from "react";
+import { img } from '../lib/assets';
+
 // PROPUESTA ALTERNATIVA DE FOOTER
 export const FoosterAlt: React.FC = () => (
   <footer className="w-full bg-black text-white py-10 px-8">
     <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-5 gap-2 md:gap-0 px-0">
       {/* Sección 1: Logo y descripción */}
       <div className="flex flex-col justify-start items-start md:col-span-2 md:pr-8 mb-6 md:mb-0">
-        <a href="http://localhost:5178/es" className="mb-3 block">
-          <img src="/assets/images/Logo%20terrahous%20Blanco.png" alt="Terrahaus logo" className="max-h-20 w-auto cursor-pointer" style={{maxWidth: '220px', height: 'auto', display: 'block'}} />
+        <a href="/es" className="mb-3 block">
+          <img src={img("Logo terrahous Blanco.webp")} alt="Terrahaus logo" className="max-h-20 w-auto cursor-pointer" style={{maxWidth: '220px', height: 'auto', display: 'block'}} loading="lazy" />
         </a>
         <p className="mb-4 text-left" style={{fontFamily: 'Barlow, sans-serif', fontWeight: 300, fontSize: '15px', color: '#e5e7eb', maxWidth: '320px'}}>
           Llevamos adelante tu proyecto de<br />
@@ -79,7 +82,6 @@ export const FoosterAlt: React.FC = () => (
     </div>
   </footer>
 );
-import React from "react";
 
 const Fooster: React.FC = () => (
   <footer className="w-full bg-black text-white py-14 px-4 mt-10">
@@ -87,7 +89,7 @@ const Fooster: React.FC = () => (
       {/* Columna 1: Logo y descripción + social */}
       <div className="flex flex-col items-start w-full mb-8 md:mb-0 md:pl-0">
         <div className="flex items-center mb-2">
-          <img src="/assets/images/Logo%20terrahous%20Blanco.png" alt="Terrahaus logo" className="h-10 w-auto mr-2" style={{maxWidth: '120px'}} />
+          <img src={img("Logo terrahous Blanco.webp")} alt="Terrahaus logo" className="h-10 w-auto mr-2" style={{maxWidth: '120px'}} loading="lazy" />
           <span className="font-bold text-lg" style={{fontFamily: 'Barlow, sans-serif'}}>Terrahaus</span>
         </div>
         <p className="mb-3" style={{fontFamily: 'Barlow, sans-serif', fontWeight: 300, fontSize: '15px', color: '#e5e7eb', maxWidth: '320px'}}>

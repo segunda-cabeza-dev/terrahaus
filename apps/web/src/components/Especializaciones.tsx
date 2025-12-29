@@ -1,22 +1,23 @@
 import React from "react";
 import styles from "./Especializaciones.module.css";
+import { img } from '../lib/assets';
 
 const especializaciones = [
   {
     title: "CASAS DE MADERA",
-    img: "/assets/images/Casa-madera.png",
+    img: img("Casa-madera.webp"),
   },
   {
     title: "CASAS DE HORMIGÓN",
-    img: "/assets/images/Casa-hormigon.png",
+    img: img("Casa-hormigon.webp"),
   },
   {
     title: "GLAMPLINGS",
-    img: "/assets/images/Glamplings.png",
+    img: img("Glamplings.webp"),
   },
   {
     title: "CABAÑAS Y BUNGALOS",
-    img: "/assets/images/cabana-bungalo.png",
+    img: img("cabana-bungalo.webp"),
     alt: "Cabañas y Bungalos",
   },
 ];
@@ -32,7 +33,7 @@ const pasos = [
   Te guiaremos <b>paso a paso en cada etapa</b> para que tengas una <b>comprensión total del proceso</b> y te sientas acompañado en cada decisión.
       </>
     ),
-  img: "/assets/images/Especializaciones1.jpg",
+  img: img("Especializaciones1.webp"),
   },
   {
     numero: "02.",
@@ -44,7 +45,7 @@ const pasos = [
   Nuestro equipo solo quiere una cosa: <b>que estés feliz con el resultado.</b>
       </>
     ),
-  img: "/assets/images/Especializaciones2.jpg",
+  img: img("Especializaciones2.webp"),
   },
   {
     numero: "03.",
@@ -56,7 +57,7 @@ const pasos = [
   Este compromiso te asegura que el proyecto se llevará a cabo en el <b>tiempo</b> y dentro del <b>presupuesto acordado.</b>
       </>
     ),
-  img: "/assets/images/Especializaciones3.jpg",
+  img: img("Especializaciones3.webp"),
   },
 ];
 

@@ -3,15 +3,17 @@ import React from "react";
 import Header from "../components/Header";
 import { FoosterAlt } from "../components/Fooster";
 import Formulario from "../components/Formulario";
+import { img, videoSources } from "../lib/assets";
 
 const HeroGlamping: React.FC = () => (
   <section className="relative min-h-[80vh] flex flex-col justify-center font-sans bg-[#10141b] overflow-hidden pb-10">
     {/* Fondo */}
     <div className="absolute inset-0 w-full h-full z-0">
       <img
-        src="/assets/images/Hero-Glamping.jpg"
+        src={img("Hero-Glamping.webp")}
         alt="Glamping Hero"
         className="w-full h-full object-cover object-center opacity-70"
+        loading="eager"
       />
       <div className="absolute inset-0 bg-gradient-to-b from-[#10141b]/95 via-[#10141b]/80 to-[#1e2d2f]/90" />
     </div>
@@ -75,12 +77,14 @@ function Glamping() {
         <div className="w-full md:w-1/2 flex justify-center">
           <div className="w-full max-w-md aspect-[4/3] bg-slate-200 rounded-2xl flex items-center justify-center border border-slate-100 shadow overflow-hidden">
             <video
-              src="/assets/videos/Rendervideo.mp4"
               controls
               className="w-full h-full object-cover rounded-2xl"
-              poster="/assets/images/01-elproyecto.jpg"
-              preload="auto"
-            />
+              poster={videoSources("Rendervideo").poster}
+              preload="metadata"
+            >
+              <source src={videoSources("Rendervideo").webm} type="video/webm" />
+              <source src={videoSources("Rendervideo").mp4} type="video/mp4" />
+            </video>
           </div>
         </div>
         {/* Texto derecha */}
@@ -126,9 +130,10 @@ function Glamping() {
         <div className="w-full md:w-1/2 flex justify-center">
           <div className="w-full max-w-md aspect-[4/3] bg-slate-200 rounded-2xl flex items-center justify-center border border-slate-100 shadow">
             <img
-              src="/assets/images/02-concepto.png"
+              src={img("02-concepto.webp")}
               alt="Concepto y Enfoque Glamping"
               className="w-full h-full object-cover rounded-2xl"
+              loading="lazy"
             />
           </div>
         </div>
@@ -253,16 +258,18 @@ function Glamping() {
         <div className="w-full max-w-md aspect-[4/3] bg-slate-100 rounded-2xl border border-slate-100 shadow">
           <div className="flex flex-col gap-4 w-full h-full justify-center items-center">
             <img
-              src="/assets/images/04-alojamiento02.png"
+              src={img("04-alojamiento02.webp")}
               alt="Vista superior de alojamientos"
               className="w-full rounded-2xl border border-slate-200 shadow object-contain bg-white"
               style={{ maxHeight: 220 }}
+              loading="lazy"
             />
             <img
-              src="/assets/images/04-alojamiento01.png"
+              src={img("04-alojamiento01.webp")}
               alt="Vista frontal de alojamientos"
               className="w-full rounded-2xl border border-slate-200 shadow object-contain bg-white"
               style={{ maxHeight: 220 }}
+              loading="lazy"
             />
           </div>
         </div>
@@ -276,16 +283,18 @@ function Glamping() {
   <div className="flex flex-col items-center md:items-start gap-6 justify-center h-full order-last md:order-first">
           <div className="aspect-[4/3] bg-slate-200 rounded-2xl flex items-center justify-center border border-slate-100 shadow overflow-hidden w-full max-w-md md:ml-12">
             <img
-              src="/assets/images/05-comunitarios.png"
+              src={img("05-comunitarios.webp")}
               alt="Vista del restaurante, solárium y piscina central"
               className="w-full h-full object-cover rounded-2xl"
+              loading="lazy"
             />
           </div>
           <div className="aspect-[4/3] bg-slate-200 rounded-2xl flex items-center justify-center border border-slate-100 shadow overflow-hidden w-full max-w-md md:ml-12">
             <img
-              src="/assets/images/06-2exteriores.png"
+              src={img("06-2exteriores.webp")}
               alt="Piscina central y áreas deportivas"
               className="w-full h-full object-cover rounded-2xl"
+              loading="lazy"
             />
           </div>
         </div>
@@ -381,7 +390,7 @@ function Glamping() {
         {/* Columna derecha: imagen */}
         <div className="w-full md:w-1/2 flex justify-center items-start mt-10 md:mt-0">
           <div className="w-full max-w-md aspect-[4/3] bg-slate-100 rounded-2xl border border-slate-100 shadow">
-            <img src="/assets/images/07-urbanización.jpg" alt="Viales interiores y accesos con bajo impacto" className="object-cover w-full h-full rounded-2xl" />
+            <img src={img("07-urbanizacion.webp")} alt="Viales interiores y accesos con bajo impacto" className="object-cover w-full h-full rounded-2xl" loading="lazy" />
           </div>
         </div>
       </div>
@@ -393,7 +402,7 @@ function Glamping() {
         {/* Columna izquierda: imagen */}
         <div className="w-full md:w-1/2 flex justify-center items-start mb-10 md:mb-0">
           <div className="w-full max-w-md aspect-[4/3] bg-slate-100 rounded-2xl border border-slate-100 shadow">
-            <img src="/assets/images/08-zonasverdes.png" alt="Zonas verdes y jardines del glamping" className="object-cover w-full h-full rounded-2xl" />
+            <img src={img("08-zonasverdes.webp")} alt="Zonas verdes y jardines del glamping" className="object-cover w-full h-full rounded-2xl" loading="lazy" />
           </div>
         </div>
         {/* Columna derecha: texto */}
@@ -428,7 +437,7 @@ function Glamping() {
         {/* Columna derecha: imagen */}
         <div className="w-full md:w-1/2 flex justify-center items-start mt-10 md:mt-0">
           <div className="w-full max-w-md aspect-[4/3] bg-slate-100 rounded-2xl border border-slate-100 shadow">
-            <img src="/assets/images/08-edificacionclave.jpg" alt="Edificación clave del conjunto" className="object-cover w-full h-full rounded-2xl" />
+            <img src={img("08-edificacionclave.webp")} alt="Edificación clave del conjunto" className="object-cover w-full h-full rounded-2xl" loading="lazy" />
           </div>
         </div>
       </div>

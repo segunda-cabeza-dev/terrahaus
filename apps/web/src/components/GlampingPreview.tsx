@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { img } from '../lib/assets';
 
 const GlampingPreview: React.FC = () => {
   return (
@@ -10,9 +11,10 @@ const GlampingPreview: React.FC = () => {
           <div className="hidden md:block absolute inset-0 w-full h-full z-0">
              <div className="absolute inset-0 bg-gradient-to-b from-white via-white/95 to-white/90 z-10" />
              <img 
-               src="/assets/images/Hero-Glamping.jpg" 
+               src={img("Hero-Glamping.webp")} 
                alt="" 
                className="w-full h-full object-cover opacity-20 grayscale group-hover:grayscale-0 group-hover:opacity-30 transition-all duration-700 transform group-hover:scale-105" 
+               loading="lazy"
              />
           </div>
           

@@ -45,3 +45,4 @@ dist-ssr
 **/assets/videos/
 **/assets/images/
 **/public/assets/
+.wrangler/

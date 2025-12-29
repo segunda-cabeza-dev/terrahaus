@@ -1,4 +1,5 @@
 import React, { useRef, useLayoutEffect, useState } from "react";
+import { img } from '../lib/assets';
 
 
 const Header: React.FC = () => {
@@ -33,7 +34,7 @@ const Header: React.FC = () => {
           {/* Logo */}
           <a ref={logoRef} href="/es" className="flex items-center" style={{minWidth: 180}}>
             <img
-              src="/assets/images/Logo terrahous Blanco.png"
+              src={img("Logo terrahous Blanco.webp")}
               alt="Terrahaus Logo"
               className="h-12 w-auto"
             />

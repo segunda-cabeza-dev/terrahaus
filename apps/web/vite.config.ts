@@ -10,4 +10,34 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    // Optimización de chunks
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Vendor chunks - librerías grandes separadas
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'i18n': ['i18next', 'react-i18next'],
+          'ui': ['lucide-react', 'clsx', 'tailwind-merge'],
+        },
+      },
+    },
+    // Reducir tamaño de chunks
+    chunkSizeWarningLimit: 500,
+    // Minificación con esbuild (más rápido)
+    minify: 'esbuild',
+    // Optimización de assets
+    assetsInlineLimit: 4096, // Inline assets < 4kb como base64
+    // Source maps solo en desarrollo
+    sourcemap: false,
+  },
+  // Optimización del servidor de desarrollo
+  server: {
+    port: 5173,
+    host: true,
+  },
+  // Pre-bundling de dependencias
+  optimizeDeps: {
+    include: ['react', 'react-dom', 'react-router-dom', 'i18next', 'react-i18next'],
+  },
 })
