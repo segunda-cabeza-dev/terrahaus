@@ -9,7 +9,7 @@ const HeroCasaHorizonte: React.FC = () => (
   <section className="relative min-h-[80vh] flex flex-col font-sans">
     <div className="absolute inset-0 w-full h-full z-0">
       <img
-        src={img("la-casa-horizonte-formulario.webp")}
+        src={img("la-casa-horizonte- formulario.webp")}
         alt="Casa Horizonte Hero"
         className="w-full h-full object-cover"
         loading="eager"

@@ -390,7 +390,7 @@ function Glamping() {
         {/* Columna derecha: imagen */}
         <div className="w-full md:w-1/2 flex justify-center items-start mt-10 md:mt-0">
           <div className="w-full max-w-md aspect-[4/3] bg-slate-100 rounded-2xl border border-slate-100 shadow">
-            <img src={img("07-urbanizacion.webp")} alt="Viales interiores y accesos con bajo impacto" className="object-cover w-full h-full rounded-2xl" loading="lazy" />
+            <img src={img("07-urbanización.webp")} alt="Viales interiores y accesos con bajo impacto" className="object-cover w-full h-full rounded-2xl" loading="lazy" />
           </div>
         </div>
       </div>

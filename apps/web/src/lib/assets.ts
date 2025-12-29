@@ -1,8 +1,8 @@
 /**
  * URL base para assets desde Cloudflare R2
- * En desarrollo usa la variable de entorno, en producción también
+ * En producción siempre usa R2
  */
-export const ASSETS_URL = import.meta.env.VITE_ASSETS_URL || '';
+export const ASSETS_URL = import.meta.env.VITE_ASSETS_URL || 'https://pub-e9476d34c83b42cebbbfe7469a26b77a.r2.dev';
 
 /**
  * Obtiene la URL de una imagen
