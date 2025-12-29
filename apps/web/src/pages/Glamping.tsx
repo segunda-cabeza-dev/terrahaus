@@ -74,10 +74,12 @@ function Glamping() {
         {/* Imagen izquierda */}
         <div className="w-full md:w-1/2 flex justify-center">
           <div className="w-full max-w-md aspect-[4/3] bg-slate-200 rounded-2xl flex items-center justify-center border border-slate-100 shadow overflow-hidden">
-            <img
-              src="/assets/images/01-elproyecto.jpg"
-              alt="El Proyecto Glamping"
+            <video
+              src="/assets/videos/Rendervideo.mp4"
+              controls
               className="w-full h-full object-cover rounded-2xl"
+              poster="/assets/images/01-elproyecto.jpg"
+              preload="auto"
             />
           </div>
         </div>
@@ -188,13 +190,15 @@ function Glamping() {
         {/* Tarjeta 6: Autocaravanas (Camión) */}
         <div className="flex flex-col items-center justify-center bg-[#f6f7f9] rounded-2xl py-10 px-4 shadow-sm border border-[#e6e8ec] transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-md">
           <svg width="48" height="48" fill="none" viewBox="0 0 24 24" className="mb-3">
-            <rect x="2" y="8" width="16" height="9" rx="2" stroke="#b35427" strokeWidth="1.5"/>
-            <path d="M18 11h2a2 2 0 0 1 2 2v4h-4" stroke="#b35427" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            <circle cx="6" cy="17" r="2" stroke="#b35427" strokeWidth="1.5"/>
-            <circle cx="16" cy="17" r="2" stroke="#b35427" strokeWidth="1.5"/>
-            <path d="M8 17h6" stroke="#b35427" strokeWidth="1.5"/>
-            <rect x="4" y="10" width="4" height="3" rx="0.5" stroke="#b35427" strokeWidth="1.2"/>
-            <rect x="10" y="10" width="4" height="3" rx="0.5" stroke="#b35427" strokeWidth="1.2"/>
+            <rect x="2" y="8" width="16" height="9" rx="2" stroke="#b35427" strokeWidth="1.5" fill="#fff"/>
+            <rect x="18" y="13" width="3" height="4" rx="1" stroke="#b35427" strokeWidth="1.5" fill="#fff"/>
+            <circle cx="6" cy="17" r="2" fill="#b35427" stroke="#b35427" strokeWidth="1.2"/>
+            <circle cx="16" cy="17" r="2" fill="#b35427" stroke="#b35427" strokeWidth="1.2"/>
+            <rect x="4" y="10" width="4" height="3" rx="0.5" fill="#b35427" opacity="0.2" />
+            <rect x="10" y="10" width="4" height="3" rx="0.5" fill="#b35427" opacity="0.2" />
+            <rect x="10" y="13" width="5" height="2" rx="0.5" fill="#b35427" opacity="0.3" />
+            <rect x="14" y="11" width="2" height="2" rx="0.5" fill="#b35427" opacity="0.5" />
+            <rect x="17" y="15" width="2" height="1" rx="0.5" fill="#b35427" opacity="0.5" />
           </svg>
           <div className="text-xl font-bold text-[#232b36]">Autocaravanas</div>
           <p className="text-sm text-[#6b7280] mt-2 text-center" style={{fontFamily:'Barlow, sans-serif'}}>Área específica de pernocta y servicios</p>

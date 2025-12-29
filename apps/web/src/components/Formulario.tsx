@@ -19,7 +19,14 @@ const Formulario: React.FC<{ image?: string }> = ({ image }) => {
   <div className="md:w-1/2 w-full bg-[#ededed] flex flex-col justify-center p-6 md:p-24 px-6" style={{alignItems: 'flex-start'}}>
           <span className="text-[#b35427] font-normal uppercase tracking-wider mb-2" style={{fontFamily: 'Bebas Neue, sans-serif', letterSpacing: 1, fontSize: '22px'}}>¿Tienes preguntas?</span>
           <h2 className="text-black mb-6 font-normal w-full text-left" style={{fontFamily: 'Bebas Neue, sans-serif', lineHeight: 1.1, letterSpacing: 1, fontSize: '28px'}}>¡Ponte en contacto con nosotros!</h2>
-          <form className="flex flex-col gap-3 w-full" style={{fontFamily: 'Bebas Neue, sans-serif', fontWeight: 300, letterSpacing: 1}}>
+          <form 
+            className="flex flex-col gap-3 w-full" 
+            style={{fontFamily: 'Bebas Neue, sans-serif', fontWeight: 300, letterSpacing: 1}}
+            onSubmit={e => {
+              e.preventDefault();
+              window.location.href = '/es/gracias';
+            }}
+          >
             <input type="text" placeholder="Nombre" className="border border-gray-300 rounded px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#b35427] text-black placeholder:font-barlow text-base" style={{fontFamily: 'Barlow, sans-serif', fontWeight: 300, letterSpacing: 1}} />
             <PhoneInput
               country={'es'}

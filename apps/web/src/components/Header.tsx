@@ -60,11 +60,11 @@ const Header: React.FC = () => {
                 </button>
                 {showProjects && (
                   <ul className="absolute left-0 mt-2 bg-white rounded shadow-lg text-[#232b36] min-w-[180px] z-50">
-                    <li><a href="/es/pequenaandina" className="block px-4 py-2 hover:bg-[#f6f7f9]">Pequeña Andina</a></li>
-                    <li><a href="/es/proyectos/casahorizonte" className="block px-4 py-2 hover:bg-[#f6f7f9]">Casa Horizonte</a></li>
-                    <li><a href="/es/proyectos/casacuadrante" className="block px-4 py-2 hover:bg-[#f6f7f9]">Casa Cuadrante</a></li>
                     <li><a href="/es/proyectos/alpinablanca" className="block px-4 py-2 hover:bg-[#f6f7f9]">Alpina Blanca</a></li>
+                    <li><a href="/es/proyectos/casacuadrante" className="block px-4 py-2 hover:bg-[#f6f7f9]">Casa Cuadrante</a></li>
+                    <li><a href="/es/proyectos/casahorizonte" className="block px-4 py-2 hover:bg-[#f6f7f9]">Casa Horizonte</a></li>
                     <li><a href="/es/glamping" className="block px-4 py-2 hover:bg-[#f6f7f9]">Glamping <span className="text-[#b35427]">★</span></a></li>
+                    <li><a href="/es/pequenaandina" className="block px-4 py-2 hover:bg-[#f6f7f9]">Pequeña Andina</a></li>
                   </ul>
                 )}
               </li>
@@ -105,11 +105,11 @@ const Header: React.FC = () => {
             <div className="flex flex-col gap-4">
                 <span className="text-white text-3xl font-bold uppercase tracking-wide" style={{fontFamily: 'Bebas Neue, sans-serif'}}>Proyectos</span>
                 <div className="pl-4 flex flex-col gap-4 border-l-2 border-[#b35427]/50 ml-1">
-                    <a href="/es/pequenaandina" className="text-gray-300 text-xl hover:text-white transition-colors">Pequeña Andina</a>
-                    <a href="/es/proyectos/casahorizonte" className="text-gray-300 text-xl hover:text-white transition-colors">Casa Horizonte</a>
-                    <a href="/es/proyectos/casacuadrante" className="text-gray-300 text-xl hover:text-white transition-colors">Casa Cuadrante</a>
                     <a href="/es/proyectos/alpinablanca" className="text-gray-300 text-xl hover:text-white transition-colors">Alpina Blanca</a>
+                    <a href="/es/proyectos/casacuadrante" className="text-gray-300 text-xl hover:text-white transition-colors">Casa Cuadrante</a>
+                    <a href="/es/proyectos/casahorizonte" className="text-gray-300 text-xl hover:text-white transition-colors">Casa Horizonte</a>
                     <a href="/es/glamping" className="text-gray-300 text-xl hover:text-white transition-colors">Glamping <span className="text-[#b35427]">★</span></a>
+                    <a href="/es/pequenaandina" className="text-gray-300 text-xl hover:text-white transition-colors">Pequeña Andina</a>
                 </div>
             </div>
 

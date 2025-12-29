@@ -4,6 +4,7 @@ import { Routes, Route, Navigate, useParams } from 'react-router-dom'
 import { Proyecto, ProyectoCategoria, ProyectoDetalle } from './features/proyectos'
 import Home from './pages/Home'
 import AlpinaBlanca from './pages/AlpinaBlanca'
+import Gracias from './pages/Gracias'
 import CasaCuadrante from './pages/CasaCuadrante'
 import CasaHorizonte from './pages/CasaHorizonte'
 import Glamping from './pages/Glamping'
@@ -42,7 +43,6 @@ function ProjectDetailRedirect() {
 }
 
 function App() {
-  <Route path="/es/proyectos/casahorizonte" element={<CasaHorizonte />} />
   const { i18n } = useTranslation();
   
   return (
@@ -61,6 +61,8 @@ function App() {
   <Route path="/es/glamping" element={<Glamping />} />
   <Route path="/es/pequenaandina" element={<PequenaAndina />} />
   <Route path="/es/proyectos-todos" element={<Proyectos />} />
+  <Route path="/es/gracias" element={<Gracias />} />
+
         {/* <Route path="/es/landingproyectos" element={<Landingproyecto />} /> */}
         {/* Puedes agregar aquí más rutas válidas según tus componentes existentes */}
       </Routes>
