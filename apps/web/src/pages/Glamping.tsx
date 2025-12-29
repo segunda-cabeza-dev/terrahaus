@@ -251,11 +251,20 @@ function Glamping() {
       {/* Imagen derecha */}
       <div className="w-full md:w-1/2 flex justify-center">
         <div className="w-full max-w-md aspect-[4/3] bg-slate-100 rounded-2xl border border-slate-100 shadow">
-          <img
-            src="/assets/images/04-alojamientos.png"
-            alt="Área de Alojamientos Glamping"
-            className="w-full h-full object-cover rounded-2xl"
-          />
+          <div className="flex flex-col gap-4 w-full h-full justify-center items-center">
+            <img
+              src="/assets/images/04-alojamiento02.png"
+              alt="Vista superior de alojamientos"
+              className="w-full rounded-2xl border border-slate-200 shadow object-contain bg-white"
+              style={{ maxHeight: 220 }}
+            />
+            <img
+              src="/assets/images/04-alojamiento01.png"
+              alt="Vista frontal de alojamientos"
+              className="w-full rounded-2xl border border-slate-200 shadow object-contain bg-white"
+              style={{ maxHeight: 220 }}
+            />
+          </div>
         </div>
       </div>
     </div>

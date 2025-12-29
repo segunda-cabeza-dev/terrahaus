@@ -57,6 +57,8 @@ const GlampingPreview: React.FC = () => {
             </div>
           </div>
 
+          {/* Imágenes de alojamientos una arriba de otra */}
+
           {/* CTA */}
           <div className="relative z-10 mb-8">
             <Link 
