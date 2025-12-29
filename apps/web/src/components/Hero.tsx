@@ -40,9 +40,8 @@ const Hero: React.FC = () => {
             }
           `}</style>
           <span className="hero-title-break">
-            CONSTRUIMOS<br className="sm:hidden" />
-            LUGARES UNICOS<br className="sm:hidden" />
-            EN TODO ALICANTE
+            <span className="hidden sm:inline">CONSTRUIMOS LUGARES ÚNICOS EN TODO ALICANTE</span>
+            <span className="sm:hidden">CONSTRUIMOS<br/>LUGARES UNICOS<br/>EN TODO ALICANTE</span>
           </span>
           <style>{`
             @media (max-width: 640px) {

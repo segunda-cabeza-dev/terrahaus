@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom';
 
 const GlampingPreview: React.FC = () => {
   return (
-    <section className="py-20 px-6 md:px-16 xl:px-32 bg-white">
-      <div className="max-w-7xl mx-auto">
-        <div className="relative bg-[#f8fafc] md:bg-white rounded-3xl p-8 md:p-24 text-center border border-slate-200 shadow-sm md:shadow-2xl overflow-hidden group transition-all duration-500 hover:shadow-[#b35427]/10">
+  <section className="pt-20 pb-32 px-4 md:pt-10 md:pb-32 md:px-8 bg-white">
+      <div className="max-w-6xl mx-auto">
+  <div className="relative bg-[#f8fafc] md:bg-white rounded-3xl p-8 md:p-10 text-center border border-slate-200 shadow-sm md:shadow-2xl overflow-hidden group transition-all duration-500 hover:shadow-[#b35427]/10 mx-auto mt-[-70px] md:mt-[-60px] lg:mt-[-80px]">
           {/* Decorative background element - Desktop only */}
           <div className="hidden md:block absolute inset-0 w-full h-full z-0">
              <div className="absolute inset-0 bg-gradient-to-b from-white via-white/95 to-white/90 z-10" />
@@ -38,7 +38,7 @@ const GlampingPreview: React.FC = () => {
 
           {/* Features */}
           <div className="mb-14 relative z-10">
-            <div className="grid grid-cols-2 md:flex md:flex-wrap justify-center gap-3 md:gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 justify-items-center w-fit mx-auto">
               {[
                 "Alojamiento premium",
                 "Servicios centralizados",
@@ -58,7 +58,7 @@ const GlampingPreview: React.FC = () => {
           </div>
 
           {/* CTA */}
-          <div className="relative z-10">
+          <div className="relative z-10 mb-8">
             <Link 
               to="/es/glamping" 
               className="inline-block bg-[#b35427] hover:bg-[#a3471d] text-white py-4 px-12 rounded transition shadow-lg hover:shadow-xl hover:-translate-y-1 uppercase tracking-wide"
@@ -66,6 +66,16 @@ const GlampingPreview: React.FC = () => {
             >
               Conocer el proyecto
             </Link>
+          </div>
+
+          {/* Firma de la empresa - estilo minimalista elegante */}
+          <div className="relative z-10 text-center mt-12 select-none">
+            <span 
+              className="block text-slate-700 text-base md:text-lg font-medium tracking-wide" 
+              style={{ fontFamily: 'Barlow, sans-serif' }}
+            >
+              Promotor del proyecto: <strong className="font-bold text-slate-900">Promotora de Glamping 4★ Gran Lujo</strong>
+            </span>
           </div>
         </div>
       </div>

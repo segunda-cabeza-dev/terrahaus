@@ -70,7 +70,7 @@ function Glamping() {
 
       {/* Sección 01: El Proyecto */}
       <section className="w-full py-20 px-6 md:px-16 xl:px-32 bg-white flex flex-col items-center">
-        <div className="max-w-6xl w-full mx-auto flex flex-col md:flex-row items-center gap-12">
+        <div className="max-w-6xl w-full mx-auto flex flex-col-reverse md:flex-row items-center gap-12">
         {/* Imagen izquierda */}
         <div className="w-full md:w-1/2 flex justify-center">
           <div className="w-full max-w-md aspect-[4/3] bg-slate-200 rounded-2xl flex items-center justify-center border border-slate-100 shadow overflow-hidden">
@@ -260,7 +260,7 @@ function Glamping() {
     <section className="w-full py-16 px-6 md:px-16 xl:px-32 bg-white flex flex-col items-center">
   <div className="max-w-6xl w-full mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 items-start">
         {/* Imágenes izquierda */}
-  <div className="flex flex-col items-center md:items-start gap-6 justify-center h-full">
+  <div className="flex flex-col items-center md:items-start gap-6 justify-center h-full order-last md:order-first">
           <div className="aspect-[4/3] bg-slate-200 rounded-2xl flex items-center justify-center border border-slate-100 shadow overflow-hidden w-full max-w-md md:ml-12">
             <img
               src="/assets/images/05-comunitarios.png"
@@ -376,7 +376,7 @@ function Glamping() {
 
     {/* Sección 08: Paisajismo y Reforestación */}
   <section className="w-full py-20 px-6 md:px-16 xl:px-32 bg-[#f6f7f9] flex flex-col items-center">
-      <div className="max-w-6xl w-full mx-auto flex flex-col md:flex-row gap-12 items-start">
+      <div className="max-w-6xl w-full mx-auto flex flex-col-reverse md:flex-row gap-12 items-start">
         {/* Columna izquierda: imagen */}
         <div className="w-full md:w-1/2 flex justify-center items-start mb-10 md:mb-0">
           <div className="w-full max-w-md aspect-[4/3] bg-slate-100 rounded-2xl border border-slate-100 shadow">
