@@ -25,7 +25,7 @@ const Gracias: React.FC = () => (
           Te llamaremos a la brevedad
         </p>
         <a
-          href="/es"
+          href="/"
           className="mt-10 inline-block bg-[#b35427] hover:bg-[#a3471d] text-white font-bold py-3 px-8 rounded transition text-xl uppercase shadow-lg"
           style={{fontFamily: 'Bebas Neue, sans-serif', letterSpacing: '0.04em'}}
         >

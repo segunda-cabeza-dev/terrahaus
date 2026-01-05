@@ -21,15 +21,17 @@ function App() {
       <ScrollToTop />
       <Suspense fallback={<PageLoader />}>
         <Routes>
-          <Route path="/" element={<Navigate to="/es" replace />} />
-          <Route path="/es" element={<Home />} />
-          <Route path="/es/proyectos/alpinablanca" element={<AlpinaBlanca />} />
-          <Route path="/es/proyectos/casacuadrante" element={<CasaCuadrante />} />
-          <Route path="/es/proyectos/casahorizonte" element={<CasaHorizonte />} />
-          <Route path="/es/glamping" element={<Glamping />} />
-          <Route path="/es/pequenaandina" element={<PequenaAndina />} />
-          <Route path="/es/proyectos-todos" element={<Proyectos />} />
-          <Route path="/es/gracias" element={<Gracias />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/proyectos/alpinablanca" element={<AlpinaBlanca />} />
+          <Route path="/proyectos/casacuadrante" element={<CasaCuadrante />} />
+          <Route path="/proyectos/casahorizonte" element={<CasaHorizonte />} />
+          <Route path="/glamping" element={<Glamping />} />
+          <Route path="/pequenaandina" element={<PequenaAndina />} />
+          <Route path="/proyectos" element={<Proyectos />} />
+          <Route path="/gracias" element={<Gracias />} />
+          {/* Redirecciones desde rutas antiguas con /es */}
+          <Route path="/es" element={<Navigate to="/" replace />} />
+          <Route path="/es/*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>
       <WhatsAppFloat />

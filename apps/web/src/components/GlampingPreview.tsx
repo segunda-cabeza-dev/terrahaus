@@ -64,7 +64,7 @@ const GlampingPreview: React.FC = () => {
           {/* CTA */}
           <div className="relative z-10 mb-8">
             <Link 
-              to="/es/glamping" 
+              to="/glamping" 
               className="inline-block bg-[#b35427] hover:bg-[#a3471d] text-white py-4 px-12 rounded transition shadow-lg hover:shadow-xl hover:-translate-y-1 uppercase tracking-wide"
               style={{fontFamily: 'Bebas Neue, sans-serif', fontWeight: 400, fontSize: '24px'}}
             >

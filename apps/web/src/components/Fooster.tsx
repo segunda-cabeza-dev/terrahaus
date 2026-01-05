@@ -7,7 +7,7 @@ export const FoosterAlt: React.FC = () => (
     <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-5 gap-2 md:gap-0 px-0">
       {/* Sección 1: Logo y descripción */}
       <div className="flex flex-col justify-start items-start md:col-span-2 md:pr-8 mb-6 md:mb-0">
-        <a href="/es" className="mb-3 block">
+        <a href="/" className="mb-3 block">
           <img src={img("Logo terrahous Blanco.webp")} alt="Terrahaus logo" className="max-h-20 w-auto cursor-pointer" style={{maxWidth: '220px', height: 'auto', display: 'block'}} loading="lazy" />
         </a>
         <p className="mb-4 text-left" style={{fontFamily: 'Barlow, sans-serif', fontWeight: 300, fontSize: '15px', color: '#e5e7eb', maxWidth: '320px'}}>
@@ -32,11 +32,11 @@ export const FoosterAlt: React.FC = () => (
         <div className="flex flex-col items-start">
         <div className="font-bold mb-2 text-left uppercase" style={{fontFamily: 'Barlow, sans-serif', fontSize: '16px', color: '#fff'}}>PROYECTOS</div>
         <ul className="space-y-1 text-left" style={{fontFamily: 'Barlow, sans-serif', fontWeight: 300, fontSize: '15px', color: '#e5e7eb'}}>
-          <li><span className="text-[#b35427] font-bold mr-2">&gt;</span><a href="/es/glamping" className="hover:text-[#b35427] transition">Glamping</a></li>
-          <li><span className="text-[#b35427] font-bold mr-2">&gt;</span><a href="/es/proyectos/alpinablanca" className="hover:text-[#b35427] transition">Alpina Blanca</a></li>
-          <li><span className="text-[#b35427] font-bold mr-2">&gt;</span><a href="/es/proyectos/casacuadrante" className="hover:text-[#b35427] transition">Casa Cuadrante</a></li>
-          <li><span className="text-[#b35427] font-bold mr-2">&gt;</span><a href="/es/proyectos/casahorizonte" className="hover:text-[#b35427] transition">Casa Horizonte</a></li>
-          <li><span className="text-[#b35427] font-bold mr-2">&gt;</span><a href="/es/pequenaandina" className="hover:text-[#b35427] transition">Pequeña Andina</a></li>
+          <li><span className="text-[#b35427] font-bold mr-2">&gt;</span><a href="/glamping" className="hover:text-[#b35427] transition">Glamping</a></li>
+          <li><span className="text-[#b35427] font-bold mr-2">&gt;</span><a href="/proyectos/alpinablanca" className="hover:text-[#b35427] transition">Alpina Blanca</a></li>
+          <li><span className="text-[#b35427] font-bold mr-2">&gt;</span><a href="/proyectos/casacuadrante" className="hover:text-[#b35427] transition">Casa Cuadrante</a></li>
+          <li><span className="text-[#b35427] font-bold mr-2">&gt;</span><a href="/proyectos/casahorizonte" className="hover:text-[#b35427] transition">Casa Horizonte</a></li>
+          <li><span className="text-[#b35427] font-bold mr-2">&gt;</span><a href="/pequenaandina" className="hover:text-[#b35427] transition">Pequeña Andina</a></li>
         </ul>
       </div>
         {/* Sección 4: Contacto */}
@@ -100,10 +100,10 @@ const Fooster: React.FC = () => (
       <div className="flex flex-col items-start w-full mb-8 md:mb-0">
         <div className="font-bold mb-2 text-left" style={{fontFamily: 'Barlow, sans-serif', fontSize: '16px', color: '#fff'}}>PROYECTOS</div>
         <ul className="space-y-1 text-left" style={{fontFamily: 'Barlow, sans-serif', fontWeight: 300, fontSize: '15px', color: '#e5e7eb'}}>
-          <li><a href="/es/glamping" className="hover:underline">Glamping</a></li>
-          <li><a href="/es/alpinablanca" className="hover:underline">Alpina Blanca</a></li>
-          <li><a href="/es/casacuadrante" className="hover:underline">Casa Cuadrante</a></li>
-          <li><a href="/es/pequenaandina" className="hover:underline">Pequeña Andina</a></li>
+          <li><a href="/glamping" className="hover:underline">Glamping</a></li>
+          <li><a href="/alpinablanca" className="hover:underline">Alpina Blanca</a></li>
+          <li><a href="/casacuadrante" className="hover:underline">Casa Cuadrante</a></li>
+          <li><a href="/pequenaandina" className="hover:underline">Pequeña Andina</a></li>
         </ul>
       </div>
       {/* Columna 3: Contacto */}
