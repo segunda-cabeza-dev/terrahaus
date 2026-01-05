@@ -80,6 +80,18 @@ const GlampingPreview: React.FC = () => {
             >
               Promotor del proyecto: <strong className="font-bold text-slate-900">Promotora de Glamping 4★ Gran Lujo</strong>
             </span>
+            <span 
+              className="block text-slate-600 text-sm md:text-base mt-2" 
+              style={{ fontFamily: 'Barlow, sans-serif' }}
+            >
+              Arquitecto: <strong className="font-semibold text-slate-800">Jorge D. Chaves López</strong>
+            </span>
+            <span 
+              className="block text-slate-500 text-xs md:text-sm mt-1" 
+              style={{ fontFamily: 'Barlow, sans-serif' }}
+            >
+              Colegiado Nº 24. C.O.A CEUTA
+            </span>
           </div>
         </div>
       </div>
