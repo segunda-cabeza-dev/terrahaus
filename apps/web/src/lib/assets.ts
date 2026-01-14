@@ -7,21 +7,35 @@ export const ASSETS_URL = import.meta.env.VITE_ASSETS_URL || 'https://pub-e9476d
 /**
  * Obtiene la URL de una imagen
  * @param path - Ruta de la imagen (ej: "HeroFondo.webp" o "/assets/images/HeroFondo.jpg")
+ * @param preferLocal - Si es true, prefiere imágenes locales (útil para desarrollo)
  */
-export function img(path: string): string {
+export function img(path: string, preferLocal: boolean = false): string {
   // Limpiar la ruta
   let cleanPath = path
     .replace('/assets/images/', '')
     .replace('/assets/', '')
     .replace(/^\//, '');
-  
+
   // Convertir a WebP si es jpg/png
   cleanPath = cleanPath.replace(/\.(jpg|jpeg|png)$/i, '.webp');
-  
+
+  // Lista de imágenes que solo existen localmente (no en R2 todavía)
+  const localOnlyImages = [
+    'reformas-integrales-vivienda.webp',
+    'reformas-integrales-cocina.webp',
+    'reformas-integrales-bano.webp',
+    'reformas-integrales-local.webp'
+  ];
+
+  // Si es una imagen local o preferimos local, usar ruta local
+  if (preferLocal || localOnlyImages.includes(cleanPath)) {
+    return `/assets/images/${cleanPath}`;
+  }
+
   if (ASSETS_URL) {
     return `${ASSETS_URL}/images/${cleanPath}`;
   }
-  
+
   return `/assets/images/${cleanPath}`;
 }
 

@@ -14,6 +14,7 @@ const CasaHorizonte = lazy(() => import('./pages/CasaHorizonte'))
 const Glamping = lazy(() => import('./pages/Glamping'))
 const PequenaAndina = lazy(() => import('./pages/PequenaAndina'))
 const Proyectos = lazy(() => import('./pages/Proyectos'))
+const L1ReformasIntegrales = lazy(() => import('./pages/L1ReformasIntegrales'))
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
           <Route path="/pequenaandina" element={<PequenaAndina />} />
           <Route path="/proyectos" element={<Proyectos />} />
           <Route path="/gracias" element={<Gracias />} />
+          <Route path="/l1-reformas-integrales" element={<L1ReformasIntegrales />} />
           {/* Redirecciones desde rutas antiguas con /es */}
           <Route path="/es" element={<Navigate to="/" replace />} />
           <Route path="/es/*" element={<Navigate to="/" replace />} />
