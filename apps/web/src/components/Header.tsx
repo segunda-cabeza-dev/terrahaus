@@ -41,12 +41,15 @@ const Header: React.FC = () => {
           </a>
           {/* Menú y botón: solo visible en desktop */}
           <nav className="flex-1 flex justify-center hidden md:flex">
-            <ul className="flex gap-14">
+            <ul className="flex gap-10">
               <li>
-                <a href="#contacto" className="text-white font-bold text-[20px] uppercase tracking-wide hover:opacity-80" style={{fontFamily: 'Bebas Neue, sans-serif'}}>Calculadora de corte</a>
+                <a href="#contacto" className="text-white font-bold text-[20px] uppercase tracking-wide hover:opacity-80" style={{fontFamily: 'Bebas Neue, sans-serif'}}>Reformas</a>
               </li>
               <li>
-                <a href="#metodologia" className="text-white font-bold text-[20px] uppercase tracking-wide hover:opacity-80" style={{fontFamily: 'Bebas Neue, sans-serif'}}>Metodología</a>
+                <a href="#contacto" className="text-white font-bold text-[20px] uppercase tracking-wide hover:opacity-80" style={{fontFamily: 'Bebas Neue, sans-serif'}}>Construcción</a>
+              </li>
+              <li>
+                <a href="#contacto" className="text-white font-bold text-[20px] uppercase tracking-wide hover:opacity-80" style={{fontFamily: 'Bebas Neue, sans-serif'}}>Inversión</a>
               </li>
               <li className="relative">
                 <button
@@ -100,8 +103,9 @@ const Header: React.FC = () => {
       {/* Mobile Menu Overlay */}
       <div className={`fixed inset-0 bg-[#10141b] z-40 transition-transform duration-300 ease-in-out md:hidden flex flex-col pt-32 px-8 ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
         <nav className="flex flex-col gap-8">
-            <a href="#contacto" onClick={() => setIsMobileMenuOpen(false)} className="text-white text-3xl font-bold uppercase tracking-wide" style={{fontFamily: 'Bebas Neue, sans-serif'}}>Calculadora de corte</a>
-            <a href="#metodologia" onClick={() => setIsMobileMenuOpen(false)} className="text-white text-3xl font-bold uppercase tracking-wide" style={{fontFamily: 'Bebas Neue, sans-serif'}}>Metodología</a>
+            <a href="#contacto" onClick={() => setIsMobileMenuOpen(false)} className="text-white text-3xl font-bold uppercase tracking-wide" style={{fontFamily: 'Bebas Neue, sans-serif'}}>Reformas</a>
+            <a href="#contacto" onClick={() => setIsMobileMenuOpen(false)} className="text-white text-3xl font-bold uppercase tracking-wide" style={{fontFamily: 'Bebas Neue, sans-serif'}}>Construcción</a>
+            <a href="#contacto" onClick={() => setIsMobileMenuOpen(false)} className="text-white text-3xl font-bold uppercase tracking-wide" style={{fontFamily: 'Bebas Neue, sans-serif'}}>Inversión</a>
             
             <div className="flex flex-col gap-4">
                 <span className="text-white text-3xl font-bold uppercase tracking-wide" style={{fontFamily: 'Bebas Neue, sans-serif'}}>Proyectos</span>

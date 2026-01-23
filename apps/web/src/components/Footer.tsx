@@ -39,7 +39,7 @@ const Footer: React.FC = () => {
                 {/* Horario SVG */}
                 <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
               </span>
-              Lun - Vie: 09:00 a 18:00 / Sáb: 9:00 a 14:00
+              Lun - Vie: 8:00 a 18:00
             </li>
           </ul>
         </div>
@@ -55,7 +55,7 @@ const Footer: React.FC = () => {
         </div>
       </div>
   <div className="border-t border-gray-700 mt-10 pt-4 text-center text-gray-400 text-sm flex flex-col md:flex-row items-center justify-between max-w-7xl mx-auto px-4 md:px-16" style={{fontFamily: 'Inter Tight, sans-serif', fontWeight: 300}}>
-        <span>Creado por <span className="font-bold">REFORMARKETING</span> <span className="text-lg">©</span> Copyright 2024.</span>
+        <span>Creado por <a href="https://segundacabeza.com" target="_blank" rel="noopener noreferrer" className="font-bold hover:text-white transition">Segunda Cabeza</a> <span className="text-lg">©</span> 2026.</span>
       </div>
     </footer>
   );

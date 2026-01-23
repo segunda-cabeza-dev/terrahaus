@@ -63,7 +63,7 @@ const pasos = [
 
 const Especializaciones: React.FC = () => {
   return (
-  <section className="bg-white py-20 px-4 pb-32">
+  <section id="proyectos" className="bg-white py-20 px-4 pb-32">
   <div className="max-w-6xl mx-auto px-4 md:px-8">
         <div className="text-center mb-10">
           <div className="text-[#b35427] uppercase mb-1" style={{fontFamily: 'Bebas Neue, sans-serif', fontSize: '25px', fontWeight: 400, letterSpacing: '1.2px'}}>CONSTRUCCIÓN Y ARQUITECTURA</div>
