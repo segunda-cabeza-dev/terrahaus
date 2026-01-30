@@ -1,5 +1,5 @@
 {
-  "name": "beltrame-web",
+  "name": "terrahaus",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -9,9 +9,9 @@
   ],
   "scripts": {
     "dev": "npm run dev:web",
-    "dev:web": "npm run dev --workspace=@beltrame/web",
+    "dev:web": "npm run dev --workspace=@terrahaus/web",
     "build": "npm run build:web",
-    "build:web": "npm run build --workspace=@beltrame/web",
+    "build:web": "npm run build --workspace=@terrahaus/web",
     "lint": "eslint .",
     "preview": "vite preview",
     "convert-images": "node scripts/convert-to-webp.js"
