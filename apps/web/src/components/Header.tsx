@@ -4,6 +4,7 @@ import { img } from '../lib/assets';
 
 const Header: React.FC = () => {
   const [showProjects, setShowProjects] = useState(false);
+  const [showReformas, setShowReformas] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const logoRef = useRef<HTMLAnchorElement>(null);
   const btnRef = useRef<HTMLAnchorElement>(null);
@@ -42,8 +43,22 @@ const Header: React.FC = () => {
           {/* Menú y botón: solo visible en desktop */}
           <nav className="flex-1 flex justify-center hidden md:flex">
             <ul className="flex gap-10">
-              <li>
-                <a href="#contacto" className="text-white font-bold text-[20px] uppercase tracking-wide hover:opacity-80" style={{fontFamily: 'Bebas Neue, sans-serif'}}>Reformas</a>
+              <li className="relative">
+                <button
+                  className="flex items-center text-white font-bold text-[20px] uppercase tracking-wide hover:opacity-80"
+                  style={{fontFamily: 'Bebas Neue, sans-serif'}}
+                  onClick={() => setShowReformas((v) => !v)}
+                >
+                  Reformas
+                  <span className={`ml-2 transition-transform ${showReformas ? 'rotate-180' : ''}`}>
+                    <span className="text-base">▼</span>
+                  </span>
+                </button>
+                {showReformas && (
+                  <ul className="absolute left-0 mt-2 bg-white rounded shadow-lg text-[#232b36] min-w-[180px] z-50">
+                    <li><a href="/reformas-cocina" className="block px-4 py-2 hover:bg-[#f6f7f9]">Cocina</a></li>
+                  </ul>
+                )}
               </li>
               <li>
                 <a href="#contacto" className="text-white font-bold text-[20px] uppercase tracking-wide hover:opacity-80" style={{fontFamily: 'Bebas Neue, sans-serif'}}>Construcción</a>

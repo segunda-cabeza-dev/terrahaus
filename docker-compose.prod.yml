@@ -1,39 +1,10 @@
-# Docker Compose para PRODUCCIÓN con HTTPS
+# Docker Compose para PRODUCCIÓN
+# Frontend, API y PostgreSQL - Traefik ya está en el servidor
 # Uso: docker compose -f docker-compose.prod.yml up -d --build
 
 services:
   # ===================
-  # TRAEFIK - Reverse Proxy con SSL
-  # ===================
-  traefik:
-    image: traefik:v3.0
-    container_name: traefik
-    restart: unless-stopped
-    command:
-      - "--api.dashboard=false"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.websecure.address=:443"
-      # Redirigir HTTP a HTTPS
-      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
-      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
-      # Let's Encrypt
-      - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
-      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
-      - "--certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL}"
-      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - traefik-certificates:/letsencrypt
-    networks:
-      - web
-
-  # ===================
-  # TERRAHAUS - Web App
+  # TERRAHAUS - Web App (Frontend)
   # ===================
   terrahaus:
     build:
@@ -45,15 +16,67 @@ services:
       - web
     labels:
       - "traefik.enable=true"
-      # HTTPS
       - "traefik.http.routers.terrahaus.rule=Host(`${DOMAIN}`)"
       - "traefik.http.routers.terrahaus.entrypoints=websecure"
       - "traefik.http.routers.terrahaus.tls.certresolver=letsencrypt"
       - "traefik.http.services.terrahaus.loadbalancer.server.port=80"
+    depends_on:
+      - api
+
+  # ===================
+  # API - Fastify Backend
+  # ===================
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    container_name: terrahaus-api
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - PORT=3001
+      - CORS_ORIGIN=https://${DOMAIN}
+    networks:
+      - web
+    depends_on:
+      postgres:
+        condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.terrahaus-api.rule=Host(`${API_DOMAIN}`)"
+      - "traefik.http.routers.terrahaus-api.entrypoints=websecure"
+      - "traefik.http.routers.terrahaus-api.tls.certresolver=letsencrypt"
+      - "traefik.http.services.terrahaus-api.loadbalancer.server.port=3001"
+
+  # ===================
+  # POSTGRES - Database
+  # ===================
+  postgres:
+    image: postgres:16-alpine
+    container_name: terrahaus-db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - web
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 networks:
   web:
-    driver: bridge
+    external: true
 
 volumes:
-  traefik-certificates:
+  postgres-data:

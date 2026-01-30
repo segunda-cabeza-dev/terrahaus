@@ -1,63 +1,52 @@
+# Docker Compose para DESARROLLO LOCAL
+# Solo PostgreSQL y API - El frontend se ejecuta con Vite
+# Uso: docker compose up -d
+
 services:
   # ===================
-  # TRAEFIK - Reverse Proxy
+  # POSTGRES - Database
   # ===================
-  traefik:
-    image: traefik:v3.0
-    container_name: traefik
+  postgres:
+    image: postgres:16-alpine
+    container_name: terrahaus-db
     restart: unless-stopped
-    command:
-      - "--api.dashboard=true"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.websecure.address=:443"
-      # Descomentar para HTTPS con Let's Encrypt
-      # - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
-      # - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
-      # - "--certificatesresolvers.letsencrypt.acme.email=tu@email.com"
-      # - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+    environment:
+      - POSTGRES_USER=terrahaus
+      - POSTGRES_PASSWORD=terrahaus_secret
+      - POSTGRES_DB=terrahaus
     ports:
-      - "80:80"
-      - "443:443"
+      - "5432:5432"
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - traefik-certificates:/letsencrypt
-    networks:
-      - web
-    labels:
-      # Dashboard de Traefik (opcional)
-      - "traefik.enable=true"
-      - "traefik.http.routers.traefik.rule=Host(`traefik.localhost`)"
-      - "traefik.http.routers.traefik.service=api@internal"
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U terrahaus -d terrahaus"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   # ===================
-  # TERRAHAUS - Web App
+  # API - Fastify Backend
   # ===================
-  terrahaus:
+  api:
     build:
-      context: .
+      context: ./apps/api
       dockerfile: Dockerfile
-    container_name: terrahaus
+    container_name: terrahaus-api
     restart: unless-stopped
+    environment:
+      - NODE_ENV=development
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=terrahaus
+      - DB_PASSWORD=terrahaus_secret
+      - DB_NAME=terrahaus
+      - PORT=3001
+      - CORS_ORIGIN=http://localhost:5174
     ports:
-      - "3000:80"
-    networks:
-      - web
-    labels:
-      - "traefik.enable=true"
-      # HTTP
-      - "traefik.http.routers.terrahaus.rule=Host(`terrahaus.localhost`) || Host(`localhost`)"
-      - "traefik.http.routers.terrahaus.entrypoints=web"
-      - "traefik.http.services.terrahaus.loadbalancer.server.port=80"
-      # Descomentar para HTTPS
-      # - "traefik.http.routers.terrahaus-secure.rule=Host(`terrahaus.tudominio.com`)"
-      # - "traefik.http.routers.terrahaus-secure.entrypoints=websecure"
-      # - "traefik.http.routers.terrahaus-secure.tls.certresolver=letsencrypt"
-
-networks:
-  web:
-    driver: bridge
+      - "3001:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
 
 volumes:
-  traefik-certificates:
+  postgres-data:
