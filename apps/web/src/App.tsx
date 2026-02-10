@@ -15,7 +15,9 @@ const Glamping = lazy(() => import('./pages/Glamping'))
 const PequenaAndina = lazy(() => import('./pages/PequenaAndina'))
 const Proyectos = lazy(() => import('./pages/Proyectos'))
 const L1ReformasIntegrales = lazy(() => import('./pages/L1ReformasIntegrales'))
+
 const L2ReformasCocina = lazy(() => import('./pages/L2ReformasCocina'))
+const L2Electricidad = lazy(() => import('./pages/L2Electricidad'))
 
 function App() {
   return (
@@ -33,6 +35,7 @@ function App() {
           <Route path="/gracias" element={<Gracias />} />
           <Route path="/l1-reformas-integrales" element={<L1ReformasIntegrales />} />
           <Route path="/reformas-cocina" element={<L2ReformasCocina />} />
+          <Route path="/electricidad" element={<L2Electricidad />} />
           {/* Redirecciones desde rutas antiguas con /es */}
           <Route path="/es" element={<Navigate to="/" replace />} />
           <Route path="/es/*" element={<Navigate to="/" replace />} />

@@ -24,7 +24,19 @@ export function img(path: string, preferLocal: boolean = false): string {
     'reformas-integrales-vivienda.webp',
     'reformas-integrales-cocina.webp',
     'reformas-integrales-bano.webp',
-    'reformas-integrales-local.webp'
+    'reformas-integrales-local.webp',
+    'electricidad-plano.webp',
+    'landing-electricidad-hero.webp',
+    '1-comunidades-antiguas.webp',
+    '2-cuarto-contadores.webp',
+    '3-aumento-potencia.webp',
+    '4-puesta-tierra.webp',
+    'arquitecto-electricidad.webp',
+    '1-Comunidades-antiguas.jpg',
+    '2-Cuarto-contadores.jpg',
+    '3-Aumento-potencia.jpg',
+    '4-Puesta-tierra.jpg',
+    'Arquitecto-electricidad.jpg'
   ];
 
   // Si es una imagen local o preferimos local, usar ruta local
