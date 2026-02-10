@@ -267,7 +267,7 @@ const ProcesoTrabajo: React.FC = () => {
         <div className="flex flex-col lg:flex-row justify-center items-center gap-8 text-center">
           {steps.map((step, idx) => (
             <React.Fragment key={idx}>
-              <div className="flex flex-col items-center flex-1 min-w-[180px] max-w-[260px]">
+              <div className="group flex flex-col items-center flex-1 min-w-[180px] max-w-[260px]">
                 <div className="mb-6 flex flex-col items-center relative w-full">
                   <div className="w-14 h-14 bg-[#222] rounded-full flex items-center justify-center group-hover:bg-[#b35427] transition-colors duration-300 mx-auto">
                     {React.cloneElement(step.icon, { className: 'w-8 h-8 text-white' })}

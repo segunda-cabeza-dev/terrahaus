@@ -29,7 +29,7 @@ const SectionTitle: React.FC<{ subtitle: string; title: React.ReactNode; light?:
 
 const HeroLanding: React.FC = () => {
   return (
-    <section className="relative h-screen min-h-[600px] flex flex-col justify-center items-center text-center px-4 overflow-hidden">
+  <section className="relative h-[85vh] min-h-[480px] flex flex-col justify-center md:justify-center overflow-hidden md:h-screen md:min-h-[600px]">
       {/* Background */}
       <div className="absolute inset-0 w-full h-full z-0">
         <img
@@ -38,44 +38,38 @@ const HeroLanding: React.FC = () => {
           className="w-full h-full object-cover scale-105"
           loading="eager"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/60 to-black/70" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-black/70 to-black/80" />
       </div>
 
       <Header />
 
       {/* Content */}
-      <div className="relative z-10 max-w-5xl mx-auto flex flex-col items-center pt-20">
+      <div className="relative z-10 max-w-6xl mx-auto w-full flex flex-col items-start text-left px-4 md:px-8 pt-20 md:pt-32 md:items-center md:text-center">
         <h1
-          className="text-white mb-6 uppercase leading-none tracking-tight"
+          className="text-white mb-4 uppercase leading-[0.95] tracking-tight"
           style={{
             fontFamily: 'Bebas Neue, sans-serif',
-            fontSize: 'clamp(48px, 8vw, 100px)',
+            fontSize: 'clamp(48px,9vw,78px)',
             textShadow: '0 2px 10px rgba(0,0,0,0.3)'
           }}
         >
-          REFORMAS DE COCINA <br />
+          REFORMAS DE COCINA<br />
           <span className="text-[#b35427]">PREMIUM A PRECIOS INSUPERABLES</span>
         </h1>
         <p
-          className="text-gray-200 mb-10 max-w-3xl text-lg md:text-xl font-light leading-relaxed"
-          style={{ fontFamily: 'Barlow, sans-serif' }}
+          className="text-gray-200 mb-8 max-w-md md:max-w-2xl font-light leading-relaxed"
+          style={{ fontFamily: 'Barlow, sans-serif', fontSize: '16px' }}
         >
           Reforma integral con un solo equipo coordinando todo: medición, proyecto, obra y montaje.
         </p>
         <a
           href="#contacto"
-          className="group bg-white text-black hover:bg-[#b35427] hover:text-white transition-all duration-300 py-4 px-10 font-bold uppercase tracking-wider flex items-center gap-3"
-          style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '20px' }}
+          className="group bg-white text-black hover:bg-[#b35427] hover:text-white transition-all duration-300 py-3 px-6 font-bold uppercase tracking-wider flex items-center gap-3 text-base md:text-[20px]"
+          style={{ fontFamily: 'Bebas Neue, sans-serif' }}
         >
           SOLICITAR ESTUDIO GRATUITO
           <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
         </a>
-      </div>
-      
-      {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce text-white/50">
-        <div className="w-[1px] h-12 bg-white/30 mx-auto mb-2"></div>
-        <span className="text-xs uppercase tracking-widest">Scroll</span>
       </div>
     </section>
   );
@@ -150,27 +144,30 @@ const ProcesoTrabajo: React.FC = () => {
   return (
     <section className="py-20 bg-[#111] text-white">
       <div className="max-w-[1400px] mx-auto px-4 md:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-[#b35427] text-xl tracking-widest uppercase mb-4" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>Metodología Terrahaus</h2>
-          <p className="text-4xl md:text-5xl uppercase" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>Tu cocina lista en 4 pasos</p>
+        <div className="text-left md:text-center mb-16">
+          <h2 className="text-[#b35427] text-xl tracking-widest uppercase mb-2" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>Metodología Terrahaus</h2>
+          <p className="text-4xl md:text-5xl uppercase leading-[0.95]" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>Tu cocina lista en 4 pasos</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="flex flex-col lg:flex-row justify-center items-center gap-8 text-center">
           {steps.map((step, idx) => (
-            <div key={idx} className="relative group">
-              <div className="mb-6 relative">
-                 <div className="w-20 h-20 bg-[#222] rounded-full flex items-center justify-center group-hover:bg-[#b35427] transition-colors duration-300">
-                    {step.icon}
-                 </div>
-                 {idx < steps.length - 1 && (
-                   <div className="hidden lg:block absolute top-10 left-20 w-[calc(100%-5rem)] h-[1px] bg-[#333]"></div>
-                 )}
+            <React.Fragment key={idx}>
+              <div className="group flex flex-col items-center flex-1 min-w-[180px] max-w-[260px]">
+                <div className="mb-6 flex flex-col items-center relative w-full">
+                  <div className="w-14 h-14 bg-[#222] rounded-full flex items-center justify-center group-hover:bg-[#b35427] transition-colors duration-300 mx-auto">
+                    {React.cloneElement(step.icon, { className: 'w-8 h-8 text-white' })}
+                  </div>
+                </div>
+                <h3 className="text-2xl mb-4 text-white" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>{step.title}</h3>
+                <p className="text-gray-400 font-light leading-relaxed" style={{ fontFamily: 'Barlow, sans-serif', fontSize: '16px' }}>
+                  {step.desc}
+                </p>
               </div>
-              <h3 className="text-2xl mb-4 text-white" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>{step.title}</h3>
-              <p className="text-gray-400 font-light leading-relaxed text-sm md:text-base pr-4" style={{ fontFamily: 'Barlow, sans-serif' }}>
-                {step.desc}
-              </p>
-            </div>
+              {/* Línea solo entre los pasos, centrada verticalmente */}
+              {idx < steps.length - 1 && (
+                <div className="hidden lg:block h-0.5 bg-[#333]" style={{ width: '60px', alignSelf: 'center' }}></div>
+              )}
+            </React.Fragment>
           ))}
         </div>
       </div>
