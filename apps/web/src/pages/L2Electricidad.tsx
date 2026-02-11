@@ -61,7 +61,7 @@ const HeroLanding: React.FC = () => {
           className="text-gray-200 mb-8 max-w-md md:max-w-2xl font-light leading-relaxed"
           style={{ fontFamily: 'Barlow, sans-serif', fontSize: '16px' }}
         >
-          Enlaces, líneas generales y puesta a tierra con ejecución técnica y adecuación normativa.
+          Instalaciones de enlace, línea general de alimentación, derivación individual y puesta a tierra.
         </p>
         <a
           href="#contacto"
@@ -81,7 +81,7 @@ const ServiciosElectricidad: React.FC = () => {
   const servicios = [
     {
       titulo: "Puesta a Tierra de Comunidades",
-      descripcion: "Medición, verificación y renovación del sistema de puesta a tierra para garantizar la seguridad del edificio."
+      descripcion: "Medición, verificación y renovación del sistema de puesta a tierra para garantizar la seguridad de las personas y los bienes."
     },
     {
       titulo: "Instalaciones de Enlace",
@@ -89,7 +89,7 @@ const ServiciosElectricidad: React.FC = () => {
     },
     {
       titulo: "Centralización de Contadores",
-      descripcion: "Reordenación y actualización de cuartos de contadores para mayor seguridad y accesibilidad."
+      descripcion: "Actualización de cuartos de contadores para mayor seguridad y accesibilidad."
     },
     {
       titulo: "Línea General de Alimentación",
@@ -101,7 +101,7 @@ const ServiciosElectricidad: React.FC = () => {
     },
     {
       titulo: "Puesta a Tierra Eléctrica",
-      descripcion: "Instalación y mantenimiento de sistemas de puesta a tierra para protección eléctrica."
+      descripcion: "Instalación y mantenimiento de sistemas de puesta a tierra para protección de las personas y los bienes."
     }
   ];
 
@@ -142,8 +142,8 @@ const ServiciosElectricidad: React.FC = () => {
 // 3️⃣ BLOQUE "TIPOS DE ACTUACIÓN"
 const TiposActuacion: React.FC = () => {
   const actuaciones = [
-    { name: "COMUNIDADES ANTIGUAS", img: "1-comunidades-antiguas.webp", desc: "Actualización de enlaces deteriorados" },
-    { name: "REFORMA DE CUARTO DE CONTADORES", img: "2-cuarto-contadores.webp", desc: "Ordenación, seguridad y accesibilidad" },
+    { name: "COMUNIDADES ANTIGUAS", img: "1-comunidades-antiguas.webp", desc: "Actualización de instrucciones de enlace deterioradas" },
+    { name: "REFORMA DE CUARTO DE CONTADORES", img: "2-cuarto-contadores.webp", desc: "Orden, seguridad y accesibilidad" },
     { name: "ADECUACIÓN POR AUMENTO DE POTENCIA", img: "3-aumento-potencia.webp", desc: "Preparado para nuevas demandas energéticas" },
     { name: "REVISIÓN Y MEJORA DE PUESTA A TIERRA", img: "4-puesta-tierra.webp", desc: "Prevención de derivaciones y riesgos" },
   ];
