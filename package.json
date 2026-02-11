@@ -14,7 +14,8 @@
     "build:web": "npm run build --workspace=@terrahaus/web",
     "lint": "eslint .",
     "preview": "vite preview",
-    "convert-images": "node scripts/convert-to-webp.js"
+    "convert-images": "node scripts/convert-to-webp.js",
+    "deploy:frontend": "docker compose -f docker-compose.prod.yml build terrahaus && docker compose -f docker-compose.prod.yml up -d terrahaus"
   },
   "dependencies": {
     "browser-image-compression": "^2.0.2",

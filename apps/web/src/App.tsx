@@ -35,7 +35,7 @@ function App() {
           <Route path="/gracias" element={<Gracias />} />
           <Route path="/l1-reformas-integrales" element={<L1ReformasIntegrales />} />
           <Route path="/reformas-cocina" element={<L2ReformasCocina />} />
-          <Route path="/electricidad" element={<L2Electricidad />} />
+          <Route path="/electricista-alicante" element={<L2Electricidad />} />
           {/* Redirecciones desde rutas antiguas con /es */}
           <Route path="/es" element={<Navigate to="/" replace />} />
           <Route path="/es/*" element={<Navigate to="/" replace />} />
