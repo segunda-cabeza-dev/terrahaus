@@ -54,8 +54,8 @@ const HeroLanding: React.FC = () => {
             textShadow: '0 2px 10px rgba(0,0,0,0.3)'
           }}
         >
-          INSTALACIONES ELÉCTRICAS<br />
-          <span className="text-[#b35427]">PARA COMUNIDADES</span>
+          ELECTRICISTA EN ALICANTE<br />
+          <span className="text-[#b35427]">PARA HOGARES Y COMUNIDADES</span>
         </h1>
         <p
           className="text-gray-200 mb-8 max-w-md md:max-w-2xl font-light leading-relaxed"
