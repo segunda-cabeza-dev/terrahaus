@@ -1,5 +1,6 @@
-# Default local: SOLO DB (web y api corren fuera de Docker).
-# Para stack full-docker: usar docker-compose.dev.yml
+# Docker Compose SOLO DB para desarrollo local.
+# Uso:
+#   docker compose -f docker-compose.db.yml up -d
 
 services:
   db:
@@ -22,3 +23,4 @@ services:
 
 volumes:
   postgres-data:
+

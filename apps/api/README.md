@@ -1,22 +1,23 @@
 # API Terrahaus
 
-API de contactos para Terrahaus construida con Fastify + PostgreSQL.
+API de contactos para Terrahaus construida con Fastify + Prisma + PostgreSQL.
 
-## Desarrollo local
+## Desarrollo local (recomendado con Docker Compose)
+
+Desde la raíz del repo:
 
 ```bash
-# Instalar dependencias
-npm install
-
-# Configurar variables de entorno
 cp .env.example .env
 
-# Ejecutar migraciones (requiere PostgreSQL corriendo)
-npm run db:migrate
+# DB en Docker
+docker compose -f docker-compose.db.yml up -d
 
-# Iniciar en modo desarrollo
-npm run dev
+# API fuera de Docker
+cp apps/api/.env.example apps/api/.env
+npm run dev:api
 ```
+
+La API queda en `http://localhost:3000`.
 
 ## Endpoints
 
@@ -24,16 +25,24 @@ npm run dev
 
 | Método | Ruta | Descripción |
 |--------|------|-------------|
-| `POST` | `/api/contacts` | Crear nuevo contacto |
-| `GET` | `/api/contacts` | Listar contactos (admin) |
-| `GET` | `/api/contacts/:id` | Obtener contacto por ID |
-| `PATCH` | `/api/contacts/:id/processed` | Marcar como procesado |
+| `POST` | `/contacts` | Crear nuevo contacto |
+| `GET` | `/contacts` | Listar contactos (admin) |
+| `GET` | `/contacts/:id` | Obtener contacto por ID |
+| `PATCH` | `/contacts/:id/processed` | Marcar como procesado |
+
+Compatibilidad: también existen las mismas rutas bajo `/api/contacts/*`.
 
 ### Health Check
 
 | Método | Ruta | Descripción |
 |--------|------|-------------|
 | `GET` | `/health` | Estado del servidor |
+
+### Version
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| `GET` | `/version` | Info de build/commit |
 
 ## Crear contacto (POST /api/contacts)
 
@@ -50,12 +59,4 @@ npm run dev
 
 ## Docker
 
-La API se ejecuta automáticamente con el resto del proyecto:
-
-```bash
-docker compose up -d
-```
-
-La API estará disponible en:
-- Local: `http://localhost:3001`
-- Traefik: `http://api.localhost`
+La API corre dentro de `docker-compose.dev.yml` (dev) y `docker-compose.prod.yml` (prod).

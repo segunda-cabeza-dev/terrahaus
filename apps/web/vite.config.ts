@@ -35,6 +35,14 @@ export default defineConfig({
   server: {
     port: 5173,
     host: true,
+    proxy: {
+      // Permite usar el fallback default del frontend: `VITE_API_URL || '/api'`
+      // sin configurar CORS en dev.
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      },
+    },
   },
   // Pre-bundling de dependencias
   optimizeDeps: {

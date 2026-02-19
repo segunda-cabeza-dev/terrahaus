@@ -21,7 +21,7 @@ RUN npm run build:web
 FROM nginx:alpine AS production
 
 # Copiar configuración de nginx
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
 
 # Copiar archivos build
 COPY --from=builder /app/apps/web/dist /usr/share/nginx/html

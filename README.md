@@ -1,86 +1,94 @@
 # Terrahaus
 
-Sitio web para estudio de arquitectura y reformas especializado en proyectos sostenibles.
+Sitio web para estudio de arquitectura y reformas.
 
-## 🚀 Stack Tecnológico
+## Stack
 
-- **Frontend**: React 19 + Vite 7 + TypeScript
-- **Styling**: Tailwind CSS
-- **Icons**: Lucide React
-- **Router**: React Router v7
-- **Backend API**: Fastify + Drizzle ORM
-- **Database**: PostgreSQL 16
-- **CDN**: Cloudflare R2 (imágenes y videos)
+- **Web**: React + Vite + TypeScript (`apps/web`)
+- **API**: Node + Fastify + Prisma (`apps/api`)
+- **DB**: PostgreSQL
 - **Monorepo**: npm workspaces
 
-## 📦 Instalación
+## Estructura
+
+```
+apps/
+  web/        # React + Vite
+  api/        # Fastify + Prisma
+packages/
+  shared/     # Código compartido
+docker/
+  nginx.conf  # SPA fallback + proxy /api -> api
+docker-compose.dev.yml
+docker-compose.prod.yml
+.github/workflows/build-images.yml
+```
+
+## Dev (local: Vite + API, Docker solo para DB)
 
 ```bash
-npm install
+cp .env.example .env
+
+# 1) DB
+docker compose -f docker-compose.db.yml up -d
+
+# 2) API (otra terminal)
+cp apps/api/.env.example apps/api/.env
+npm run dev:api
+
+# 3) Web (otra terminal)
+npm run dev:web
 ```
 
-## ⚙️ Configuración
-
-### Desarrollo local
-
-1. Crear archivo `apps/web/.env.local`:
-```env
-VITE_API_URL=http://localhost:3001
-VITE_ASSETS_URL=https://pub-e9476d34c83b42cebbbfe7469a26b77a.r2.dev
-```
-
-2. Levantar PostgreSQL y API con Docker:
-```bash
-docker compose up -d
-```
-
-3. Ejecutar migraciones:
-```bash
-docker compose exec api npm run db:migrate
-```
-
-## 🏃 Desarrollo
+Atajo (mata puertos 5173/3000 y levanta ambos):
 
 ```bash
-# Iniciar servidor de desarrollo (Vite)
-npm run dev
-
-# Disponible en http://localhost:5174
+npm run local
 ```
 
-## 🏗️ Construcción
+- Web: `http://localhost:5173`
+- API: `http://localhost:3000` (health: `/health`, version: `/version`)
+- DB: `localhost:5432`
+
+Migraciones (Prisma):
+- Primera vez / aplicar pendientes: `npm run db:migrate --workspace @terrahaus/api`
+
+Webhook leads (opcional):
+- Configurar en `apps/api/.env`:
+  - `LEADS_WEBHOOK_URL=https://app.terrahaus.es/api/leads`
+  - `LEADS_WEBHOOK_AUTHTOKEN=...`
+
+### Migraciones en dev (cuando cambie el schema)
 
 ```bash
-npm run build
+npm run db:dev --workspace @terrahaus/api
 ```
 
-## 🚀 Despliegue en Producción
+## Dev (full Docker, opcional)
 
 ```bash
-# En el servidor
-docker compose -f docker-compose.prod.yml up -d --build
-docker compose -f docker-compose.prod.yml exec api npm run db:migrate
+docker compose -f docker-compose.dev.yml up --build
 ```
 
-## 📁 Estructura del Proyecto
+## Prod (manual: build/push + deploy)
 
+1) **Build & push manual**: GitHub Actions → `Build & Push Docker Images` (workflow_dispatch).
+
+2) En el server/Portainer:
+
+```bash
+cp .env.production.example .env
+# editar .env (API_IMAGE, WEB_IMAGE, secrets)
+docker compose -f docker-compose.prod.yml pull
+docker compose -f docker-compose.prod.yml up -d
 ```
-terrahaus/
-├── apps/
-│   ├── web/              # Frontend React (Vite)
-│   └── api/              # Backend Fastify + PostgreSQL
-├── packages/
-│   └── shared/           # Componentes compartidos
-├── docker-compose.yml    # Desarrollo local (postgres + api)
-└── docker-compose.prod.yml # Producción (frontend + api + postgres)
+
+Notas:
+- No hay deploy automático al merge a `main`.
+- El servicio `migrate` aplica migraciones pendientes con `prisma migrate deploy` usando la misma imagen de `api`.
+
+### Traefik (opcional)
+
+```bash
+docker compose -f docker-compose.prod.yml -f docker-compose.prod.traefik.yml up -d
 ```
-
-## 🌐 Dominios
-
-- **Web**: terrahaus.es
-- **API**: api.terrahaus.es
-
----
-
-Desarrollado con ❤️ para Terrahaus
-

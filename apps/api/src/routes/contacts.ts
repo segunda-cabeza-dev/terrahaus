@@ -1,7 +1,6 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { db } from '../db/index.js';
-import { contacts, NewContact } from '../db/schema.js';
-import { desc, eq } from 'drizzle-orm';
+import { prisma } from '../db/prisma.js';
+import { isLeadsWebhookEnabled, sendLeadWebhook } from '../integrations/leadsWebhook.js';
 
 interface CreateContactBody {
   name: string;
@@ -23,23 +22,56 @@ export async function contactRoutes(fastify: FastifyInstance) {
     }
 
     try {
-      const newContact: NewContact = {
-        name,
-        email,
-        phone: phone || null,
-        reformType: reformType || null,
-        message: message || null,
-        source: source || 'web',
-      };
+      const leadSource = source || 'web';
+      const inserted = await prisma.contact.create({
+        data: {
+          name,
+          email,
+          phone: phone || null,
+          reformType: reformType || null,
+          message: message || null,
+          source: leadSource,
+        },
+        select: { id: true, name: true, email: true },
+      });
 
-      const [inserted] = await db.insert(contacts).values(newContact).returning();
-      
-      fastify.log.info(`Nuevo contacto registrado: ${email} desde ${source}`);
-      
+      fastify.log.info(`Nuevo contacto registrado: ${email} desde ${leadSource}`);
+
+      // Webhook externo (opcional por env). No bloquea el guardado local.
+      if (isLeadsWebhookEnabled()) {
+        try {
+          if (process.env.LEADS_WEBHOOK_LOG_SUCCESS === 'true') {
+            fastify.log.info('Enviando webhook de leads...');
+          }
+
+          const webhookSource = process.env.LEADS_WEBHOOK_SOURCE_ID || leadSource;
+          const webhookStatus = process.env.LEADS_WEBHOOK_STATUS_ID || process.env.LEADS_WEBHOOK_STATUS || 'new';
+          const webhookAssigned = process.env.LEADS_WEBHOOK_ASSIGNED_ID || process.env.LEADS_WEBHOOK_ASSIGNED || 'web';
+
+          const result = await sendLeadWebhook({
+            source: webhookSource,
+            status: webhookStatus,
+            name,
+            assigned: webhookAssigned,
+            email,
+            phonenumber: phone,
+            description: [reformType ? `Reforma: ${reformType}` : null, message ? `Mensaje: ${message}` : null]
+              .filter(Boolean)
+              .join('\n'),
+            tags: process.env.LEADS_WEBHOOK_TAGS || undefined,
+          });
+          if (process.env.LEADS_WEBHOOK_LOG_SUCCESS === 'true') {
+            fastify.log.info({ status: result.status }, 'Webhook de leads enviado');
+          }
+        } catch (err) {
+          fastify.log.warn({ err }, 'Falló envío de webhook de leads (se guardó el contacto local igual).');
+        }
+      }
+
       return reply.status(201).send({
         success: true,
         message: 'Contacto registrado correctamente',
-        contact: { id: inserted.id, name: inserted.name, email: inserted.email },
+        contact: inserted,
       });
     } catch (error) {
       fastify.log.error(error);
@@ -50,12 +82,11 @@ export async function contactRoutes(fastify: FastifyInstance) {
   // Listar contactos (para admin)
   fastify.get('/', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-      const allContacts = await db
-        .select()
-        .from(contacts)
-        .orderBy(desc(contacts.createdAt))
-        .limit(100);
-      
+      const allContacts = await prisma.contact.findMany({
+        orderBy: { createdAt: 'desc' },
+        take: 100,
+      });
+
       return { contacts: allContacts, total: allContacts.length };
     } catch (error) {
       fastify.log.error(error);
@@ -66,17 +97,21 @@ export async function contactRoutes(fastify: FastifyInstance) {
   // Obtener un contacto por ID
   fastify.get('/:id', async (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
     const { id } = request.params;
-    
+
+    const contactId = Number(id);
+    if (!Number.isInteger(contactId)) {
+      return reply.status(400).send({ error: 'ID inválido' });
+    }
+
     try {
-      const [contact] = await db
-        .select()
-        .from(contacts)
-        .where(eq(contacts.id, parseInt(id, 10)));
-      
+      const contact = await prisma.contact.findUnique({
+        where: { id: contactId },
+      });
+
       if (!contact) {
         return reply.status(404).send({ error: 'Contacto no encontrado' });
       }
-      
+
       return { contact };
     } catch (error) {
       fastify.log.error(error);
@@ -87,18 +122,18 @@ export async function contactRoutes(fastify: FastifyInstance) {
   // Marcar contacto como procesado
   fastify.patch('/:id/processed', async (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
     const { id } = request.params;
-    
+
+    const contactId = Number(id);
+    if (!Number.isInteger(contactId)) {
+      return reply.status(400).send({ error: 'ID inválido' });
+    }
+
     try {
-      const [updated] = await db
-        .update(contacts)
-        .set({ processed: true, updatedAt: new Date() })
-        .where(eq(contacts.id, parseInt(id, 10)))
-        .returning();
-      
-      if (!updated) {
-        return reply.status(404).send({ error: 'Contacto no encontrado' });
-      }
-      
+      const updated = await prisma.contact.update({
+        where: { id: contactId },
+        data: { processed: true },
+      });
+
       return { success: true, contact: updated };
     } catch (error) {
       fastify.log.error(error);

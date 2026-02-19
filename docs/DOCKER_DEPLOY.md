@@ -1,84 +1,45 @@
-# Deploy con Docker + Traefik
+# Deploy con Docker Compose
 
-## 🚀 Deploy Local (desarrollo)
+Este repo está pensado para:
+- **Dev**: `docker-compose.dev.yml` (build local + hot reload)
+- **Prod**: `docker-compose.prod.yml` (imágenes desde registry + migraciones one-shot)
+- **Opcional**: `docker-compose.prod.traefik.yml` (override de labels/red)
 
-```bash
-# Construir y levantar
-docker compose up -d --build
-
-# Acceder a: http://localhost:3000
-```
-
-## 🌐 Deploy en Producción (con HTTPS)
-
-### 1. Clonar en el servidor
+## 🚀 Dev (local)
 
 ```bash
-git clone https://github.com/juliana392/terrahaus.git
-cd terrahaus
+cp .env.example .env
+
+# Solo DB en Docker
+docker compose -f docker-compose.db.yml up -d
+
+# Web + API fuera de Docker
+npm run dev:web
+npm run dev:api
 ```
 
-### 2. Configurar variables de entorno
+- Web: `http://localhost:5173`
+- API: `http://localhost:3000`
+
+## 🌐 Prod (manual, recomendado)
+
+1) Build & push manual en GitHub Actions:
+- Workflow: `Build & Push Docker Images`
+
+2) En el servidor/Portainer:
 
 ```bash
 cp .env.production.example .env
-nano .env
+# editar .env (API_IMAGE, WEB_IMAGE, secrets)
+docker compose -f docker-compose.prod.yml pull
+docker compose -f docker-compose.prod.yml up -d
 ```
 
-Editar:
-```env
-DOMAIN=terrahaus.tudominio.com
-ACME_EMAIL=tu@email.com
-```
+Migraciones:
+- El servicio `migrate` ejecuta `prisma migrate deploy` y aplica solo pendientes.
 
-### 3. Configurar DNS
-
-Apuntar tu dominio al servidor:
-```
-A    terrahaus.tudominio.com    →    IP_DEL_SERVIDOR
-```
-
-### 4. Desplegar
+## Traefik (opcional)
 
 ```bash
-docker compose -f docker-compose.prod.yml up -d --build
+docker compose -f docker-compose.prod.yml -f docker-compose.prod.traefik.yml up -d
 ```
-
-¡Listo! Tu sitio estará en `https://terrahaus.tudominio.com` con SSL automático.
-
-## 📦 Comandos útiles
-
-```bash
-# Ver estado
-docker compose ps
-
-# Ver logs
-docker compose logs -f terrahaus
-
-# Reconstruir sin cache
-docker compose build --no-cache
-
-# Parar todo
-docker compose down
-
-# Parar y eliminar volúmenes
-docker compose down -v
-```
-
-## 🔧 Estructura de archivos
-
-```
-├── Dockerfile              # Multi-stage build (Node + Nginx)
-├── docker-compose.yml      # Para desarrollo local
-├── docker-compose.prod.yml # Para producción con HTTPS
-├── nginx.conf              # Configuración de Nginx para SPA
-├── .dockerignore           # Archivos a ignorar en el build
-└── .env.production.example # Ejemplo de variables de entorno
-```
-
-## 💡 Tips
-
-1. **SSL automático**: Let's Encrypt genera y renueva certificados automáticamente
-2. **Cache de imágenes**: Las imágenes se sirven desde Cloudflare R2
-3. **Gzip**: Habilitado automáticamente en Nginx
-4. **Health check**: Disponible en `/health`

@@ -1,82 +1,67 @@
-# Docker Compose para PRODUCCIÓN
-# Frontend, API y PostgreSQL - Traefik ya está en el servidor
-# Uso: docker compose -f docker-compose.prod.yml up -d --build
+# Docker Compose para PRODUCCIÓN (web + api + db + migrate one-shot)
+#
+# Recomendado (Portainer/servidor):
+#   cp .env.production.example .env
+#   docker compose -f docker-compose.prod.yml pull
+#   docker compose -f docker-compose.prod.yml up -d
+#
+# Opcional Traefik: ver docker-compose.prod.traefik.yml
 
 services:
-  # ===================
-  # TERRAHAUS - Web App (Frontend)
-  # ===================
-  terrahaus:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: terrahaus
-    restart: unless-stopped
-    networks:
-      - web
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.terrahaus.rule=Host(`${DOMAIN}`)"
-      - "traefik.http.routers.terrahaus.entrypoints=websecure"
-      - "traefik.http.routers.terrahaus.tls.certresolver=letsencrypt"
-      - "traefik.http.services.terrahaus.loadbalancer.server.port=80"
-    depends_on:
-      - api
-
-  # ===================
-  # API - Fastify Backend
-  # ===================
-  api:
-    build:
-      context: ./apps/api
-      dockerfile: Dockerfile
-    container_name: terrahaus-api
-    restart: unless-stopped
-    environment:
-      - NODE_ENV=production
-      - DB_HOST=postgres
-      - DB_PORT=5432
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_NAME=${DB_NAME}
-      - PORT=3001
-      - CORS_ORIGIN=https://${DOMAIN}
-    networks:
-      - web
-    depends_on:
-      postgres:
-        condition: service_healthy
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.terrahaus-api.rule=Host(`${API_DOMAIN}`)"
-      - "traefik.http.routers.terrahaus-api.entrypoints=websecure"
-      - "traefik.http.routers.terrahaus-api.tls.certresolver=letsencrypt"
-      - "traefik.http.services.terrahaus-api.loadbalancer.server.port=3001"
-
-  # ===================
-  # POSTGRES - Database
-  # ===================
-  postgres:
+  db:
     image: postgres:16-alpine
     container_name: terrahaus-db
     restart: unless-stopped
     environment:
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - POSTGRES_DB=${DB_NAME}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - postgres-data:/var/lib/postgresql/data
-    networks:
-      - web
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 10
 
-networks:
+  migrate:
+    image: ${API_IMAGE}:${IMAGE_TAG}
+    container_name: terrahaus-migrate
+    restart: "no"
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?schema=public
+    depends_on:
+      db:
+        condition: service_healthy
+    working_dir: /app/apps/api
+    command: ["npm", "run", "db:migrate"]
+
+  api:
+    image: ${API_IMAGE}:${IMAGE_TAG}
+    container_name: terrahaus-api
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 3000
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?schema=public
+      JWT_SECRET: ${JWT_SECRET}
+      CORS_ORIGIN: ${CORS_ORIGIN:-*}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    ports:
+      - "3000:3000"
+
   web:
-    external: true
+    image: ${WEB_IMAGE}:${IMAGE_TAG}
+    container_name: terrahaus-web
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "80:80"
 
 volumes:
   postgres-data:
+

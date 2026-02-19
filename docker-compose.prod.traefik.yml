@@ -1,0 +1,39 @@
+# Override opcional para Traefik (producción).
+#
+# Uso:
+#   docker compose -f docker-compose.prod.yml -f docker-compose.prod.traefik.yml up -d
+
+services:
+  web:
+    networks:
+      - web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.terrahaus.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.terrahaus.entrypoints=websecure"
+      - "traefik.http.routers.terrahaus.tls.certresolver=letsencrypt"
+      - "traefik.http.services.terrahaus.loadbalancer.server.port=80"
+    ports: []
+
+  api:
+    networks:
+      - web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.terrahaus-api.rule=Host(`${API_DOMAIN}`)"
+      - "traefik.http.routers.terrahaus-api.entrypoints=websecure"
+      - "traefik.http.routers.terrahaus-api.tls.certresolver=letsencrypt"
+      - "traefik.http.services.terrahaus-api.loadbalancer.server.port=3000"
+    ports: []
+
+  db:
+    networks:
+      - web
+
+  migrate:
+    networks:
+      - web
+
+networks:
+  web:
+    external: true
