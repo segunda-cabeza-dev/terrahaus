@@ -41,6 +41,8 @@ function App() {
           {/* Redirecciones desde rutas antiguas con /es */}
           <Route path="/es" element={<Navigate to="/" replace />} />
           <Route path="/es/*" element={<Navigate to="/" replace />} />
+          {/* Fallback para rutas no definidas (evita página en blanco) */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>
       <WhatsAppFloat />

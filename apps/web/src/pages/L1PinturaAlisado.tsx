@@ -1,8 +1,7 @@
 import React from "react";
 import LandingFooter from "../components/LandingFooter";
 import { img } from "../lib/assets";
-import PhoneInput from "react-phone-input-2";
-import "react-phone-input-2/lib/style.css";
+import FormularioLanding from "../components/FormularioLanding";
 import { ArrowRight, CheckCircle2, PenTool, Ruler, Hammer, Clock, Shield, Sparkles, MessageCircle } from "lucide-react";
 
 const SectionTitle: React.FC<{ subtitle: string; title: React.ReactNode; light?: boolean }> = ({
@@ -31,6 +30,7 @@ const SectionTitle: React.FC<{ subtitle: string; title: React.ReactNode; light?:
 );
 
 const HeroLanding: React.FC = () => {
+  const fallbackHero = img("reformas-integrales-vivienda.webp", true);
   return (
     <section className="relative h-[80vh] min-h-[460px] flex flex-col overflow-hidden md:h-[85vh] md:min-h-[560px]">
       <div className="absolute inset-0 w-full h-full z-0">
@@ -39,6 +39,9 @@ const HeroLanding: React.FC = () => {
           alt="Pintura en Alicante"
           className="w-full h-full object-cover scale-105"
           loading="eager"
+          onError={(e) => {
+            e.currentTarget.src = fallbackHero;
+          }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-black/70 to-black/80" />
       </div>
@@ -318,7 +321,7 @@ const GaleriaTrabajos: React.FC = () => {
     { type: "image" as const, src: images[3] },
   ];
 
-  const fallbackImg = img("Detalle-constructivo.webp");
+  const fallbackImg = img("Detalle-constructivo.webp", true);
 
   return (
     <section className="py-10 bg-white">
@@ -371,149 +374,6 @@ const GaleriaTrabajos: React.FC = () => {
   );
 };
 
-const Formulario: React.FC = () => {
-  const [formData, setFormData] = React.useState({
-    name: "",
-    email: "",
-    phone: "",
-    service: "Pintura y Alisado",
-    message: "",
-  });
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [error, setError] = React.useState("");
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setError("");
-
-    try {
-      const apiUrl = import.meta.env.VITE_API_URL || "/api";
-      const response = await fetch(`${apiUrl}/contacts`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...formData,
-          source: "l1-pintura-alisado",
-        }),
-      });
-
-      if (!response.ok) throw new Error("Error al enviar el formulario");
-      window.location.href = "/gracias";
-    } catch {
-      setError("Hubo un problema al enviar. Por favor, inténtalo de nuevo.");
-      setIsSubmitting(false);
-    }
-  };
-
-  return (
-    <section id="contacto" className="py-24 bg-white">
-      <div className="max-w-4xl mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-5xl uppercase mb-4" style={{ fontFamily: "Bebas Neue, sans-serif" }}>
-            CUÉNTANOS TU PROYECTO
-          </h2>
-          <p className="text-gray-600 font-light text-xl" style={{ fontFamily: "Barlow, sans-serif" }}>
-            Dinos metros aproximados, estado actual (gotelé/imperfecciones), zona y fechas. Te respondemos con una
-            propuesta clara.
-          </p>
-        </div>
-
-        <div className="bg-[#f9f9f9] p-8 md:p-12 border border-gray-200 shadow-sm relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-2 h-full bg-[#b35427]" />
-
-          {error && <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded">{error}</div>}
-
-          <form className="grid grid-cols-1 md:grid-cols-2 gap-6" onSubmit={handleSubmit}>
-            <div className="md:col-span-1">
-              <label className="block text-xs uppercase tracking-wider text-gray-500 mb-2 font-bold">Nombre</label>
-              <input
-                type="text"
-                required
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full bg-white border-b-2 border-gray-200 p-3 focus:outline-none focus:border-[#b35427] transition-colors rounded-none"
-                style={{ fontFamily: "Barlow, sans-serif" }}
-              />
-            </div>
-
-            <div className="md:col-span-1">
-              <label className="block text-xs uppercase tracking-wider text-gray-500 mb-2 font-bold">Email</label>
-              <input
-                type="email"
-                required
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="w-full bg-white border-b-2 border-gray-200 p-3 focus:outline-none focus:border-[#b35427] transition-colors rounded-none"
-                style={{ fontFamily: "Barlow, sans-serif" }}
-              />
-            </div>
-
-            <div className="md:col-span-1">
-              <label className="block text-xs uppercase tracking-wider text-gray-500 mb-2 font-bold">Teléfono</label>
-              <div className="phone-input-architect">
-                <PhoneInput
-                  country={"es"}
-                  value={formData.phone}
-                  onChange={(phone) => setFormData({ ...formData, phone })}
-                  inputClass="!w-full !bg-white !border-b-2 !border-gray-200 !border-t-0 !border-l-0 !border-r-0 !rounded-none !h-[49px] !pl-12 focus:!border-[#b35427]"
-                  buttonClass="!bg-transparent !border-none !rounded-none"
-                  containerClass="!w-full"
-                  inputStyle={{ fontFamily: "Barlow, sans-serif" }}
-                />
-              </div>
-            </div>
-
-            <div className="md:col-span-1">
-              <label className="block text-xs uppercase tracking-wider text-gray-500 mb-2 font-bold">Servicio</label>
-              <select
-                value={formData.service}
-                onChange={(e) => setFormData({ ...formData, service: e.target.value })}
-                className="w-full bg-white border-b-2 border-gray-200 p-3 focus:outline-none focus:border-[#b35427] transition-colors rounded-none appearance-none cursor-pointer"
-                style={{ fontFamily: "Barlow, sans-serif" }}
-              >
-                <option>Pintura y Alisado</option>
-                <option>Solo Alisado</option>
-                <option>Solo Pintura</option>
-                <option>Fachada / Exterior</option>
-                <option>Otro</option>
-              </select>
-            </div>
-
-            <div className="md:col-span-2">
-              <label className="block text-xs uppercase tracking-wider text-gray-500 mb-2 font-bold">
-                Detalles del Proyecto
-              </label>
-              <textarea
-                rows={4}
-                value={formData.message}
-                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                placeholder="Metros, habitaciones, si hay gotelé, altura de techos, estado actual, y cualquier detalle importante..."
-                className="w-full bg-white border-2 border-gray-200 p-4 focus:outline-none focus:border-[#b35427] transition-colors rounded-none resize-none"
-                style={{ fontFamily: "Barlow, sans-serif" }}
-              />
-            </div>
-
-            <div className="md:col-span-2 mt-4">
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full bg-black text-white p-5 uppercase tracking-[2px] hover:bg-[#b35427] transition-colors duration-300 font-bold disabled:opacity-50 disabled:cursor-not-allowed"
-                style={{ fontFamily: "Bebas Neue, sans-serif", fontSize: "20px" }}
-              >
-                {isSubmitting ? "Enviando..." : "Solicitar Presupuesto"}
-              </button>
-              <p className="text-center text-xs text-gray-400 mt-4">
-                Protegemos tus datos. Al enviar aceptas nuestra política de privacidad.
-              </p>
-            </div>
-          </form>
-        </div>
-      </div>
-    </section>
-  );
-};
-
 const L1PinturaAlisado: React.FC = () => {
   return (
     <>
@@ -523,7 +383,12 @@ const L1PinturaAlisado: React.FC = () => {
       <ProcesoTrabajo />
       <Garantias />
       <GaleriaTrabajos />
-      <Formulario />
+      <FormularioLanding
+        reformType="Pintura y Alisado"
+        source="l1-pintura-alisado"
+        description="Completa el formulario y nos pondremos en contacto contigo en menos de 24 horas para conocer tu proyecto de pintura y alisado."
+        messagePlaceholder="Cuéntanos sobre tu proyecto de pintura y alisado 💭"
+      />
       <LandingFooter />
     </>
   );
