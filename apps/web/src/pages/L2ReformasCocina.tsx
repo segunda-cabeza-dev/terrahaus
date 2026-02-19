@@ -1,5 +1,5 @@
 import React from "react";
-import Header from '../components/Header';
+import LandingFooter from '../components/LandingFooter';
 import { img } from '../lib/assets';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
@@ -29,7 +29,7 @@ const SectionTitle: React.FC<{ subtitle: string; title: React.ReactNode; light?:
 
 const HeroLanding: React.FC = () => {
   return (
-  <section className="relative h-[85vh] min-h-[480px] flex flex-col justify-center md:justify-center overflow-hidden md:h-screen md:min-h-[600px]">
+  <section className="relative h-[80vh] min-h-[460px] flex flex-col overflow-hidden md:h-[85vh] md:min-h-[560px]">
       {/* Background */}
       <div className="absolute inset-0 w-full h-full z-0">
         <img
@@ -41,10 +41,18 @@ const HeroLanding: React.FC = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-black/70 to-black/80" />
       </div>
 
-      <Header />
-
       {/* Content */}
-      <div className="relative z-10 max-w-6xl mx-auto w-full flex flex-col items-start text-left px-4 md:px-8 pt-20 md:pt-32 md:items-center md:text-center">
+      <div className="relative z-10 flex-1 flex items-center">
+      <div className="max-w-6xl mx-auto w-full flex flex-col items-center justify-center text-center px-4 md:px-8 py-10 md:py-12">
+        <div className="mb-6">
+          <img
+            src={img("Logo terrahous Blanco.webp")}
+            alt="Terrahaus"
+            className="h-10 md:h-12 w-auto mx-auto opacity-90"
+            style={{ maxWidth: '180px' }}
+            loading="eager"
+          />
+        </div>
         <h1
           className="text-white mb-4 uppercase leading-[0.95] tracking-tight"
           style={{
@@ -70,6 +78,7 @@ const HeroLanding: React.FC = () => {
           SOLICITAR ESTUDIO GRATUITO
           <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
         </a>
+      </div>
       </div>
     </section>
   );
@@ -459,27 +468,6 @@ const FormularioConstruccion: React.FC = () => {
   );
 };
 
-const FooterSimple: React.FC = () => (
-  <footer className="bg-black text-white py-12 border-t border-gray-800">
-    <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6">
-       <div className="flex flex-col items-center md:items-start">
-         <img src={img("Logo terrahous Blanco.webp")} alt="Terrahaus" className="h-10 w-auto mb-4 opacity-70" />
-         <p className="text-gray-500 text-sm">Empresa de reformas integrales y construcción.</p>
-       </div>
-       <div className="flex flex-col md:flex-row gap-8 text-center md:text-right">
-          <div>
-            <span className="block text-[#b35427] uppercase text-xs tracking-wider mb-1">Contacto</span>
-            <a href="tel:+34642413996" className="block text-lg hover:text-gray-300 transition-colors">+34 642 413 996</a>
-          </div>
-           <div>
-            <span className="block text-[#b35427] uppercase text-xs tracking-wider mb-1">Email</span>
-            <a href="mailto:info@terrahaus.es" className="block text-lg hover:text-gray-300 transition-colors">info@terrahaus.es</a>
-          </div>
-       </div>
-    </div>
-  </footer>
-);
-
 const L2ReformasCocina: React.FC = () => {
   return (
     <>
@@ -490,7 +478,7 @@ const L2ReformasCocina: React.FC = () => {
       <EspecificacionesTecnicas />
       <GaleriaEstilos />
       <FormularioConstruccion />
-      <FooterSimple />
+      <LandingFooter />
     </>
   );
 };

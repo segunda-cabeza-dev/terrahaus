@@ -2,11 +2,12 @@ import React from "react";
 import { img } from '../lib/assets';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
+import LandingFooter from '../components/LandingFooter';
 
 // Hero sin header
 const HeroLanding: React.FC = () => {
   return (
-    <section className="relative min-h-[85vh] flex flex-col font-sans">
+    <section className="relative h-[80vh] min-h-[460px] flex flex-col overflow-hidden md:h-[85vh] md:min-h-[560px] font-sans">
       {/* Fondo Hero con degradado negro */}
       <div className="absolute inset-0 w-full h-full z-0">
         <img
@@ -17,79 +18,48 @@ const HeroLanding: React.FC = () => {
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/60 to-black/70" />
       </div>
-      {/* Contenido Hero */}
-      <div className="relative z-20 flex flex-col items-center justify-center text-center text-white px-0 flex-1 hero-content-responsive" style={{paddingTop: '60px'}}>
-        {/* Logo Terrahaus */}
-        <div className="mb-8">
-          <img
-            src={img("Logo terrahous Blanco.webp")}
-            alt="Terrahaus"
-            className="h-16 md:h-20 w-auto mx-auto"
-            style={{maxWidth: '250px'}}
-            loading="eager"
-          />
-        </div>
-        <h1
-          className="mb-6 uppercase tracking-tight mx-auto hero-title-responsive"
-          style={{
-            fontFamily: 'Bebas Neue, sans-serif',
-            fontSize: '85px',
-            fontWeight: 400,
-            letterSpacing: '2px',
-            lineHeight: 1.05,
-            maxWidth: '900px',
-            background: 'none',
-            padding: 0,
-            borderRadius: 0
-          }}
-        >
-          <style>{`
-            @media (max-width: 640px) {
-              .hero-title-responsive {
-                font-size: 54px !important;
-                line-height: 1 !important;
-              }
-            }
-          `}</style>
-          <span className="hero-title-break">
-            <span className="hidden sm:inline">REFORMAS INTEGRALES EN ALICANTE Y ALREDEDORES</span>
-            <span className="sm:hidden">REFORMAS<br/>INTEGRALES EN<br/>ALICANTE</span>
-          </span>
-        </h1>
-        <div
-          className="mb-6 mx-auto text-center hero-desc-responsive"
-          style={{
-            fontFamily: 'Barlow, sans-serif',
-            fontWeight: 400,
-            maxWidth: '1200px',
-            lineHeight: 1.3,
-            fontSize: '19px',
-            paddingLeft: '24px',
-            paddingRight: '24px',
-          }}
-        >
-          <style>{`
-            @media (max-width: 640px) {
-              .hero-desc-responsive {
-                font-size: 17px !important;
-                padding-left: 14px !important;
-                padding-right: 14px !important;
-              }
-            }
-          `}</style>
-          <div className="hero-main-title">
-            Transformamos tu espacio con un equipo de arquitectos especializados en reformas integrales.
+      <div className="relative z-20 flex-1 flex items-center">
+        <div className="max-w-6xl mx-auto w-full flex flex-col items-center justify-center text-center text-white px-4 md:px-8 py-10 md:py-12">
+          {/* Logo Terrahaus */}
+          <div className="mb-6">
+            <img
+              src={img("Logo terrahous Blanco.webp")}
+              alt="Terrahaus"
+              className="h-10 md:h-12 w-auto mx-auto opacity-90"
+              style={{ maxWidth: '180px' }}
+              loading="eager"
+            />
           </div>
-          <div className="hero-secondary-text font-bold">
-            Presupuesto cerrado y fecha de entrega garantizados por contrato.
-          </div>
+
+          <h1
+            className="text-white mb-4 uppercase leading-[0.95] tracking-tight"
+            style={{
+              fontFamily: 'Bebas Neue, sans-serif',
+              fontSize: 'clamp(48px,9vw,78px)',
+              textShadow: '0 2px 10px rgba(0,0,0,0.3)',
+            }}
+          >
+            REFORMAS INTEGRALES EN ALICANTE
+            <br />
+            <span className="text-[#b35427]">Y ALREDEDORES</span>
+          </h1>
+
+          <p
+            className="text-gray-200 mb-8 max-w-md md:max-w-2xl font-light leading-relaxed"
+            style={{ fontFamily: 'Barlow, sans-serif', fontSize: '16px' }}
+          >
+            Transformamos tu espacio con un equipo de arquitectos especializados.
+            <span className="font-semibold"> Presupuesto cerrado y fecha de entrega garantizados por contrato.</span>
+          </p>
+
+          <a
+            href="#contacto"
+            className="group bg-white text-black hover:bg-[#b35427] hover:text-white transition-all duration-300 py-3 px-6 font-bold uppercase tracking-wider flex items-center gap-3 text-base md:text-[20px]"
+            style={{ fontFamily: 'Bebas Neue, sans-serif' }}
+          >
+            SOLICITAR PRESUPUESTO
+          </a>
         </div>
-        <a
-          href="#contacto"
-          className="bg-[#b35427] hover:bg-[#a3471d] text-white py-3 px-10 rounded transition mb-4 shadow-lg text-[23px] uppercase"
-          style={{fontFamily: 'Bebas Neue, sans-serif', fontWeight: 400, fontSize: '23px'}}>
-          SOLICITA TU PRESUPUESTO GRATIS
-        </a>
       </div>
     </section>
   );
@@ -467,76 +437,6 @@ const FormularioLanding: React.FC = () => {
   );
 };
 
-// Footer minimalista solo con contacto
-const FooterContacto: React.FC = () => (
-  <footer className="w-full bg-black text-white py-12 px-8">
-    <div className="max-w-6xl mx-auto">
-      {/* Logo y descripción */}
-      <div className="text-center mb-8">
-        <a href="/" className="inline-block mb-4">
-          <img
-            src={img("Logo terrahous Blanco.webp")}
-            alt="Terrahaus logo"
-            className="max-h-16 w-auto mx-auto"
-            style={{maxWidth: '200px', height: 'auto'}}
-            loading="lazy"
-          />
-        </a>
-        <p className="text-center mx-auto" style={{fontFamily: 'Barlow, sans-serif', fontWeight: 300, fontSize: '16px', color: '#e5e7eb', maxWidth: '500px'}}>
-          Especialistas en reformas integrales en Alicante y alrededores.<br />
-          Arquitectos profesionales con presupuesto cerrado y fecha garantizada.
-        </p>
-      </div>
-
-      {/* Información de contacto centrada */}
-      <div className="flex flex-col md:flex-row justify-center items-center gap-8 mb-8">
-        {/* Email */}
-        <div className="flex items-center gap-3">
-          <span className="inline-block">
-            <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="text-[#b35427]">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a3 3 0 003.22 0L22 8m-19 8V8a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
-            </svg>
-          </span>
-          <a href="mailto:info@terrahaus.es" className="hover:text-[#b35427] transition" style={{fontFamily: 'Barlow, sans-serif', fontSize: '16px'}}>
-            info@terrahaus.es
-          </a>
-        </div>
-
-        {/* Teléfono */}
-        <div className="flex items-center gap-3">
-          <span className="inline-block">
-            <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="text-[#b35427]">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-            </svg>
-          </span>
-          <a href="tel:+34642413996" className="hover:text-[#b35427] transition" style={{fontFamily: 'Barlow, sans-serif', fontSize: '16px'}}>
-            +34 642 413 996
-          </a>
-        </div>
-
-        {/* Horario */}
-        <div className="flex items-center gap-3">
-          <span className="inline-block">
-            <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="text-[#b35427]">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </span>
-          <span style={{fontFamily: 'Barlow, sans-serif', fontSize: '16px', color: '#e5e7eb'}}>
-            Lun - Vie: 09:00 - 18:00
-          </span>
-        </div>
-      </div>
-
-      {/* Línea divisoria */}
-      <div className="border-t border-gray-700 pt-6">
-        <p className="text-center text-gray-400 text-sm" style={{fontFamily: 'Barlow, sans-serif', fontWeight: 300}}>
-          © 2024 Terrahaus. Reformas integrales en Alicante. Todos los derechos reservados.
-        </p>
-      </div>
-    </div>
-  </footer>
-);
-
 // Componente principal de la landing
 const L1ReformasIntegrales: React.FC = () => (
   <>
@@ -545,7 +445,7 @@ const L1ReformasIntegrales: React.FC = () => (
     <TiposReformas />
     <CTAIntermedio />
     <FormularioLanding />
-    <FooterContacto />
+    <LandingFooter />
   </>
 );
 
