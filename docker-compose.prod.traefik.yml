@@ -6,34 +6,34 @@
 services:
   web:
     networks:
-      - web
+      - traefik-public
     labels:
       - "traefik.enable=true"
+      - "traefik.docker.network=traefik-public"
       - "traefik.http.routers.terrahaus.rule=Host(`${DOMAIN}`)"
       - "traefik.http.routers.terrahaus.entrypoints=websecure"
       - "traefik.http.routers.terrahaus.tls.certresolver=letsencrypt"
       - "traefik.http.services.terrahaus.loadbalancer.server.port=80"
-    ports: []
 
   api:
     networks:
-      - web
+      - traefik-public
     labels:
       - "traefik.enable=true"
+      - "traefik.docker.network=traefik-public"
       - "traefik.http.routers.terrahaus-api.rule=Host(`${API_DOMAIN}`)"
       - "traefik.http.routers.terrahaus-api.entrypoints=websecure"
       - "traefik.http.routers.terrahaus-api.tls.certresolver=letsencrypt"
       - "traefik.http.services.terrahaus-api.loadbalancer.server.port=3000"
-    ports: []
 
   db:
     networks:
-      - web
+      - traefik-public
 
   migrate:
     networks:
-      - web
+      - traefik-public
 
 networks:
-  web:
+  traefik-public:
     external: true

@@ -1,0 +1,14 @@
+# Override opcional para publicar puertos (producción SIN Traefik).
+#
+# Uso:
+#   docker compose -f docker-compose.prod.yml -f docker-compose.prod.ports.yml up -d
+
+services:
+  api:
+    ports:
+      - "3000:3000"
+
+  web:
+    ports:
+      - "80:80"
+
