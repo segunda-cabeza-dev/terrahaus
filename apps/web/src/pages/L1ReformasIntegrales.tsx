@@ -2,23 +2,28 @@ import React from "react";
 import { img } from '../lib/assets';
 import LandingFooter from '../components/LandingFooter';
 import FormularioLanding from '../components/FormularioLanding';
+import { ArrowRight } from "lucide-react";
 
 // Hero sin header
 const HeroLanding: React.FC = () => {
+  const fallbackHero = img("HeroFondo.webp", true);
   return (
-    <section className="relative h-[80vh] min-h-[460px] flex flex-col overflow-hidden md:h-[85vh] md:min-h-[560px] font-sans">
-      {/* Fondo Hero con degradado negro */}
+    <section className="relative h-[80vh] min-h-[460px] flex flex-col overflow-hidden md:h-[85vh] md:min-h-[560px]">
       <div className="absolute inset-0 w-full h-full z-0">
         <img
-          src={img("HeroFondo.webp")}
+          src={img("reformas-integrales-vivienda.webp")}
           alt="Reformas integrales en Alicante"
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover scale-105"
           loading="eager"
+          onError={(e) => {
+            e.currentTarget.src = fallbackHero;
+          }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/60 to-black/70" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-black/70 to-black/80" />
       </div>
-      <div className="relative z-20 flex-1 flex items-center">
-        <div className="max-w-6xl mx-auto w-full flex flex-col items-center justify-center text-center text-white px-4 md:px-8 py-10 md:py-12">
+
+      <div className="relative z-10 flex-1 flex items-center">
+        <div className="max-w-6xl mx-auto w-full flex flex-col items-center justify-center text-center px-4 md:px-8 py-10 md:py-12">
           {/* Logo Terrahaus */}
           <div className="mb-6">
             <img
@@ -57,6 +62,7 @@ const HeroLanding: React.FC = () => {
             style={{ fontFamily: 'Bebas Neue, sans-serif' }}
           >
             SOLICITAR PRESUPUESTO
+            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </a>
         </div>
       </div>
