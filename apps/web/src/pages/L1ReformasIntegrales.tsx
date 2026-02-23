@@ -304,6 +304,8 @@ const L1ReformasIntegrales: React.FC = () => (
     <FormularioLanding
       reformType="Reforma Integral"
       source="reformas-integrales"
+      image="reformas-integrales-vivienda.webp"
+      imageAlt="Reforma integral de vivienda"
       description="Completa el formulario y nos pondremos en contacto contigo en menos de 24 horas para conocer tu proyecto de reforma integral."
       messagePlaceholder="Cuéntanos sobre tu proyecto de reforma integral 💭"
     />

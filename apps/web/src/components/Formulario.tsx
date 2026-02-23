@@ -44,13 +44,16 @@ const Formulario: React.FC<{ image?: string }> = ({ image }) => {
     }
   };
 
+  const imageSrc =
+    image && (image.startsWith('http') || image.startsWith('/')) ? image : img(image || 'Formulario-casa-madera.webp');
+
   return (
     <section className="w-full bg-[#ededed] py-0 px-0">
       <div className="w-full flex flex-col md:flex-row rounded-none overflow-hidden shadow-lg">
         {/* Imagen a la izquierda, pegada al borde */}
         <div className="md:w-1/2 w-full h-40 md:h-auto md:min-h-[500px]">
           <img 
-            src={img("Formulario-casa-madera.webp")} 
+            src={imageSrc} 
             alt="Casa madera formulario" 
             className="object-cover w-full h-full" 
             style={{ minHeight: '100%', minWidth: '100%', display: 'block' }}

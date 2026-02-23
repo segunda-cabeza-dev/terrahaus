@@ -386,6 +386,8 @@ const L1PinturaAlisado: React.FC = () => {
       <FormularioLanding
         reformType="Pintura y Alisado"
         source="l1-pintura-alisado"
+        image="/assets/images/Pintura-alisado1.jpg"
+        imageAlt="Pintura y alisado terminado"
         description="Completa el formulario y nos pondremos en contacto contigo en menos de 24 horas para conocer tu proyecto de pintura y alisado."
         messagePlaceholder="Cuéntanos sobre tu proyecto de pintura y alisado 💭"
       />

@@ -10,6 +10,8 @@ type FormularioLandingProps = {
   title?: string;
   description?: string;
   messagePlaceholder?: string;
+  image?: string;
+  imageAlt?: string;
 };
 
 const FormularioLanding: React.FC<FormularioLandingProps> = ({
@@ -19,6 +21,8 @@ const FormularioLanding: React.FC<FormularioLandingProps> = ({
   title = '¡Solicita tu presupuesto sin compromiso!',
   description = 'Completa el formulario y nos pondremos en contacto contigo en menos de 24 horas.',
   messagePlaceholder = 'Cuéntanos sobre tu proyecto 💭',
+  image,
+  imageAlt,
 }) => {
   const [formData, setFormData] = React.useState({
     name: '',
@@ -61,16 +65,23 @@ const FormularioLanding: React.FC<FormularioLandingProps> = ({
     }
   };
 
+  const imageSrc =
+    image && (image.startsWith('http') || image.startsWith('/')) ? image : img(image || 'Formulario-casa-madera.webp');
+
   return (
     <section id="contacto" className="w-full bg-[#ededed] py-0 px-0">
       <div className="w-full flex flex-col md:flex-row rounded-none overflow-hidden shadow-lg">
         <div className="md:w-1/2 w-full h-40 md:h-auto md:min-h-[600px]">
           <img
-            src={img('Formulario-casa-madera.webp')}
-            alt={reformType}
+            src={imageSrc}
+            alt={imageAlt || reformType}
             className="object-cover w-full h-full"
             style={{ minHeight: '100%', minWidth: '100%', display: 'block' }}
             loading="lazy"
+            onError={(e) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = img('Formulario-casa-madera.webp');
+            }}
           />
         </div>
 
@@ -160,4 +171,3 @@ const FormularioLanding: React.FC<FormularioLandingProps> = ({
 };
 
 export default FormularioLanding;
-

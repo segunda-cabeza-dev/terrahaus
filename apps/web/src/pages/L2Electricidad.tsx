@@ -1,8 +1,7 @@
 import React from "react";
 import LandingFooter from '../components/LandingFooter';
+import FormularioLanding from "../components/FormularioLanding";
 import { img } from '../lib/assets';
-import PhoneInput from 'react-phone-input-2';
-import 'react-phone-input-2/lib/style.css';
 import { ArrowRight, CheckCircle2, Ruler, PenTool, Hammer, Clock } from "lucide-react";
 
 // --- Components Helpers ---
@@ -356,156 +355,6 @@ const VentajasCompetitivas: React.FC = () => {
   );
 };
 
-// 7️⃣ FORMULARIO
-const FormularioConstruccion: React.FC = () => {
-  const [formData, setFormData] = React.useState({
-    name: '',
-    email: '',
-    phone: '',
-    reformType: 'Puesta a tierra',
-    message: '',
-  });
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [error, setError] = React.useState('');
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setError('');
-
-    try {
-      const apiUrl = import.meta.env.VITE_API_URL || '/api';
-      const response = await fetch(`${apiUrl}/contacts`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...formData,
-          source: 'electricidad',
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Error al enviar el formulario');
-      }
-
-      window.location.href = '/gracias';
-    } catch {
-      setError('Hubo un problema al enviar. Por favor, inténtalo de nuevo.');
-      setIsSubmitting(false);
-    }
-  };
-
-  return (
-    <section id="contacto" className="py-24 bg-white">
-      <div className="max-w-4xl mx-auto px-4">
-        <div className="text-left md:text-center mb-12">
-           <h2 className="text-5xl uppercase mb-2 leading-[0.95]" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>Cuéntanos tu Proyecto</h2>
-           <p className="text-gray-600 font-light" style={{ fontFamily: 'Barlow, sans-serif', fontSize: '16px' }}>
-             Cuéntanos qué necesitas. Te contacta el equipo técnico para preparar una propuesta y, si encaja, agendar una visita gratuita.
-           </p>
-        </div>
-
-        <div className="bg-[#f9f9f9] p-8 md:p-12 border border-gray-200 shadow-sm relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-2 h-full bg-[#b35427]"></div>
-          
-          {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded">
-              {error}
-            </div>
-          )}
-          
-          <form
-            className="grid grid-cols-1 md:grid-cols-2 gap-6"
-            onSubmit={handleSubmit}
-          >
-            <div className="md:col-span-1">
-              <label className="block text-xs uppercase tracking-wider text-gray-500 mb-2 font-bold">Nombre</label>
-              <input
-                type="text"
-                required
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full bg-white border-b-2 border-gray-200 p-3 focus:outline-none focus:border-[#b35427] transition-colors rounded-none"
-                style={{ fontFamily: 'Barlow, sans-serif' }}
-              />
-            </div>
-            
-            <div className="md:col-span-1">
-              <label className="block text-xs uppercase tracking-wider text-gray-500 mb-2 font-bold">Email</label>
-              <input
-                type="email"
-                required
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="w-full bg-white border-b-2 border-gray-200 p-3 focus:outline-none focus:border-[#b35427] transition-colors rounded-none"
-                style={{ fontFamily: 'Barlow, sans-serif' }}
-              />
-            </div>
-
-            <div className="md:col-span-1">
-              <label className="block text-xs uppercase tracking-wider text-gray-500 mb-2 font-bold">Teléfono</label>
-              <div className="phone-input-architect">
-                <PhoneInput
-                  country={'es'}
-                  value={formData.phone}
-                  onChange={(phone) => setFormData({ ...formData, phone })}
-                  inputClass="!w-full !bg-white !border-b-2 !border-gray-200 !border-t-0 !border-l-0 !border-r-0 !rounded-none !h-[49px] !pl-12 focus:!border-[#b35427]"
-                  buttonClass="!bg-transparent !border-none !rounded-none"
-                  containerClass="!w-full"
-                  inputStyle={{ fontFamily: 'Barlow, sans-serif' }}
-                />
-              </div>
-            </div>
-
-            <div className="md:col-span-1">
-               <label className="block text-xs uppercase tracking-wider text-gray-500 mb-2 font-bold">Tipo de Intervención</label>
-               <select 
-                 value={formData.reformType}
-                 onChange={(e) => setFormData({ ...formData, reformType: e.target.value })}
-                 className="w-full bg-white border-b-2 border-gray-200 p-3 focus:outline-none focus:border-[#b35427] transition-colors rounded-none appearance-none cursor-pointer" 
-                 style={{ fontFamily: 'Barlow, sans-serif' }}
-               >
-                 <option>Puesta a tierra</option>
-                 <option>Instalación de enlace</option>
-                 <option>Línea general de alimentación</option>
-                 <option>Derivación individual</option>
-                 <option>Cuarto de contadores</option>
-                 <option>Otro</option>
-               </select>
-            </div>
-
-            <div className="md:col-span-2">
-              <label className="block text-xs uppercase tracking-wider text-gray-500 mb-2 font-bold">Detalles del Proyecto</label>
-              <textarea
-                rows={4}
-                value={formData.message}
-                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                placeholder="Tipo de edificio, número de viviendas, antigüedad, problemas detectados, ubicación..."
-                className="w-full bg-white border-2 border-gray-200 p-4 focus:outline-none focus:border-[#b35427] transition-colors rounded-none resize-none"
-                style={{ fontFamily: 'Barlow, sans-serif' }}
-              ></textarea>
-            </div>
-
-            <div className="md:col-span-2 mt-4">
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full bg-black text-white p-5 uppercase tracking-[2px] hover:bg-[#b35427] transition-colors duration-300 font-bold disabled:opacity-50 disabled:cursor-not-allowed"
-                style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '20px' }}
-              >
-                {isSubmitting ? 'Enviando...' : 'Solicitar Presupuesto'}
-              </button>
-              <p className="text-center text-xs text-gray-400 mt-4">
-                Protegemos tus datos. Al enviar aceptas nuestra política de privacidad.
-              </p>
-            </div>
-          </form>
-        </div>
-      </div>
-    </section>
-  );
-};
-
 const L2Electricidad: React.FC = () => {
   return (
     <>
@@ -515,7 +364,14 @@ const L2Electricidad: React.FC = () => {
       <ConceptoArquitectonico />
       <ProcesoTrabajo />
       <VentajasCompetitivas />
-      <FormularioConstruccion />
+      <FormularioLanding
+        reformType="Electricidad"
+        source="electricidad"
+        image="electricidad-plano.webp"
+        imageAlt="Plano de instalación eléctrica"
+        description="Completa el formulario y nos pondremos en contacto contigo en menos de 24 horas para conocer tu proyecto de electricidad."
+        messagePlaceholder="Cuéntanos qué necesitas (tipo de edificio, problema, ubicación) 💭"
+      />
       <LandingFooter />
     </>
   );
