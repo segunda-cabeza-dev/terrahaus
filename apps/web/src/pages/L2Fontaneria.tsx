@@ -40,7 +40,7 @@ const HeroLanding: React.FC = () => {
 
       <div className="relative z-10 flex-1 flex items-center">
         <div className="max-w-6xl mx-auto w-full flex flex-col items-center justify-center text-center px-4 md:px-8 py-8 md:py-10">
-          <div className="mb-4 md:mb-5 -mt-8 md:-mt-12">
+          <div className="mb-7 md:mb-5 -mt-8 md:-mt-12">
             <img
               src={img("Logo terrahous Blanco.webp")}
               alt="Terrahaus"
@@ -126,7 +126,7 @@ const ServiciosFontaneria: React.FC = () => {
     <section className="py-20 bg-white">
       <div className="max-w-6xl mx-auto px-4 md:px-8">
         <div className="text-left md:text-center mb-16">
-          <h2 className="uppercase leading-[0.95] text-black mt-0" style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '50px' }}>
+          <h2 className="uppercase leading-[0.95] text-black mt-0 text-[40px] md:text-[50px]" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>
             ¿EN QUÉ PODEMOS AYUDARTE AHORA MISMO?
           </h2>
           <p className="text-gray-600 mt-6 max-w-3xl mx-auto font-light" style={{ fontFamily: 'Barlow, sans-serif', fontSize: '18px', lineHeight: 1.5 }}>
