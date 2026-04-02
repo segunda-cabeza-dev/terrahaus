@@ -68,16 +68,27 @@ const HeroLanding: React.FC = () => {
           className="text-gray-200 mb-8 max-w-md md:max-w-2xl font-light leading-relaxed"
           style={{ fontFamily: 'Barlow, sans-serif', fontSize: '16px' }}
         >
-          Instalaciones de enlace, línea general de alimentación, derivación individual y puesta a tierra.
+          Servicio de urgencias eléctricas 24h.
+          <br />
+          Intervención rápida, diagnóstico preciso y precios claros.
         </p>
-        <a
-          href="#contacto"
-          className="group bg-white text-black hover:bg-[#b35427] hover:text-white transition-all duration-300 py-3 px-6 font-bold uppercase tracking-wider flex items-center gap-3 text-base md:text-[20px]"
-          style={{ fontFamily: 'Bebas Neue, sans-serif' }}
-        >
-          SOLICITAR ESTUDIO GRATUITO
-          <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-        </a>
+        <div className="flex flex-row flex-wrap items-center justify-center gap-4">
+          <a
+            href="tel:+34642413996"
+            className="group bg-white text-black hover:bg-[#b35427] hover:text-white transition-all duration-300 py-3 px-6 font-bold uppercase tracking-wider flex items-center gap-3 text-base md:text-[20px]"
+            style={{ fontFamily: 'Bebas Neue, sans-serif' }}
+          >
+            LLAMAR AHORA
+          </a>
+          <a
+            href="#contacto"
+            className="group border border-white text-white hover:bg-white hover:text-black transition-all duration-300 py-3 px-6 font-bold uppercase tracking-wider flex items-center gap-3 text-base md:text-[20px]"
+            style={{ fontFamily: 'Bebas Neue, sans-serif' }}
+          >
+            SOLICITAR PRESUPUESTO
+            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+          </a>
+        </div>
       </div>
       </div>
     </section>

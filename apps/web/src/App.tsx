@@ -19,6 +19,8 @@ const L1PinturaAlisado = lazy(() => import('./pages/L1PinturaAlisado'))
 
 const L2ReformasCocina = lazy(() => import('./pages/L2ReformasCocina'))
 const L2Electricidad = lazy(() => import('./pages/L2Electricidad'))
+const L2AireAcondicionado = lazy(() => import('./pages/L2AireAcondicionado'))
+const L2Fontaneria = lazy(() => import('./pages/L2Fontaneria'))
 
 function App() {
   return (
@@ -38,6 +40,8 @@ function App() {
           <Route path="/l1-pintura-alisado" element={<L1PinturaAlisado />} />
           <Route path="/reformas-cocina" element={<L2ReformasCocina />} />
           <Route path="/electricista-alicante" element={<L2Electricidad />} />
+          <Route path="/l1-aire-acondicionado-alicante" element={<L2AireAcondicionado />} />
+          <Route path="/l1-fontaneria-alicante" element={<L2Fontaneria />} />
           {/* Redirecciones desde rutas antiguas con /es */}
           <Route path="/es" element={<Navigate to="/" replace />} />
           <Route path="/es/*" element={<Navigate to="/" replace />} />
