@@ -1,4 +1,4 @@
-const GTM_ID = import.meta.env.VITE_GTM_ID?.trim()
+const GTM_ID = 'GTM-NR3LCKJD'
 
 let lastTrackedPath = ''
 
