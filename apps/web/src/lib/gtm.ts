@@ -1,6 +1,5 @@
 const GTM_ID = import.meta.env.VITE_GTM_ID?.trim()
 
-let gtmInitialized = false
 let lastTrackedPath = ''
 
 declare global {
@@ -15,25 +14,6 @@ function getCurrentPath() {
 
 export function isGtmEnabled() {
   return Boolean(GTM_ID)
-}
-
-export function initializeGtm() {
-  if (!GTM_ID || gtmInitialized || typeof window === 'undefined' || typeof document === 'undefined') {
-    return
-  }
-
-  window.dataLayer = window.dataLayer || []
-  window.dataLayer.push({
-    'gtm.start': Date.now(),
-    event: 'gtm.js',
-  })
-
-  const script = document.createElement('script')
-  script.async = true
-  script.src = `https://www.googletagmanager.com/gtm.js?id=${encodeURIComponent(GTM_ID)}`
-  document.head.appendChild(script)
-
-  gtmInitialized = true
 }
 
 export function trackPageView() {
