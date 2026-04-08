@@ -20,6 +20,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "convert-images": "node scripts/convert-to-webp.js",
+    "deploy": "bash scripts/deploy.sh",
     "deploy:frontend": "docker compose -f docker-compose.prod.yml up -d web"
   },
   "dependencies": {
