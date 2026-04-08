@@ -57,8 +57,8 @@ const Header: React.FC = () => {
                 {showReformas && (
                   <ul className="absolute left-0 mt-2 bg-white rounded shadow-lg text-[#232b36] min-w-[180px] z-50">
                     <li><a href="/reformas-cocina" className="block px-4 py-2 hover:bg-[#f6f7f9]">Cocina</a></li>
-                    <li><a href="/l1-aire-acondicionado-alicante" className="block px-4 py-2 hover:bg-[#f6f7f9]">Aire acondicionado</a></li>
-                    <li><a href="/l1-fontaneria-alicante" className="block px-4 py-2 hover:bg-[#f6f7f9]">Fontanería</a></li>
+                    <li><a href="/l1-tecnico-aire-acondicionado-alicante" className="block px-4 py-2 hover:bg-[#f6f7f9]">Aire acondicionado</a></li>
+                    <li><a href="/l1-fontanero-alicante" className="block px-4 py-2 hover:bg-[#f6f7f9]">Fontanería</a></li>
                   </ul>
                 )}
               </li>
@@ -124,8 +124,8 @@ const Header: React.FC = () => {
                 <span className="text-white text-3xl font-bold uppercase tracking-wide" style={{fontFamily: 'Bebas Neue, sans-serif'}}>Reformas</span>
                 <div className="pl-4 flex flex-col gap-4 border-l-2 border-[#b35427]/50 ml-1">
                     <a href="/reformas-cocina" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-300 text-xl hover:text-white transition-colors">Cocina</a>
-                    <a href="/l1-aire-acondicionado-alicante" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-300 text-xl hover:text-white transition-colors">Aire acondicionado</a>
-                    <a href="/l1-fontaneria-alicante" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-300 text-xl hover:text-white transition-colors">Fontanería</a>
+                    <a href="/l1-tecnico-aire-acondicionado-alicante" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-300 text-xl hover:text-white transition-colors">Aire acondicionado</a>
+                    <a href="/l1-fontanero-alicante" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-300 text-xl hover:text-white transition-colors">Fontanería</a>
                 </div>
             </div>
             <a href="#contacto" onClick={() => setIsMobileMenuOpen(false)} className="text-white text-3xl font-bold uppercase tracking-wide" style={{fontFamily: 'Bebas Neue, sans-serif'}}>Construcción</a>

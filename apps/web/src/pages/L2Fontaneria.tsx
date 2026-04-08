@@ -1,8 +1,10 @@
 import React from "react";
 import LandingFooter from '../components/LandingFooter';
+import { FloatingCallBar } from '../components/FloatingCallBar';
 import FormularioLanding from "../components/FormularioLanding";
 import { img } from '../lib/assets';
 import { CheckCircle2, Ruler, PenTool, Hammer, Clock } from "lucide-react";
+import { PHONE_HREF } from '../lib/contact';
 
 const SectionTitle: React.FC<{ subtitle: string; title: React.ReactNode; light?: boolean }> = ({ subtitle, title, light = false }) => (
   <div className="mb-12">
@@ -74,11 +76,11 @@ const HeroLanding: React.FC = () => {
           </div>
           <div className="mt-6 flex flex-row flex-wrap items-center justify-center gap-4">
             <a
-              href="https://wa.me/34642413996"
+              href={PHONE_HREF}
               className="bg-white text-black hover:bg-[#b35427] hover:text-white transition-all duration-300 py-3 px-6 font-bold uppercase tracking-wider text-base md:text-[20px]"
               style={{ fontFamily: 'Bebas Neue, sans-serif' }}
             >
-              SOLICITAR UN FONTANERO
+              LLAMAR AHORA
             </a>
             <a
               href="#contacto"
@@ -155,7 +157,7 @@ const ServiciosFontaneria: React.FC = () => {
             ⚡ Servicio urgente 24h disponible
           </p>
           <a
-            href="tel:+34642413996"
+            href={PHONE_HREF}
             className="inline-flex h-12 items-center justify-center bg-[#b35427] px-8 font-medium text-white transition-colors hover:bg-[#9a4620] uppercase tracking-wide"
             style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '18px' }}
           >
@@ -376,7 +378,7 @@ const EspecificacionesTecnicas: React.FC = () => {
 
 const L2Fontaneria: React.FC = () => {
   return (
-    <>
+    <div className="pb-16 md:pb-0">
       <HeroLanding />
       <ServiciosFontaneria />
       <ConceptoTecnico />
@@ -392,7 +394,8 @@ const L2Fontaneria: React.FC = () => {
         messagePlaceholder="Cuéntanos qué necesitas: fuga, reforma, sustitución de tuberías, baño, cocina o ubicación 💭"
       />
       <LandingFooter />
-    </>
+      <FloatingCallBar label="Llamar ahora" />
+    </div>
   );
 };
 

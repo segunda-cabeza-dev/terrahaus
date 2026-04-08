@@ -39,9 +39,12 @@ function App() {
           <Route path="/l1-reformas-integrales" element={<L1ReformasIntegrales />} />
           <Route path="/l1-pintura-alisado" element={<L1PinturaAlisado />} />
           <Route path="/reformas-cocina" element={<L2ReformasCocina />} />
-          <Route path="/electricista-alicante" element={<L2Electricidad />} />
-          <Route path="/l1-aire-acondicionado-alicante" element={<L2AireAcondicionado />} />
-          <Route path="/l1-fontaneria-alicante" element={<L2Fontaneria />} />
+          <Route path="/l1-electricista-alicante" element={<L2Electricidad />} />
+          <Route path="/l1-tecnico-aire-acondicionado-alicante" element={<L2AireAcondicionado />} />
+          <Route path="/l1-fontanero-alicante" element={<L2Fontaneria />} />
+          <Route path="/electricista-alicante" element={<Navigate to="/l1-electricista-alicante" replace />} />
+          <Route path="/l1-aire-acondicionado-alicante" element={<Navigate to="/l1-tecnico-aire-acondicionado-alicante" replace />} />
+          <Route path="/l1-fontaneria-alicante" element={<Navigate to="/l1-fontanero-alicante" replace />} />
           {/* Redirecciones desde rutas antiguas con /es */}
           <Route path="/es" element={<Navigate to="/" replace />} />
           <Route path="/es/*" element={<Navigate to="/" replace />} />

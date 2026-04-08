@@ -1,9 +1,8 @@
 
+import { WHATSAPP_NUMBER, WHATSAPP_PHONE_DIGITS } from '../lib/contact';
+
 export function WhatsAppFloat() {
-  // Número de WhatsApp igual al del footer
-  const whatsapp = "+34 642413996";
-  const phone = whatsapp.replace(/[^\d]/g, '');
-  const link = `https://wa.me/${phone}`;
+  const link = `https://wa.me/${WHATSAPP_PHONE_DIGITS}`;
 
   return (
     <a
@@ -11,6 +10,7 @@ export function WhatsAppFloat() {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="WhatsApp"
+      title={`WhatsApp ${WHATSAPP_NUMBER}`}
       style={{
         position: 'fixed',
         bottom: 24,

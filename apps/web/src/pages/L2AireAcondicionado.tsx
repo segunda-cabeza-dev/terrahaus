@@ -1,8 +1,10 @@
 import React from "react";
 import LandingFooter from '../components/LandingFooter';
+import { FloatingCallBar } from '../components/FloatingCallBar';
 import FormularioLanding from "../components/FormularioLanding";
 import { img } from '../lib/assets';
 import { ArrowRight, CheckCircle2, Ruler, PenTool, Hammer, Clock } from "lucide-react";
+import { PHONE_HREF } from '../lib/contact';
 
 const SectionTitle: React.FC<{ subtitle: string; title: React.ReactNode; light?: boolean }> = ({ subtitle, title, light = false }) => (
   <div className="mb-12">
@@ -76,8 +78,15 @@ const HeroLanding: React.FC = () => {
             Instalamos aire acondicionado en viviendas y negocios con una propuesta clara, montaje limpio y equipos pensados para rendir bien desde el primer día.
           </p>
           <a
-            href="#contacto"
+            href={PHONE_HREF}
             className="group bg-white text-black hover:bg-[#b35427] hover:text-white transition-all duration-300 py-3 px-6 font-bold uppercase tracking-wider flex items-center gap-3 text-base md:text-[20px]"
+            style={{ fontFamily: 'Bebas Neue, sans-serif' }}
+          >
+            LLAMAR AHORA
+          </a>
+          <a
+            href="#contacto"
+            className="group border border-white text-white hover:bg-white hover:text-black transition-all duration-300 py-3 px-6 font-bold uppercase tracking-wider flex items-center gap-3 text-base md:text-[20px]"
             style={{ fontFamily: 'Bebas Neue, sans-serif' }}
           >
             SOLICITAR ESTUDIO GRATUITO
@@ -364,7 +373,7 @@ const EspecificacionesTecnicas: React.FC = () => {
 
 const L2AireAcondicionado: React.FC = () => {
   return (
-    <>
+    <div className="pb-16 md:pb-0">
       <HeroLanding />
       <ServiciosClimatizacion />
       <ConceptoTecnico />
@@ -380,7 +389,8 @@ const L2AireAcondicionado: React.FC = () => {
         messagePlaceholder="Cuéntanos qué necesitas: tipo de espacio, metros, equipo actual y ubicación 💭"
       />
       <LandingFooter />
-    </>
+      <FloatingCallBar label="Llamar ahora" />
+    </div>
   );
 };
 

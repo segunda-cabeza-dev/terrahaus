@@ -1,8 +1,10 @@
 import React from "react";
 import LandingFooter from '../components/LandingFooter';
+import { FloatingCallBar } from '../components/FloatingCallBar';
 import FormularioLanding from "../components/FormularioLanding";
 import { img } from '../lib/assets';
 import { ArrowRight, CheckCircle2, Ruler, PenTool, Hammer, Clock } from "lucide-react";
+import { PHONE_HREF } from '../lib/contact';
 
 // --- Components Helpers ---
 
@@ -74,7 +76,7 @@ const HeroLanding: React.FC = () => {
         </p>
         <div className="flex flex-row flex-wrap items-center justify-center gap-4">
           <a
-            href="tel:+34642413996"
+            href={PHONE_HREF}
             className="group bg-white text-black hover:bg-[#b35427] hover:text-white transition-all duration-300 py-3 px-6 font-bold uppercase tracking-wider flex items-center gap-3 text-base md:text-[20px]"
             style={{ fontFamily: 'Bebas Neue, sans-serif' }}
           >
@@ -368,7 +370,7 @@ const VentajasCompetitivas: React.FC = () => {
 
 const L2Electricidad: React.FC = () => {
   return (
-    <>
+    <div className="pb-16 md:pb-0">
       <HeroLanding />
       <ServiciosElectricidad />
       <TiposActuacion />
@@ -384,7 +386,8 @@ const L2Electricidad: React.FC = () => {
         messagePlaceholder="Cuéntanos qué necesitas (tipo de edificio, problema, ubicación) 💭"
       />
       <LandingFooter />
-    </>
+      <FloatingCallBar label="Llamar ahora" />
+    </div>
   );
 };
 
