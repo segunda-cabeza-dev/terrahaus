@@ -71,6 +71,7 @@ services:
     environment:
       VITE_API_URL: ${VITE_API_URL:-http://localhost:3000}
       VITE_ASSETS_URL: ${VITE_ASSETS_URL:-}
+      VITE_GTM_ID: ${VITE_GTM_ID:-}
       CHOKIDAR_USEPOLLING: "1"
     ports:
       - "5173:5173"
@@ -82,4 +83,3 @@ services:
 
 volumes:
   postgres-data:
-

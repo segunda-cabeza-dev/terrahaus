@@ -26,7 +26,7 @@ echo "Syncing workspace to ${DEPLOY_HOST}:${DEPLOY_PATH}"
 rsync -az "${RSYNC_EXCLUDES[@]}" ./ "${DEPLOY_HOST}:${DEPLOY_PATH}/"
 
 echo "Building production images on ${DEPLOY_HOST}"
-ssh "${DEPLOY_HOST}" "cd ${DEPLOY_PATH} && docker build -f apps/api/Dockerfile -t terrahaus-api:main . && docker build -f apps/web/Dockerfile -t terrahaus-web:main ."
+ssh "${DEPLOY_HOST}" "cd ${DEPLOY_PATH} && set -a && if [ -f .env ]; then . ./.env; elif [ -f .env.production ]; then . ./.env.production; fi && set +a && docker build -f apps/api/Dockerfile -t terrahaus-api:main . && docker build --build-arg VITE_GTM_ID=\${VITE_GTM_ID:-} -f apps/web/Dockerfile -t terrahaus-web:main ."
 
 echo "Running database migrations on ${DEPLOY_HOST}"
 ssh "${DEPLOY_HOST}" "cd ${DEPLOY_PATH} && docker compose ${REMOTE_COMPOSE_FILES[*]} run --rm migrate"

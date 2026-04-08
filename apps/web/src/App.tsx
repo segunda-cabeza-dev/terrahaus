@@ -3,6 +3,7 @@ import { lazy, Suspense } from 'react'
 import ScrollToTop from './components/ScrollToTop'
 import { WhatsAppFloat } from './components/WhatsAppFloat'
 import { PageLoader } from './components/LoadingSpinner'
+import { GtmTracker } from './components/GtmTracker'
 import './App.css'
 
 // Lazy loading de páginas para mejor rendimiento
@@ -25,6 +26,7 @@ const L2Fontaneria = lazy(() => import('./pages/L2Fontaneria'))
 function App() {
   return (
     <>
+      <GtmTracker />
       <ScrollToTop />
       <Suspense fallback={<PageLoader />}>
         <Routes>

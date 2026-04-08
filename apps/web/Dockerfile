@@ -12,6 +12,9 @@ RUN npm ci -w @terrahaus/web
 FROM deps AS build
 WORKDIR /app
 
+ARG VITE_GTM_ID=""
+ENV VITE_GTM_ID=${VITE_GTM_ID}
+
 COPY apps/web ./apps/web
 COPY packages/shared ./packages/shared
 
